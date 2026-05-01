@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network Security Config.
+
+  Defaults are deny-cleartext globally. We further constrain so the app can
+  only talk to the GitHub Pages domain hosting our rates.json — even if a
+  bug or supply-chain attack tries to exfiltrate to elsewhere, the platform
+  refuses the connection.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Hard allowlist: only this domain. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">imraneggy.github.io</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

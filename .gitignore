@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+android/.idea/
+android/captures/
+android/app/release/
+*.iml
+*.apk
+*.aab
+*.keystore
+
+# Scraper local debug output
+scrapers/.cache/
+scrapers/debug_*.html
+
+# SECRETS — never commit. git.txt holds a personal access token used only
+# to authenticate `git push` on this developer machine.
+git.txt
+*.token
+*.pat
+.env
+.env.*
+!.env.example
+keystore.properties
+*.keystore
+*.jks

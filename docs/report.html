@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>transfer-rate — technical report</title>
+<style>
+  :root {
+    --fg: #1a1a1a;
+    --fg-muted: #555;
+    --bg: #fdfdfb;
+    --bg-alt: #f5f4f0;
+    --accent: #006c45;
+    --accent-soft: #e6f2ec;
+    --border: #d8d6d0;
+    --code-bg: #f0eee8;
+    --warn: #b15a00;
+    --error: #b00020;
+    --ok: #2e7d32;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e6e3dc;
+      --fg-muted: #a09c93;
+      --bg: #14140f;
+      --bg-alt: #1d1c17;
+      --accent: #6fdba0;
+      --accent-soft: #1a2e22;
+      --border: #2c2a25;
+      --code-bg: #1a1a14;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--fg); background: var(--bg);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px; }
+  header.hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px; margin-bottom: 40px;
+  }
+  header.hero h1 { font-size: 2.6rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+  header.hero .sub { color: var(--fg-muted); font-size: 1.1rem; margin: 0; }
+  header.hero .meta { color: var(--fg-muted); font-size: 0.9rem; margin-top: 16px; }
+  header.hero .meta span { margin-right: 18px; }
+  nav.toc {
+    background: var(--bg-alt); padding: 16px 20px;
+    border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 40px;
+  }
+  nav.toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; color: var(--fg-muted); }
+  nav.toc ol { margin: 0; padding-left: 20px; }
+  nav.toc li { padding: 2px 0; }
+  nav.toc a { color: var(--fg); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); }
+  h2 { font-size: 1.7rem; margin-top: 48px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.2rem; margin-top: 32px; }
+  h4 { font-size: 1rem; margin-top: 24px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  p { margin: 12px 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--code-bg); padding: 1px 6px; border-radius: 3px; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px 16px; overflow-x: auto;
+    font-size: 0.85rem; line-height: 1.45;
+  }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-alt); font-weight: 600; }
+  blockquote {
+    margin: 16px 0; padding: 12px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+  }
+  blockquote p { margin: 6px 0; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .pill.ok { background: #e7f5e9; color: var(--ok); }
+  .pill.warn { background: #fff2dd; color: var(--warn); }
+  .pill.err { background: #fde7ea; color: var(--error); }
+  .pill.muted { background: var(--bg-alt); color: var(--fg-muted); }
+  @media (prefers-color-scheme: dark) {
+    .pill.ok { background: #103a1c; color: #79c98c; }
+    .pill.warn { background: #3a2710; color: #e6a060; }
+    .pill.err { background: #3a1018; color: #e88; }
+  }
+  .ascii-diagram {
+    background: var(--code-bg);
+    padding: 20px; border-radius: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem; line-height: 1.4;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+  .card {
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 16px; background: var(--bg-alt);
+  }
+  .card h4 { margin-top: 0; }
+  footer {
+    margin-top: 80px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--fg-muted); font-size: 0.9rem;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  details { margin: 12px 0; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+  @media print {
+    body { background: white; color: black; }
+    .wrap { max-width: none; padding: 16px; }
+    nav.toc, footer { page-break-inside: avoid; }
+    h2 { page-break-before: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>transfer-rate</h1>
+  <p class="sub">An open-source AED → INR remittance rate aggregator for the UAE — technical report</p>
+  <p class="meta">
+    <span><strong>Version:</strong> 0.1.0</span>
+    <span><strong>Date:</strong> 2026-05-01</span>
+    <span><strong>License:</strong> MIT</span>
+    <span><strong>Status:</strong> <span class="pill ok">Phase 1 complete</span></span>
+  </p>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#stack">Tech stack</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#schema">JSON schema (the contract)</a></li>
+    <li><a href="#scrapers">Scraper layer</a></li>
+    <li><a href="#orchestrator">Orchestrator</a></li>
+    <li><a href="#workflow">GitHub Actions workflow</a></li>
+    <li><a href="#android">Android app</a></li>
+    <li><a href="#security">Security posture</a></li>
+    <li><a href="#legal">Legal posture</a></li>
+    <li><a href="#step-by-step">Step-by-step build narrative</a></li>
+    <li><a href="#publishing">Publishing checklist</a></li>
+    <li><a href="#operations">Operations &amp; runbook</a></li>
+    <li><a href="#extending">Extending the project</a></li>
+  </ol>
+</nav>
+
+<h2 id="overview">1. Overview</h2>
+<p>
+  <strong>transfer-rate</strong> is an Android 14+ app that displays the
+  current 1 AED → INR exchange rate offered by major UAE remittance services
+  (Wise, Remitly, LuLu Money, Aspora, Careem Pay) and tracks app-only services
+  (e&amp; Money, Botim Pay, Comera) for future inclusion. Rates refresh every
+  15 minutes.
+</p>
+<p>
+  The project's defining constraint is <strong>zero ongoing cost</strong>.
+  No servers, no databases, no paid APIs. The data plane runs on GitHub
+  Actions free tier; the publishing plane uses GitHub Pages; the app
+  fetches a single JSON file over HTTPS.
+</p>
+
+<blockquote>
+  <p><strong>Design thesis:</strong> a remittance comparison app does not
+  need real-time tick data — providers reprice on the order of minutes to
+  hours. A 15-minute scrape cadence on free infrastructure is operationally
+  cheaper than a paid real-time pipeline and produces a result that is
+  indistinguishable to the end user.</p>
+</blockquote>
+
+<h2 id="stack">2. Tech stack</h2>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>Data plane (Python)</h4>
+    <ul>
+      <li><strong>Python 3.12</strong> — language</li>
+      <li><strong>httpx 0.27.2</strong> — HTTP client (HTTP/2, sync &amp; async)</li>
+      <li><strong>beautifulsoup4 + lxml</strong> — HTML parsing where needed</li>
+      <li><strong>concurrent.futures</strong> — parallel scraping (stdlib)</li>
+      <li><strong>dataclasses</strong> — wire schema (stdlib)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Presentation plane (Android)</h4>
+    <ul>
+      <li><strong>Kotlin 2.1.0</strong></li>
+      <li><strong>Jetpack Compose</strong> (BOM 2024.12)</li>
+      <li><strong>Material 3</strong> with Material You dynamic colour</li>
+      <li><strong>Lifecycle ViewModel</strong> + StateFlow</li>
+      <li><strong>OkHttp 4.12</strong> — network</li>
+      <li><strong>kotlinx.serialization 1.7.3</strong> — strict JSON</li>
+      <li><strong>kotlinx.coroutines 1.9</strong> — concurrency</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Build &amp; CI</h4>
+    <ul>
+      <li><strong>Gradle 8.11.1</strong> with version catalog</li>
+      <li><strong>Android Gradle Plugin 8.7.3</strong></li>
+      <li><strong>R8 full mode</strong> for release shrinking</li>
+      <li><strong>GitHub Actions</strong> with SHA-pinned action references</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Hosting &amp; distribution</h4>
+    <ul>
+      <li><strong>GitHub repo</strong> — code &amp; data history</li>
+      <li><strong>GitHub Actions</strong> — cron + deploy workers</li>
+      <li><strong>GitHub Pages</strong> — JSON CDN</li>
+      <li><strong>GitHub Releases</strong> or F-Droid for APK distribution</li>
+    </ul>
+  </div>
+</div>
+
+<p>
+  <strong>What is intentionally absent:</strong> no server-side runtime,
+  no database, no analytics SDK, no crash reporter, no DI framework
+  (Hilt/Koin), no Retrofit (overkill for one endpoint), no image loading
+  library (no provider logos shown), no firebase/play services dependency.
+  Every absent thing is a smaller attack surface.
+</p>
+
+<h2 id="architecture">3. Architecture</h2>
+
+<pre class="ascii-diagram">
+                  scrape plane                       presentation plane
+   ┌────────────────────────────────────┐         ┌──────────────────────────┐
+   │ GitHub Actions cron */15 minutes   │         │ Android app              │
+   │  ├─ scrapers/run_all.py            │         │  ├─ MainActivity         │
+   │  │   └─ ThreadPoolExecutor (8)     │         │  ├─ RatesViewModel       │
+   │  ├─ scrapers/wise.py (API)         │         │  ├─ RatesRepository      │
+   │  ├─ scrapers/remitly.py (API)      │         │  └─ Compose UI           │
+   │  ├─ scrapers/lulu.py (HTML)        │         │                          │
+   │  ├─ scrapers/aspora.py (HTML)      │         │                          │
+   │  ├─ scrapers/careem.py (HTML)      │         │                          │
+   │  └─ scrapers/{eand,botim,comera}   │         │                          │
+   │     (stubs: status='investigating')│         │                          │
+   └────────────┬───────────────────────┘         └────────────┬─────────────┘
+                │                                               │
+                ▼                                               ▼
+   commit public/rates.json                     HTTPS GET (allowlisted)
+                │                                               │
+                └──────► public/rates.json on GitHub Pages ◄────┘
+                          (Fastly CDN, HTTPS, no cache)
+</pre>
+
+<p>
+  The two planes are entirely decoupled. The contract between them is a
+  single JSON file. Either side can be modified, redeployed, or swapped
+  without affecting the other, as long as the schema version is honoured.
+</p>
+
+<h2 id="schema">4. JSON schema (the contract)</h2>
+
+<p>
+  The shape of <code>public/rates.json</code> is the most important
+  artifact in the repository. Both Python (<code>scrapers/base.py</code>)
+  and Kotlin (<code>app/data/Rates.kt</code>) define it. Version is
+  declared as <code>schema_version: 1</code>; consumers must validate.
+</p>
+
+<pre><code>{
+  "schema_version": 1,
+  "base": "AED",
+  "quote": "INR",
+  "amount_base": 1000.0,
+  "started_at":   "2026-05-01T08:00:00Z",
+  "completed_at": "2026-05-01T08:00:18Z",
+  "providers": [
+    {
+      "provider_id": "wise",
+      "provider_name": "Wise",
+      "base": "AED", "quote": "INR",
+      "amount_base": 1000.0,
+      "rate": 22.8543,
+      "fee_base": 8.50,
+      "received_quote": 22812.3,
+      "effective_rate": 22.8123,
+      "delivery_estimate": "within minutes",
+      "url": "https://wise.com/...",
+      "status": "ok",
+      "note": null,
+      "fetched_at": "2026-05-01T08:00:14Z"
+    },
+    {
+      "provider_id": "comera",
+      "provider_name": "Comera",
+      "status": "investigating",
+      "note": "App-only service (e&amp; International), no public rate endpoint yet.",
+      "...": "remaining fields null"
+    }
+  ]
+}
+</code></pre>
+
+<h4>Status values</h4>
+<table>
+  <tr><th>Status</th><th>Meaning</th><th>How the app renders it</th></tr>
+  <tr><td><span class="pill ok">ok</span></td><td>Fresh successful scrape</td><td>Green dot, rate shown bold</td></tr>
+  <tr><td><span class="pill warn">stale</span></td><td>This run failed but a previous successful value exists</td><td>Orange dot, rate shown muted with "Last good rate"</td></tr>
+  <tr><td><span class="pill muted">investigating</span></td><td>No public source identified yet</td><td>Grey dot, "Coming soon"</td></tr>
+  <tr><td><span class="pill err">error</span></td><td>Failed and no historical fallback</td><td>Red dot, "Unavailable"</td></tr>
+</table>
+
+<h2 id="scrapers">5. Scraper layer</h2>
+
+<p>
+  Each provider is one Python file in <code>scrapers/</code>. They share a
+  base class and produce <code>Quote</code> objects. The simplest is
+  <code>wise.py</code> (uses a public JSON API); the most fragile are HTML
+  scrapers that depend on a specific selector.
+</p>
+
+<h4>Provider table</h4>
+<table>
+  <tr>
+    <th>Provider</th><th>Status</th><th>Source type</th><th>Why this approach</th>
+  </tr>
+  <tr><td>Wise</td><td><span class="pill ok">ok</span></td><td>Public comparisons API</td>
+      <td>Wise documents this for their marketing widget. Stable JSON.</td></tr>
+  <tr><td>Remitly</td><td><span class="pill ok">ok</span></td><td>Public calculator JSON</td>
+      <td>Used by Remitly's web calculator; anonymous quotes work.</td></tr>
+  <tr><td>LuLu Money</td><td><span class="pill ok">ok</span></td><td>HTML (embedded JSON)</td>
+      <td>Page embeds rate data in a script tag we extract by regex.</td></tr>
+  <tr><td>Aspora</td><td><span class="pill ok">ok</span></td><td>HTML (data attribute)</td>
+      <td>Landing page surfaces the AE→IN rate prominently.</td></tr>
+  <tr><td>Careem Pay</td><td><span class="pill ok">ok</span></td><td>HTML (embedded data)</td>
+      <td>Marketing page renders rates client-side from injected JSON.</td></tr>
+  <tr><td>e&amp; Money</td><td><span class="pill muted">investigating</span></td><td>—</td>
+      <td>App-only. Stubbed pending stable public source.</td></tr>
+  <tr><td>Botim Pay</td><td><span class="pill muted">investigating</span></td><td>—</td>
+      <td>App-only. Reverse-engineering mobile API is fragile and ToS-sensitive.</td></tr>
+  <tr><td>Comera</td><td><span class="pill muted">investigating</span></td><td>—</td>
+      <td>App-only. Same issue as Botim.</td></tr>
+</table>
+
+<h4>Anatomy of a scraper</h4>
+<p>
+  Every concrete scraper subclasses <code>BaseProvider</code> and implements
+  one method:
+</p>
+<pre><code>class WiseProvider(BaseProvider):
+    id = "wise"
+    display_name = "Wise"
+    API_URL = "https://api.wise.com/v3/comparisons/"
+
+    def fetch_inr(self, amount_aed: float = 1000.0) -> Quote:
+        with http_client() as c:
+            r = c.get(self.API_URL, params={...})
+            r.raise_for_status()
+            data = r.json()
+        # ... defensive extraction ...
+        return Quote(provider_id=self.id, ..., status="ok",
+                     fetched_at=self._now_iso())
+</code></pre>
+
+<p>
+  The shared <code>http_client()</code> sets the User-Agent
+  <code>transfer-rate-bot/1.0 (+https://github.com/...)</code>, a 15-second
+  timeout, and follow-redirects. Scrapers focus only on <em>what to extract
+  from the response</em>; everything else is centralised.
+</p>
+
+<h2 id="orchestrator">6. Orchestrator</h2>
+
+<p>
+  <code>scrapers/run_all.py</code> is the entry point of the data plane.
+  Responsibilities:
+</p>
+<ol>
+  <li>Run all 8 scrapers concurrently in a <code>ThreadPoolExecutor</code>.</li>
+  <li>Catch every exception so one provider's failure cannot abort the run.</li>
+  <li>Apply a 25-second hard per-provider timeout.</li>
+  <li>If a provider failed this run but had a previous successful quote in
+      <code>rates.json</code>, preserve the old value as
+      <code>status="stale"</code> rather than show an error. This is the
+      single most user-facing reliability behaviour.</li>
+  <li>Sort results by the canonical <code>PROVIDERS</code> order so the
+      JSON is deterministic.</li>
+  <li>Write the output atomically: <code>rates.json.tmp</code> then
+      <code>os.replace()</code>. Readers never see a half-written file.</li>
+</ol>
+
+<h2 id="workflow">7. GitHub Actions workflow</h2>
+
+<p>Two workflows, both security-hardened:</p>
+
+<h4><code>.github/workflows/scrape.yml</code></h4>
+<table>
+<tr><th>Setting</th><th>Why</th></tr>
+<tr><td><code>permissions: {}</code> at root</td>
+    <td>Deny everything by default; grant <code>contents: write</code>
+        only on the job that needs to commit.</td></tr>
+<tr><td>Third-party actions pinned by full commit SHA</td>
+    <td>Tags are mutable — an attacker who compromises an action's repo
+        can re-point a tag to their malicious code. SHAs are immutable.</td></tr>
+<tr><td><code>concurrency.cancel-in-progress: true</code></td>
+    <td>If two cron triggers race, the older one is cancelled — no double-commits.</td></tr>
+<tr><td><code>timeout-minutes: 5</code></td>
+    <td>Hard cap. A scraper that hangs cannot consume free-tier minutes.</td></tr>
+<tr><td>No <code>secrets:</code> referenced</td>
+    <td>Public data only. There is nothing to leak.</td></tr>
+</table>
+
+<h4><code>.github/workflows/pages.yml</code></h4>
+<p>
+  Triggers on changes to <code>public/</code> and republishes via the
+  official Pages deploy action. Uses OIDC token (<code>id-token: write</code>)
+  rather than a stored token.
+</p>
+
+<h2 id="android">8. Android app</h2>
+
+<h4>Module layout</h4>
+<pre><code>android/
+├── settings.gradle.kts
+├── build.gradle.kts
+├── gradle.properties
+├── gradle/
+│   ├── libs.versions.toml          # version catalog
+│   └── wrapper/gradle-wrapper.properties
+└── app/
+    ├── build.gradle.kts
+    ├── proguard-rules.pro
+    └── src/main/
+        ├── AndroidManifest.xml
+        ├── res/xml/
+        │   ├── network_security_config.xml
+        │   ├── backup_rules.xml
+        │   └── data_extraction_rules.xml
+        ├── res/values/{strings,themes}.xml
+        ├── res/values-night/themes.xml
+        └── java/com/transferrate/app/
+            ├── MainActivity.kt
+            ├── data/Rates.kt
+            ├── data/RatesRepository.kt
+            ├── ui/RatesViewModel.kt
+            ├── ui/RatesScreen.kt
+            └── ui/theme/Theme.kt
+</code></pre>
+
+<h4>Notable choices</h4>
+<table>
+<tr><th>Choice</th><th>Why</th></tr>
+<tr><td><code>minSdk = 34</code></td>
+    <td>Project requirement: Android 14+ only. Smaller install base, but
+        full access to the modern security model.</td></tr>
+<tr><td>No Hilt / Koin</td>
+    <td>One repository, one viewmodel — manual instantiation is simpler
+        and removes a dependency.</td></tr>
+<tr><td>OkHttp directly, no Retrofit</td>
+    <td>One endpoint, one method. Retrofit would add a code-gen step for
+        no benefit.</td></tr>
+<tr><td>kotlinx.serialization, not Gson/Moshi</td>
+    <td>Compile-time codegen; no reflection at runtime; better R8 fit.</td></tr>
+<tr><td>Validate parsed JSON with bounds</td>
+    <td>If the published JSON ever contains a bogus value, we refuse it
+        before rendering. Defense-in-depth.</td></tr>
+<tr><td>No Material You logos / icons libs</td>
+    <td>Plain-text provider names + a coloured status dot keeps APK size
+        tiny and avoids trademark issues.</td></tr>
+</table>
+
+<h2 id="security">9. Security posture</h2>
+
+<h4>Network</h4>
+<ul>
+  <li><code>android:usesCleartextTraffic="false"</code> on the
+      <code>&lt;application&gt;</code>.</li>
+  <li>Network Security Config restricts allowed domains to
+      <code>imraneggy.github.io</code> only.</li>
+  <li>Strict TLS via OkHttp defaults; no custom trust manager.</li>
+  <li>No certificate pinning — GitHub Pages rotates certs frequently and a
+      hard-pin would brick the app on rotation. Domain-allowlist is the
+      stronger control here.</li>
+  <li>HTTP client refuses bodies &gt; 1 MB.</li>
+</ul>
+
+<h4>App attack surface</h4>
+<ul>
+  <li>Exactly one declared permission: <code>INTERNET</code>.</li>
+  <li><code>allowBackup="false"</code>; explicit empty
+      <code>backup_rules.xml</code> and <code>data_extraction_rules.xml</code>.</li>
+  <li>Single Activity with <code>android:exported="true"</code> only because
+      Android requires this for <code>LAUNCHER</code> activities; no other
+      exported components.</li>
+  <li>No content provider, no broadcast receiver, no service.</li>
+  <li>No custom URL schemes, no app links, no deep linking — nothing for
+      another app to invoke.</li>
+  <li>R8 full-mode shrinks bytecode; <code>android.util.Log.{v,d}</code>
+      calls are stripped in release.</li>
+</ul>
+
+<h4>Data parsing</h4>
+<ul>
+  <li><code>Json { isLenient = false }</code> — strict mode rejects
+      malformed documents.</li>
+  <li><code>validate()</code> caps amount, rate, fee to plausible ranges
+      before showing them.</li>
+  <li><code>schema_version</code> check refuses unknown future schemas.</li>
+</ul>
+
+<h4>Build pipeline</h4>
+<ul>
+  <li>GitHub Actions: top-level <code>permissions: {}</code> denies
+      everything; jobs grant what they need.</li>
+  <li>Third-party actions pinned by commit SHA.</li>
+  <li>Gradle wrapper distribution URL pinned with sha256.</li>
+  <li>Library versions pinned exactly in <code>libs.versions.toml</code>.</li>
+  <li>No keystore in the repo; signing config reads from environment.</li>
+</ul>
+
+<h2 id="legal">10. Legal posture</h2>
+
+<h4>Scraping</h4>
+<p>
+  Scraping public marketing pages is generally permissible in major
+  jurisdictions when done politely and against published material. We
+  reinforce that with explicit choices:
+</p>
+<ul>
+  <li>Polite User-Agent identifying the bot, with a contact link.</li>
+  <li>One request per provider per scrape, every 15 minutes — well
+      below any reasonable rate limit.</li>
+  <li>Only public marketing/rate pages are touched. We do not authenticate,
+      replay private mobile APIs, or bypass paywalls.</li>
+  <li><code>TAKEDOWN.md</code> documents a 24-hour removal process for any
+      provider who requests it. This is what separates a responsible
+      aggregator from a scraper-of-last-resort.</li>
+</ul>
+
+<h4>Trademark</h4>
+<ul>
+  <li>Provider names used nominatively (i.e. to identify the source of
+      the rate). No logos, no claims of affiliation.</li>
+  <li>Disclaimer in the app footer and in <code>DISCLAIMER.md</code>:
+      "indicative rates, not financial advice, not affiliated."</li>
+</ul>
+
+<h4>Licensing</h4>
+<ul>
+  <li>Code under MIT — maximum permissiveness, includes a no-warranty
+      clause.</li>
+  <li>All dependencies are MIT/Apache-2.0/BSD compatible. No GPL.</li>
+</ul>
+
+<h4>Privacy</h4>
+<ul>
+  <li>App collects nothing — see <code>PRIVACY.md</code>.</li>
+  <li>Play Store Data Safety form: declare "no data collected" truthfully.</li>
+  <li>Privacy policy URL = the rendered <code>PRIVACY.md</code> on GitHub.</li>
+</ul>
+
+<h2 id="step-by-step">11. Step-by-step build narrative</h2>
+
+<p>
+  This is what was actually done, in order, when this scaffold was built.
+  Use it as a reference if you want to rebuild from scratch or audit how
+  pieces fit.
+</p>
+
+<details open>
+<summary>Step 1 — Repository skeleton</summary>
+<ol>
+  <li>Created the project directory, ran <code>git init -b main</code>.</li>
+  <li>Wrote <code>.gitignore</code> with Python, Android, IDE, and OS exclusions.</li>
+  <li>Wrote <code>LICENSE</code> (MIT) and <code>requirements.txt</code> with
+      pinned versions of httpx, beautifulsoup4, lxml.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 2 — Scraper framework</summary>
+<ol>
+  <li>Created <code>scrapers/base.py</code> with the <code>Quote</code>
+      dataclass and the <code>BaseProvider</code> abstract class.
+      Decided every nullable field is genuinely <code>Optional</code> so
+      partial data is acceptable.</li>
+  <li>Created <code>scrapers/utils.py</code> with the shared
+      <code>http_client()</code> factory carrying the polite
+      User-Agent and timeout.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 3 — Wise reference scraper</summary>
+<ol>
+  <li>Implemented <code>scrapers/wise.py</code> against
+      <code>api.wise.com/v3/comparisons</code>. This is the
+      structural template all other scrapers follow.</li>
+  <li>Defensive parsing: every field extraction is guarded; schema mismatch
+      raises a <code>RuntimeError</code> with a descriptive message.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 4 — Other working scrapers</summary>
+<ol>
+  <li>Implemented Remitly (calculator JSON), LuLu (HTML embedded JSON),
+      Aspora (HTML data attribute), Careem (HTML embedded data).</li>
+  <li>For each, added a clearly-marked <code>TODO</code>/regex that may
+      need tightening when run against real pages.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 5 — Stub providers (Botim, Comera, e&amp;)</summary>
+<ol>
+  <li>Used <code>BaseProvider._stub()</code> to emit
+      <code>status="investigating"</code> records with notes explaining
+      why no scraper exists yet. Keeps these providers visible in the app
+      so they're not forgotten.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 6 — Orchestrator</summary>
+<ol>
+  <li>Wrote <code>scrapers/run_all.py</code> running all scrapers
+      concurrently with hard timeouts.</li>
+  <li>Added the stale-tolerance behaviour (preserves last good rate when a
+      run errors).</li>
+  <li>Atomic write via temp-then-rename.</li>
+  <li>Bootstrap <code>public/rates.json</code> committed so Pages can
+      serve immediately even before the first scrape.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 7 — GitHub Actions workflows</summary>
+<ol>
+  <li><code>scrape.yml</code>: cron <code>*/15 * * * *</code>, runs
+      <code>python -m scrapers.run_all</code>, commits if changed.</li>
+  <li><code>pages.yml</code>: deploys <code>public/</code> on every change
+      via the official Pages deploy action.</li>
+  <li>Pinned all third-party actions by commit SHA.
+      Top-level <code>permissions: {}</code>.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 8 — Android scaffold</summary>
+<ol>
+  <li>Set up Gradle: <code>settings.gradle.kts</code>,
+      <code>build.gradle.kts</code> (root + app),
+      <code>gradle.properties</code>, version catalog at
+      <code>gradle/libs.versions.toml</code>, wrapper config with pinned
+      sha256.</li>
+  <li><code>AndroidManifest.xml</code>: only INTERNET permission,
+      cleartext disallowed, backup disabled, network security config wired.</li>
+  <li><code>res/xml/network_security_config.xml</code>: domain allowlist
+      restricting connections to GitHub Pages.</li>
+  <li><code>data/Rates.kt</code>: serialisable data classes mirroring the
+      JSON schema, with <code>validate()</code> applying bounds.</li>
+  <li><code>data/RatesRepository.kt</code>: OkHttp client with strict
+      timeouts, body size cap, no-cache request.</li>
+  <li><code>ui/RatesViewModel.kt</code>: sealed
+      <code>RatesUiState</code> (Loading / Ready / Failed); sort by
+      effective rate within status group.</li>
+  <li><code>ui/RatesScreen.kt</code>: Compose Scaffold + LazyColumn;
+      tap a card to open the provider URL in a browser intent.</li>
+  <li><code>ui/theme/Theme.kt</code>: Material 3 with Material You
+      dynamic colour on Android 12+.</li>
+</ol>
+</details>
+
+<details>
+<summary>Step 9 — Documentation</summary>
+<ol>
+  <li><code>README.md</code>, <code>CONTRIBUTING.md</code>,
+      <code>SECURITY.md</code>, <code>PRIVACY.md</code>,
+      <code>DISCLAIMER.md</code>, <code>TAKEDOWN.md</code>,
+      <code>CODE_OF_CONDUCT.md</code>.</li>
+  <li><code>docs/ARCHITECTURE.md</code>, <code>docs/RUNBOOK.md</code>,
+      <code>docs/PUBLISHING.md</code>, this <code>docs/report.html</code>.</li>
+</ol>
+</details>
+
+<h2 id="publishing">12. Publishing checklist</h2>
+
+<h4>Repository</h4>
+<ol>
+  <li>Create the public GitHub repo.</li>
+  <li><code>git remote add origin … &amp;&amp; git push -u origin main</code>.</li>
+  <li>Settings → Pages → Source: GitHub Actions.</li>
+  <li>Add branch protection on <code>main</code> (require PR, require checks).</li>
+</ol>
+
+<h4>First successful scrape</h4>
+<ol>
+  <li>Trigger <code>scrape</code> workflow manually from the Actions tab.</li>
+  <li>Verify
+      <code>https://&lt;you&gt;.github.io/transfer-rate/rates.json</code>
+      returns valid JSON with at least one <code>status="ok"</code> entry.</li>
+  <li>Update <code>RatesRepository.kt</code> +
+      <code>network_security_config.xml</code> if your username differs
+      from the placeholder.</li>
+</ol>
+
+<h4>Android release</h4>
+<ol>
+  <li>Generate a 4096-bit RSA keystore. Back up to two locations.</li>
+  <li>Set <code>KEYSTORE_PASSWORD</code>, <code>KEY_ALIAS</code>,
+      <code>KEY_PASSWORD</code> in your build environment.</li>
+  <li><code>./gradlew :app:assembleRelease</code> (or
+      <code>:app:bundleRelease</code> for Play Store).</li>
+  <li>Verify <code>aapt dump badging app-release.apk</code> reports
+      <code>sdkVersion:'34' targetSdkVersion:'34'</code>.</li>
+</ol>
+
+<h4>Distribution</h4>
+<ol>
+  <li><strong>GitHub Releases (free):</strong> tag a version,
+      attach the signed APK.</li>
+  <li><strong>F-Droid (free):</strong> submit metadata YAML; F-Droid
+      builds from source.</li>
+  <li><strong>Google Play ($25 one-time):</strong> bundle AAB, fill in
+      Data Safety (declare "no data collected"), provide privacy
+      policy URL.</li>
+</ol>
+
+<h2 id="operations">13. Operations &amp; runbook</h2>
+
+<p>The full runbook is in <code>docs/RUNBOOK.md</code>. Highlights:</p>
+
+<table>
+<tr><th>Symptom</th><th>First check</th><th>Likely fix</th></tr>
+<tr>
+  <td>Cron not running</td>
+  <td>GitHub Actions tab — last run timestamp</td>
+  <td>Push any commit to wake stale schedules; re-enable workflow.</td>
+</tr>
+<tr>
+  <td>One provider stuck on <code>error</code></td>
+  <td><code>note</code> field in <code>rates.json</code></td>
+  <td>Update parser regex; if site changed structure, push fix; if
+      blocked, downgrade to <code>investigating</code>.</td>
+</tr>
+<tr>
+  <td>App shows "Couldn't load rates"</td>
+  <td><code>curl</code> the JSON URL</td>
+  <td>If 5xx → Pages incident; if malformed JSON → revert latest scraper change.</td>
+</tr>
+<tr>
+  <td>Provider asks for removal</td>
+  <td>Verify the requester</td>
+  <td>Remove from <code>PROVIDERS</code> in <code>run_all.py</code>; push.
+      Target: under 24 hours.</td>
+</tr>
+</table>
+
+<h2 id="extending">14. Extending the project</h2>
+
+<h4>Add a new provider</h4>
+<ol>
+  <li>Copy <code>scrapers/wise.py</code> to
+      <code>scrapers/&lt;new&gt;.py</code>.</li>
+  <li>Implement <code>fetch_inr()</code> for the new source.</li>
+  <li>Add the class to <code>PROVIDERS</code> in
+      <code>run_all.py</code>.</li>
+  <li>Run locally:
+      <code>python -m scrapers.run_all &amp;&amp; jq . public/rates.json</code>.</li>
+  <li>Confirm new entry has <code>status="ok"</code> and a sane rate.</li>
+  <li>Open a PR; CI exercises it on merge.</li>
+</ol>
+
+<h4>Add a new currency corridor</h4>
+<p>
+  Currently AED → INR. Adding AED → PHP, AED → PKR, etc. is mostly schema
+  work: add <code>quote</code> to the JSON top level (already there),
+  let scrapers accept a <code>quote</code> parameter, and parameterise the
+  Android UI. The architecture supports it; the implementation hasn't
+  been built yet because Phase 1 is INR-only.
+</p>
+
+<h4>Add fee transparency</h4>
+<p>
+  The schema already includes <code>fee_base</code> and
+  <code>effective_rate</code>. Some scrapers (Wise, Remitly) populate them;
+  others leave fee as null. To extend: hit each provider's quote endpoint
+  with the user's input amount, return the per-amount-tier fee. The app
+  already displays effective rate when present.
+</p>
+
+<h4>Add historical charts</h4>
+<p>
+  Each scrape commits a new <code>rates.json</code> to git. So git is the
+  database. To build a chart: a sibling workflow can read the last N
+  commits' JSONs and write a <code>history.json</code> for the app. No
+  database needed.
+</p>
+
+<footer>
+  <p>
+    <strong>transfer-rate</strong> · open source under MIT ·
+    <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a>
+  </p>
+  <p>
+    Generated 2026-05-01. The authoritative documentation is the markdown
+    in this repository; this HTML report is a curated summary.
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

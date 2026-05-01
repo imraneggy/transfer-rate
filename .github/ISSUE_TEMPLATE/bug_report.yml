@@ -1,0 +1,43 @@
+name: Bug report
+description: Report a problem with the app or with rates
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Wrong rate shown
+        - App crash / error
+        - Scraper broken (one provider)
+        - Something else
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider (if applicable)
+      placeholder: e.g. LuLu Money
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: Plain English. What did you see, what did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: |
+        For wrong-rate bugs: paste the rate the app showed, the rate the
+        provider's site/app showed, and the time you observed both.
+        Screenshots welcome.
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App version (Settings → About)

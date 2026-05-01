@@ -1,0 +1,22 @@
+name: Add a new provider
+description: Suggest a UAE remittance provider we should track
+labels: ["enhancement", "new-provider"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Provider name
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Public rate page URL (must not require login)
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything we should know — known fee structure, ToS
+        considerations, whether the rate is gross or effective, etc.
