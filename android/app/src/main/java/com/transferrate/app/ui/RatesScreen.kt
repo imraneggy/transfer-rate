@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -518,9 +519,17 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                 )
                 if (rate != null && midMarket != null) {
                     val delta = rate - midMarket
+                    // Pick colors that adapt to current theme — hardcoded dark
+                    // green/red lose contrast in dark mode. Compute the
+                    // active mode from the background luminance (works
+                    // whether the user is on system, light, or dark via
+                    // our manual toggle).
+                    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+                    val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
+                    val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
                     val (label, color) = when {
-                        delta > 0.001 -> "+%.4f".format(delta) to Color(0xFF1B7B33)
-                        delta < -0.001 -> "%.4f".format(delta) to Color(0xFFB71C1C)
+                        delta > 0.001  -> "+%.4f".format(delta) to positive
+                        delta < -0.001 -> "%.4f".format(delta) to negative
                         else -> "= mid-market" to MaterialTheme.colorScheme.outline
                     }
                     Text(
@@ -529,6 +538,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                             fontFeatureSettings = "tnum",
                         ),
                         color = color,
+                        fontWeight = FontWeight.Medium,
                     )
                 } else {
                     Text(
