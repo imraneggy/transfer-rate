@@ -25,15 +25,15 @@ import androidx.core.view.WindowCompat
 private val LightColors = lightColorScheme(
     primary = Color(0xFF00665B),         // deep teal
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFB0F0E2),
-    onPrimaryContainer = Color(0xFF002019),
+    primaryContainer = Color(0xFF9DE7D6),  // slightly deeper than v0.9
+    onPrimaryContainer = Color(0xFF00201B),
 
-    secondary = Color(0xFF815400),       // warm gold (BEST badge)
+    secondary = Color(0xFF7A4F00),       // warm gold (BEST badge)
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFFFDDB0),
     onSecondaryContainer = Color(0xFF291800),
 
-    tertiary = Color(0xFF8B4789),         // accent for promo badge
+    tertiary = Color(0xFF8B4789),        // accent for promo badge
     onTertiary = Color.White,
     tertiaryContainer = Color(0xFFFFD8F4),
     onTertiaryContainer = Color(0xFF370041),
@@ -42,7 +42,7 @@ private val LightColors = lightColorScheme(
     onBackground = Color(0xFF1B1B1B),
     surface = Color(0xFFFCFAF7),
     onSurface = Color(0xFF1B1B1B),
-    surfaceVariant = Color(0xFFF1EFEA),
+    surfaceVariant = Color(0xFFEEEAE2),
     onSurfaceVariant = Color(0xFF44483F),
     outline = Color(0xFF767870),
     outlineVariant = Color(0xFFC6C7BE),
@@ -51,12 +51,12 @@ private val LightColors = lightColorScheme(
 private val DarkColors = darkColorScheme(
     primary = Color(0xFF82D5C5),
     onPrimary = Color(0xFF003730),
-    primaryContainer = Color(0xFF005046),
-    onPrimaryContainer = Color(0xFFB0F0E2),
+    primaryContainer = Color(0xFF00574B),    // deeper for better card prominence
+    onPrimaryContainer = Color(0xFFC4F1E2),
 
     secondary = Color(0xFFFFB960),
     onSecondary = Color(0xFF442B00),
-    secondaryContainer = Color(0xFF624000),
+    secondaryContainer = Color(0xFF6E4800),  // slightly brighter so BEST badge pops
     onSecondaryContainer = Color(0xFFFFDDB0),
 
     tertiary = Color(0xFFFFAEEE),
@@ -64,9 +64,12 @@ private val DarkColors = darkColorScheme(
     tertiaryContainer = Color(0xFF6F2F75),
     onTertiaryContainer = Color(0xFFFFD8F4),
 
-    background = Color(0xFF131312),
+    // Subtle hierarchy: bg darkest, surface a touch lighter, surfaceVariant
+    // lighter still — gives provider cards a clearer "lifted" feel without
+    // explicit elevation shadows.
+    background = Color(0xFF101010),
     onBackground = Color(0xFFE5E2DA),
-    surface = Color(0xFF131312),
+    surface = Color(0xFF181818),
     onSurface = Color(0xFFE5E2DA),
     surfaceVariant = Color(0xFF2C2A26),
     onSurfaceVariant = Color(0xFFC9C7BE),

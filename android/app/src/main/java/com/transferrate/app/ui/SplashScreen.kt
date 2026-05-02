@@ -108,7 +108,7 @@ fun SplashScreen(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Mid-market reference + 28 providers",
+                text = "Mid-market benchmark + 9 providers",
                 color = Color.White.copy(alpha = 0.55f),
                 fontSize = 13.sp,
             )
@@ -125,65 +125,50 @@ fun SplashScreen(
 }
 
 /**
- * The same three-bars logo as the launcher icon, drawn in Canvas so it
- * can sit at any size in the splash without resource scaling artefacts.
+ * The same chart-line logo as the launcher icon, drawn in Canvas so it
+ * can sit at any size in the splash and about screen without resource
+ * scaling artefacts. Mirrors res/drawable/ic_launcher_foreground.xml.
  *
- * Bars sit on a shared baseline; tops rounded; ascending heights from
- * left to right at proportions matching the launcher icon (28/44/60
- * fractional heights of the safe-zone vertical extent).
+ * Composition: a faint baseline band, a bold gold polyline rising
+ * left-to-right with two mid markers and a larger highlighted final
+ * data point — communicates "rates trending / latest reading."
  */
 @Composable
 fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
-    // Match the launcher icon: three bars at varying opacity, the tallest
-    // in brand gold, plus a subtle baseline and an accent dot.
-    val white = Color.White
-    val whiteFaded = Color.White.copy(alpha = 0.55f)
-    val whiteMid = Color.White.copy(alpha = 0.78f)
-    val baseline = Color.White.copy(alpha = 0.22f)
     val gold = Color(0xFFFFD980)
+    val baseline = Color.White.copy(alpha = 0.10f)
+    val midMarker = gold.copy(alpha = 0.55f)
+    val innerHighlight = Color.White.copy(alpha = 0.32f)
+
     Canvas(modifier = Modifier.size(size)) {
         val w = this.size.width
         val h = this.size.height
-        val bottom = h * 0.93f
-        val top1 = h * 0.55f
-        val top2 = h * 0.36f
-        val top3 = h * 0.18f
-        val barWidth = w * 0.18f
-        val gap = (w - barWidth * 3) / 4f
-        val r = barWidth / 2f
 
-        // Baseline (chart axis)
-        drawRect(
+        // Baseline band along the bottom (axis suggestion)
+        drawRoundRect(
             color = baseline,
-            topLeft = Offset(w * 0.10f, bottom + h * 0.005f),
-            size = Size(w * 0.80f, h * 0.025f),
+            topLeft = Offset(w * 0.20f, h * 0.76f),
+            size = Size(w * 0.60f, h * 0.04f),
+            cornerRadius = CornerRadius(h * 0.02f, h * 0.02f),
         )
 
-        // Bars
-        listOf(
-            Triple(gap + barWidth * 0, top1, whiteFaded),
-            Triple(gap * 2 + barWidth * 1, top2, whiteMid),
-            Triple(gap * 3 + barWidth * 2, top3, gold),
-        ).forEach { (x, top, color) ->
-            drawRoundRect(
-                color = color,
-                topLeft = Offset(x, top),
-                size = Size(barWidth, bottom - top),
-                cornerRadius = CornerRadius(r, r),
-            )
-            drawRect(
-                color = color,
-                topLeft = Offset(x, top + r),
-                size = Size(barWidth, bottom - top - r),
-            )
-        }
+        // Three line segments forming an ascending zigzag with rounded joins
+        val p0 = Offset(w * 0.24f, h * 0.66f)
+        val p1 = Offset(w * 0.42f, h * 0.52f)
+        val p2 = Offset(w * 0.58f, h * 0.62f)
+        val p3 = Offset(w * 0.79f, h * 0.30f)
+        val strokeW = w * 0.060f
+        val cap = androidx.compose.ui.graphics.StrokeCap.Round
+        drawLine(color = gold, start = p0, end = p1, strokeWidth = strokeW, cap = cap)
+        drawLine(color = gold, start = p1, end = p2, strokeWidth = strokeW, cap = cap)
+        drawLine(color = gold, start = p2, end = p3, strokeWidth = strokeW, cap = cap)
 
-        // Accent dot above the tallest (gold) bar
-        val tallestX = (gap * 3 + barWidth * 2) + barWidth / 2f
-        drawCircle(
-            color = gold,
-            radius = w * 0.035f,
-            center = Offset(tallestX, top3 - w * 0.07f),
-        )
+        // Mid data-point markers
+        drawCircle(color = midMarker, radius = w * 0.030f, center = p1)
+        drawCircle(color = midMarker, radius = w * 0.030f, center = p2)
+
+        // Final / "current" reading: large filled marker with inner highlight
+        drawCircle(color = gold, radius = w * 0.066f, center = p3)
+        drawCircle(color = innerHighlight, radius = w * 0.033f, center = p3)
     }
 }

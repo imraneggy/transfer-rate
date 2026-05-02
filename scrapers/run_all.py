@@ -55,6 +55,7 @@ from .mid_market import MidMarketProvider
 from .wise import WiseProvider
 from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
+from .transfergo import TransferGoProvider
 from .index_exchange import IndexExchangeProvider
 from .lulu import LuluProvider
 from .al_ansari import AlAnsariProvider
@@ -74,6 +75,7 @@ PROVIDERS: List[BaseProvider] = [
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
+    TransferGoProvider(),
     # LuluProvider() — scraper works locally (residential IP) but
     # GitHub Actions runners hit ConnectTimeout on port 9443. LuLu's
     # API host (lieservices.luluone.com:9443) appears to firewall

@@ -27,6 +27,7 @@ from scrapers.index_exchange import IndexExchangeProvider
 from scrapers.lulu import LuluProvider
 from scrapers.mid_market import MidMarketProvider
 from scrapers.remitly import RemitlyProvider
+from scrapers.transfergo import TransferGoProvider
 from scrapers.wise import WiseProvider
 
 from .conftest import fixture_text
@@ -166,6 +167,22 @@ def test_al_dahab_handles_missing_corridor(httpx_mock):
     )
     with pytest.raises(RuntimeError, match="not in marquee"):
         AlDahabProvider().fetch(target_currency="EUR")
+
+
+# --- TransferGo ---------------------------------------------------------
+
+def test_transfergo_returns_ok_rate(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://my\.transfergo\.com/api/fx-rates.*"),
+        text=fixture_text("transfergo_rates.json"),
+        headers={"content-type": "application/json"},
+    )
+    q = TransferGoProvider().fetch()
+    assert q.status == "ok"
+    assert q.provider_id == "transfergo"
+    assert q.rate == 25.84357
+    assert q.base == "AED"
+    assert q.quote == "INR"
 
 
 # --- Federal Exchange ---------------------------------------------------

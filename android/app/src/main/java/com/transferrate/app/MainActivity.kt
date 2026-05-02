@@ -10,12 +10,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.transferrate.app.data.PrefetchScheduler
@@ -57,13 +62,17 @@ class MainActivity : ComponentActivity() {
 
 /**
  * Top-level composable that decides whether to show the splash screen or
- * the main rates UI. Splash holds until BOTH:
- *   - At least 1 second has elapsed (so the brand registers), AND
- *   - The first JSON fetch has resolved (success OR failure)
+ * the main rates UI.
  *
- * On warm starts (process kept alive in background), the ViewModel still
- * holds Ready state, so the splash dismisses at the 1-second minimum
- * without waiting for a network round-trip.
+ * Splash policy (per user preference): show on every app launch, including
+ * warm starts. We observe the Activity lifecycle and reset `splashDone`
+ * each time the app comes back to the foreground (ON_START). On warm
+ * starts the ViewModel already holds Ready state, so the splash dismisses
+ * at the 1-second minimum without an additional network round-trip.
+ *
+ * splashDone is a plain `remember` (not `rememberSaveable`) so that
+ * activity-recreation events (configuration changes, themed restoration)
+ * don't carry the dismissed state over and skip the splash on resume.
  */
 @Composable
 private fun AppRoot(
@@ -72,8 +81,21 @@ private fun AppRoot(
 ) {
     val vm: RatesViewModel = viewModel()
     val state by vm.state.collectAsStateWithLifecycle()
-    var splashDone by rememberSaveable { mutableStateOf(false) }
+    var splashDone by remember { mutableStateOf(false) }
     var showAbout by rememberSaveable { mutableStateOf(false) }
+
+    // Reset the splash on every foreground transition so users see it
+    // each time they (re)open the app, not just on cold start.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                splashDone = false
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     Box(modifier = Modifier.fillMaxSize().background(SPLASH_BG)) {
         if (!splashDone) {

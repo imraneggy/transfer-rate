@@ -23,7 +23,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +31,6 @@ import com.transferrate.app.BuildConfig
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(onBack: () -> Unit) {
-    val ctx = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -143,63 +141,17 @@ fun AboutScreen(onBack: () -> Unit) {
                     "This app collects nothing. No analytics, no telemetry, " +
                     "no advertising, no account, no cloud sync. The only " +
                     "permission used is INTERNET, and connections are " +
-                    "restricted to imraneggy.github.io via the platform's " +
-                    "Network Security Config.",
+                    "restricted to a single static-data host via the " +
+                    "platform's Network Security Config.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             Spacer(Modifier.height(12.dp))
 
-            LinkCard(
-                title = "Source code",
-                subtitle = "github.com/imraneggy/transfer-rate",
-                onClick = {
-                    runCatching {
-                        val intent = android.content.Intent(
-                            android.content.Intent.ACTION_VIEW,
-                            android.net.Uri.parse(
-                                "https://github.com/imraneggy/transfer-rate",
-                            ),
-                        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                        ctx.startActivity(intent)
-                    }
-                },
-            )
-            Spacer(Modifier.height(8.dp))
-            LinkCard(
-                title = "Privacy policy",
-                subtitle = "Hosted on GitHub",
-                onClick = {
-                    runCatching {
-                        ctx.startActivity(
-                            android.content.Intent(
-                                android.content.Intent.ACTION_VIEW,
-                                android.net.Uri.parse(
-                                    "https://github.com/imraneggy/transfer-rate/blob/main/PRIVACY.md",
-                                ),
-                            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-                        )
-                    }
-                },
-            )
-            Spacer(Modifier.height(8.dp))
-            LinkCard(
-                title = "Report an issue",
-                subtitle = "GitHub issues",
-                onClick = {
-                    runCatching {
-                        ctx.startActivity(
-                            android.content.Intent(
-                                android.content.Intent.ACTION_VIEW,
-                                android.net.Uri.parse(
-                                    "https://github.com/imraneggy/transfer-rate/issues/new",
-                                ),
-                            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-                        )
-                    }
-                },
-            )
+            // Privacy is the only outbound link — and even that is a
+            // data: URI / in-app screen, not an external service. Source
+            // code link removed at user request.
 
             Spacer(Modifier.height(24.dp))
             Text(
@@ -247,28 +199,3 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
     }
 }
 
-@Composable
-private fun LinkCard(title: String, subtitle: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-        onClick = onClick,
-    ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-            Text(
-                title,
-                fontWeight = FontWeight.Medium,
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}

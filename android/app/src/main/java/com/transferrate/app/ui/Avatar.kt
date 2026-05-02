@@ -2,10 +2,12 @@ package com.transferrate.app.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -93,12 +96,23 @@ fun ProviderAvatar(
     val logoRes = logoResIdFor(providerId)
 
     if (logoRes != 0) {
-        // Bundled logo: render on a white-ish circle so transparent and
-        // dark-on-light logos read on any theme.
+        // Bundled logo: render on a near-white circle (logos are
+        // typically designed to read on white). Apply a subtle
+        // theme-aware ring so the white doesn't look harsh on dark
+        // backgrounds and the avatar feels intentional rather than
+        // floating.
+        val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+        val containerColor = if (isDark) Color(0xFFEDEDED) else Color(0xFFFFFFFF)
+        val ringColor = if (isDark) {
+            Color.White.copy(alpha = 0.10f)
+        } else {
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
+        }
         Box(
             modifier = modifier
                 .size(size)
-                .background(Color(0xFFFFFFFF), CircleShape)
+                .background(containerColor, CircleShape)
+                .border(width = 0.75.dp, color = ringColor, shape = CircleShape)
                 .clip(CircleShape),
             contentAlignment = Alignment.Center,
         ) {
@@ -108,7 +122,7 @@ fun ProviderAvatar(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(size)
-                    .padding(size * 0.12f),
+                    .padding(size * 0.14f),
             )
         }
         return
