@@ -152,31 +152,61 @@ private fun ProviderCard(p: ProviderQuote, onClick: () -> Unit) {
         ),
         onClick = onClick,
     ) {
-        Row(
-            Modifier.padding(16.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StatusDot(p.status)
-            Spacer(Modifier.size(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(p.providerName, fontWeight = FontWeight.SemiBold)
-                if (p.deliveryEstimate != null) {
-                    Text(
-                        p.deliveryEstimate,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
-                    )
+        Column(Modifier.padding(16.dp).fillMaxWidth()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                StatusDot(p.status)
+                Spacer(Modifier.size(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(p.providerName, fontWeight = FontWeight.SemiBold)
+                    if (p.deliveryEstimate != null) {
+                        Text(
+                            p.deliveryEstimate,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                    }
+                    if (p.status != "ok" && p.note != null) {
+                        Text(
+                            p.note,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                    }
                 }
-                if (p.status != "ok" && p.note != null) {
-                    Text(
-                        p.note,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
-                    )
-                }
+                RateView(p)
             }
-            RateView(p)
+            if (p.status == "ok" && p.promoRate != null) {
+                Spacer(Modifier.height(8.dp))
+                PromoBadge(p.promoRate, p.promoNote)
+            }
         }
+    }
+}
+
+@Composable
+private fun PromoBadge(promoRate: Double, note: String?) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.tertiaryContainer,
+                RoundedCornerShape(8.dp),
+            )
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "%.4f".format(promoRate),
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Spacer(Modifier.size(8.dp))
+        Text(
+            text = note ?: "Promotional rate",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
     }
 }
 

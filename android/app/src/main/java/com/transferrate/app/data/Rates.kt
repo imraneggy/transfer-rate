@@ -40,6 +40,11 @@ data class ProviderQuote(
     val url: String? = null,
     val status: String,
     val note: String? = null,
+    // Promotional rate (e.g. first-transfer bonus) — surfaced separately
+    // from `rate` so the UI can honestly show both. Null when the provider
+    // has no promo OR the promo equals the everyday rate.
+    @SerialName("promo_rate") val promoRate: Double? = null,
+    @SerialName("promo_note") val promoNote: String? = null,
     @SerialName("fetched_at") val fetchedAt: String,
 )
 
@@ -54,6 +59,7 @@ fun RatesDocument.validate(): RatesDocument {
     providers.forEach { p ->
         p.rate?.let { require(it in 0.1..1000.0) { "Rate out of range for ${p.providerId}" } }
         p.effectiveRate?.let { require(it in 0.1..1000.0) }
+        p.promoRate?.let { require(it in 0.1..1000.0) { "Promo rate out of range for ${p.providerId}" } }
         p.feeBase?.let { require(it in 0.0..100_000.0) }
     }
     return this

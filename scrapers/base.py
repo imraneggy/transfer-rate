@@ -27,6 +27,14 @@ class Quote:
     url: Optional[str]             # deep link or rate page
     status: str = "ok"             # "ok" | "stale" | "error" | "investigating"
     note: Optional[str] = None     # error message or context, shown only on non-ok
+
+    # Optional promotional rate that some providers offer to first-time users.
+    # Distinguished from `rate` (the everyday/sustained rate) so the app can
+    # honestly show both: "you get X today, Y on every transfer after."
+    # If the provider has no promo OR promo == rate, leave both None.
+    promo_rate: Optional[float] = None
+    promo_note: Optional[str] = None  # e.g. "First transfer only", "≥3500 AED"
+
     fetched_at: str = ""           # ISO 8601 UTC timestamp
 
     def to_dict(self) -> dict:
