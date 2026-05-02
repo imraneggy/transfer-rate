@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.transferrate.app.data.PrefetchScheduler
+import com.transferrate.app.ui.AboutScreen
 import com.transferrate.app.ui.RatesScreen
 import com.transferrate.app.ui.RatesUiState
 import com.transferrate.app.ui.RatesViewModel
@@ -72,9 +73,8 @@ private fun AppRoot(
     val vm: RatesViewModel = viewModel()
     val state by vm.state.collectAsStateWithLifecycle()
     var splashDone by rememberSaveable { mutableStateOf(false) }
+    var showAbout by rememberSaveable { mutableStateOf(false) }
 
-    // The teal brand background is shown beneath the splash so any
-    // transition flicker matches the OS splash colour.
     Box(modifier = Modifier.fillMaxSize().background(SPLASH_BG)) {
         if (!splashDone) {
             SplashScreen(
@@ -84,11 +84,16 @@ private fun AppRoot(
             )
         } else {
             Surface(modifier = Modifier.fillMaxSize()) {
-                RatesScreen(
-                    vm = vm,
-                    themeMode = themeMode,
-                    onCycleThemeMode = onCycleThemeMode,
-                )
+                if (showAbout) {
+                    AboutScreen(onBack = { showAbout = false })
+                } else {
+                    RatesScreen(
+                        vm = vm,
+                        themeMode = themeMode,
+                        onCycleThemeMode = onCycleThemeMode,
+                        onShowAbout = { showAbout = true },
+                    )
+                }
             }
         }
     }

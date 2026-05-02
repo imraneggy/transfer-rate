@@ -12,6 +12,64 @@ Public, free, ad-free, no analytics, no accounts.
 A small Android 14+ app that shows current 1 AED → INR rates from major UAE
 remittance services side-by-side. Updates every 15 minutes.
 
+## Screenshots
+
+Real screenshots welcome — submit a PR with PNGs in `docs/screenshots/`.
+For now, here is the layout:
+
+```
+┌──────────────────────────────────────────────┐
+│  Transfer Rate              ⓘ  ⚙  ↻           │
+├──────────────────────────────────────────────┤
+│  ╔════════════════════════════════════════╗  │
+│  ║  1 AED  🇮🇳                              ║  │  Mid-market header
+│  ║  = 25.8384 ₹                           ║  │  (Google Finance)
+│  ║  Indian Rupee · Mid-market rate        ║  │
+│  ║  Updated 12 minutes ago · Google Finance║ │
+│  ╚════════════════════════════════════════╝  │
+│  ╭─────────────────────────────────────────╮ │
+│  │ 💡 Welcome                            ✕ │ │  First-launch hint
+│  │ The big number above is the mid-market…│ │  (dismissible)
+│  ╰─────────────────────────────────────────╯ │
+│  ┌─Sending─────────────────────────────────┐ │  Variable amount input
+│  │ AED [3,000]                             │ │
+│  └─────────────────────────────────────────┘ │
+│  [1k] [5k] [10k] [25k] [50k]                 │  Quick-pick chips
+│                                              │
+│  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│  ┃ [A] Aspora    BEST           25.8200  ┃ │  Best provider
+│  ┃     within minutes       -0.0184 vs mid┃ │  (gold border)
+│  ┃     You receive        ₹ 77,460.00    ┃ │
+│  ┃     ~~~~~~~~~~~~~~                    ┃ │  7-day sparkline
+│  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+│  ┌────────────────────────────────────────┐ │
+│  │ [W] Wise                     25.8041  │ │
+│  │     within minutes       -0.0343 vs   │ │
+│  │     You receive        ₹ 77,412.30    │ │
+│  └────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────┐ │
+│  │ [R] Remitly                  25.7700  │ │
+│  │     cash, bank, UPI      -0.0684 vs   │ │
+│  │     You receive        ₹ 77,310.00    │ │
+│  │  ┌──────────────────────────────┐     │ │
+│  │  │ 25.9500 ₹ First ≥ AED 3500   │     │ │  Promo badge
+│  │  └──────────────────────────────┘     │ │
+│  └────────────────────────────────────────┘ │
+│                                              │
+│  Rates indicative. Not financial advice.     │
+└──────────────────────────────────────────────┘
+```
+
+To capture real screenshots once installed:
+
+```bash
+# With phone connected via ADB
+adb exec-out screencap -p > docs/screenshots/main.png
+```
+
+Recommended captures: home (light + dark), about screen, amount slider in
+use, dark-mode delta indicators.
+
 The data comes from a Python scraper that runs on GitHub Actions and writes a
 single JSON file to GitHub Pages — no servers to operate, $0 ongoing cost.
 

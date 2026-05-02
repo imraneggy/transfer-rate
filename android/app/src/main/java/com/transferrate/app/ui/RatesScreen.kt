@@ -90,6 +90,7 @@ fun RatesScreen(
     vm: RatesViewModel = viewModel(),
     themeMode: ThemeMode = ThemeMode.System,
     onCycleThemeMode: () -> Unit = {},
+    onShowAbout: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
 
@@ -104,6 +105,13 @@ fun RatesScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onShowAbout) {
+                        Text(
+                            "ⓘ",
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                     IconButton(onClick = onCycleThemeMode) {
                         Text(
                             themeMode.glyph,
@@ -276,6 +284,7 @@ private fun ReadyView(
                 completedAt = state.doc.completedAt,
             )
         }
+        item { FirstLaunchHint() }
         item {
             AmountPanel(
                 amount = state.selectedAmount,
@@ -318,6 +327,65 @@ private fun ReadyView(
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+/**
+ * First-launch onboarding hint shown above the amount panel until
+ * dismissed. Persists via SharedPreferences (lightweight; no need for
+ * DataStore for a single boolean).
+ */
+@Composable
+private fun FirstLaunchHint() {
+    val ctx = LocalContext.current
+    val prefs = remember {
+        ctx.getSharedPreferences("transfer-rate", android.content.Context.MODE_PRIVATE)
+    }
+    var dismissed by rememberSaveable { mutableStateOf(prefs.getBoolean("hint_dismissed_v1", false)) }
+    if (dismissed) return
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        ),
+    ) {
+        Column(Modifier.padding(14.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = "💡  Welcome",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(
+                    onClick = {
+                        prefs.edit().putBoolean("hint_dismissed_v1", true).apply()
+                        dismissed = true
+                    },
+                ) {
+                    Text(
+                        "✕",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
+                    )
+                }
+            }
+            Text(
+                text = "The big number above is the mid-market rate — the " +
+                       "wholesale benchmark every provider charges a markup on. " +
+                       "Each card below shows how much above (+) or below (−) " +
+                       "mid-market that provider is. BEST goes to whoever pays " +
+                       "you the most rupees per AED.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
+            )
         }
     }
 }
