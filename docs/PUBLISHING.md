@@ -36,19 +36,43 @@ developer registration if you want Play Store distribution.
 
 ## 3. Android signing key [free]
 
-Generate once, keep safe:
+The `app/build.gradle.kts` is wired to read keystore credentials from
+either:
+1. `android/keystore.properties` (preferred for local development)
+2. environment variables `KEYSTORE_FILE`, `KEYSTORE_PASSWORD`,
+   `KEY_ALIAS`, `KEY_PASSWORD` (preferred for CI)
+
+If neither is present, release builds fall back to the debug keystore
+so the build doesn't fail outright (NOT acceptable for actual release —
+just for first-time setup).
+
+### Generate the keystore (one-time)
 
 ```bash
-keytool -genkey -v -keystore release.keystore \
-  -alias transferrate -keyalg RSA -keysize 4096 -validity 10000
+cd android
+keytool -genkey -v \
+  -keystore release.jks \
+  -alias transferrate \
+  -keyalg RSA -keysize 4096 \
+  -validity 10000 \
+  -dname "CN=Transfer Rate, OU=Open Source, O=imraneggy, L=Dubai, C=AE"
 ```
 
-- [ ] **Do not** commit `release.keystore`.
+Then create `android/keystore.properties` (copy from
+`keystore.properties.example`):
+
+```
+storeFile=release.jks
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyAlias=transferrate
+keyPassword=YOUR_KEY_PASSWORD
+```
+
+- [ ] **Do not** commit `release.jks` or `keystore.properties` —
+      both are gitignored.
 - [ ] Back up the keystore + passwords in two places (password manager +
       offline copy). Losing this means losing the ability to push
       updates to existing installs.
-- [ ] Set environment variables when building releases:
-      `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 
 ## 4. Build a release APK [free]
 
@@ -77,12 +101,54 @@ aapt dump badging app/build/outputs/apk/release/app-release.apk | head
 
 ### b. F-Droid (free, auditable)
 
-- [ ] Submit a metadata yaml at the
-      [F-Droid Data repo](https://gitlab.com/fdroid/fdroiddata).
-- [ ] F-Droid builds your app from source — they don't accept the
-      pre-built APK. Make sure `./gradlew :app:assembleRelease` works
-      from a clean clone with only public dependencies.
-- [ ] Reproducible-builds compliance is a plus.
+The repo already contains the metadata structure F-Droid expects:
+
+```
+fastlane/metadata/android/en-US/
+├── title.txt
+├── short_description.txt        (max 80 chars)
+├── full_description.txt         (max 4000 chars)
+└── changelogs/
+    └── 8.txt                    (per-versionCode changelog)
+```
+
+When making a new release:
+- [ ] Add `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt`
+      with the user-facing changes.
+- [ ] Bump `versionCode` and `versionName` in `app/build.gradle.kts`.
+- [ ] Tag the release in git (`git tag v0.8.1 && git push --tags`).
+
+To submit:
+- [ ] Fork [fdroiddata](https://gitlab.com/fdroid/fdroiddata).
+- [ ] Add `metadata/com.transferrate.app.yml`:
+      ```yaml
+      Categories: [Money]
+      License: MIT
+      AuthorName: imraneggy
+      WebSite: https://github.com/imraneggy/transfer-rate
+      SourceCode: https://github.com/imraneggy/transfer-rate
+      IssueTracker: https://github.com/imraneggy/transfer-rate/issues
+      AutoName: Transfer Rate
+      RepoType: git
+      Repo: https://github.com/imraneggy/transfer-rate.git
+      Builds:
+        - versionName: 0.8.1
+          versionCode: 8
+          commit: v0.8.1-alpha
+          subdir: android
+          gradle:
+            - yes
+      AutoUpdateMode: Version
+      UpdateCheckMode: Tags
+      CurrentVersion: 0.8.1
+      CurrentVersionCode: 8
+      ```
+- [ ] Open an MR. F-Droid maintainers review and either approve or
+      request changes. Build is reproducible from your repo.
+
+F-Droid will rebuild from source on their infrastructure — they
+don't trust your pre-built APK. Make sure `./gradlew :app:assembleRelease`
+works from a clean clone with only public dependencies.
 
 ### c. Google Play [$25 one-time]
 

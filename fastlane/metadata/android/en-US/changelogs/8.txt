@@ -1,0 +1,12 @@
+Major UX upgrade and reliability work:
+• Variable send-amount slider with quick-pick chips
+• "You receive" line per provider for the chosen amount
+• Pull-to-refresh on the rates list
+• Stale-while-revalidate cache — instant cold start
+• Friendlier error states (offline detection)
+• 7-day rate history sparkline per provider
+• Improved logo: gold accent on the "winning" bar
+• Background prefetch via WorkManager
+• Centralized retry-with-backoff for scrapers
+• 12 unit tests + CI workflow guarding against regressions
+• Dark-mode legible delta indicators

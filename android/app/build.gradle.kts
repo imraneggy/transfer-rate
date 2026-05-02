@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,25 +17,49 @@ android {
         // significantly but gives us the strict modern security posture.
         minSdk = 34
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
-
-        // Restrict to architectures Play Store actually serves to phones.
-        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
+        // versionCode bumped on every release. App stores use it as the
+        // canonical "is this newer?" comparison.
+        versionCode = 8
+        versionName = "0.8.1"
 
         resourceConfigurations += listOf("en")
     }
 
+    // Per-architecture APK splits. Each user device only downloads the
+    // APK for its CPU; significantly smaller install. Universal APK
+    // (the one we currently produce) is also kept for sideloading.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
+    }
+
     signingConfigs {
-        // Release signing config is read from environment variables OR a
-        // local keystore.properties file. NEVER commit a keystore.
+        // Release signing reads from one of two sources, in priority order:
+        //   1. keystore.properties file at the project root (gitignored)
+        //   2. environment variables (KEYSTORE_*, KEY_*)  — for CI use
+        // If neither is configured, release builds fall back to debug
+        // signing (won't be Play-acceptable but allows local builds).
         create("release") {
-            val ksFile = file("keystore.jks")
-            if (ksFile.exists()) {
-                storeFile = ksFile
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
+            val propsFile = rootProject.file("keystore.properties")
+            if (propsFile.exists()) {
+                val props = Properties()
+                propsFile.inputStream().use { props.load(it) }
+                storeFile = file(props.getProperty("storeFile") ?: "keystore.jks")
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            } else {
+                val envStore = System.getenv("KEYSTORE_FILE")
+                if (envStore != null) {
+                    storeFile = file(envStore)
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("KEY_ALIAS")
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                }
             }
         }
     }
@@ -46,8 +72,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("release")
-            // Strip BuildConfig.DEBUG-gated logs in release.
+            // Use the release signing config IF it has a storeFile;
+            // otherwise fall back to debug so the build doesn't fail
+            // when no keystore is configured (useful for first-time
+            // local builds + reproducible-builds verification).
+            val releaseConfig = signingConfigs.getByName("release")
+            signingConfig = if (releaseConfig.storeFile?.exists() == true) {
+                releaseConfig
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isDebuggable = false
         }
         debug {
@@ -108,4 +142,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
+    implementation(libs.androidx.work.runtime)
 }

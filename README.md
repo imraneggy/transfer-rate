@@ -146,6 +146,26 @@ and we identify our bot in the User-Agent string with a contact link.
 Any provider can request removal at any time — see `TAKEDOWN.md`. We act
 within 24 hours.
 
+## Distribution
+
+The app is being prepared for two distribution channels:
+
+* **F-Droid** — metadata is in `fastlane/metadata/android/en-US/`.
+  F-Droid builds from source; submission instructions in
+  [`docs/PUBLISHING.md`](docs/PUBLISHING.md).
+* **Google Play** — release-signing config wired in
+  `app/build.gradle.kts`; per-architecture APK splits enabled.
+
+For local release builds:
+
+```bash
+# 1. Generate a keystore (one-time) — see docs/PUBLISHING.md
+# 2. Create android/keystore.properties from the .example file
+cd android
+./gradlew :app:assembleRelease
+# Outputs to app/build/outputs/apk/release/
+```
+
 ## License
 
 MIT — see [`LICENSE`](LICENSE).

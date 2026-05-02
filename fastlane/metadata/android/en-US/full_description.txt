@@ -1,0 +1,27 @@
+Transfer Rate is a free, open-source, ad-free comparison tool for UAE-to-India money transfer rates.
+
+It shows live AED → INR rates from seven verified providers — Wise, Aspora, Remitly, Al Ansari Exchange, GCC Exchange, Index Exchange, and a Google Finance mid-market reference — so you can instantly see which provider gives you the most rupees for your dirhams.
+
+Features:
+• Live rates refreshed every ~hour via a public GitHub Actions cron pipeline
+• Mid-market reference rate at the top so every provider's value is visible at a glance
+• Per-provider delta vs mid-market (+/− indicator) for honest comparison
+• "BEST" badge on the top-rated provider in real time
+• Variable send-amount slider so you see the actual receive amount for your transfer
+• 7-day rate history sparkline per provider
+• First-transfer promotional rates clearly distinguished from everyday rates (e.g. Remitly)
+• Dark mode with manual toggle (System / Light / Dark)
+• Pull-to-refresh
+• Stale-while-revalidate cache for instant cold start
+• Automatic background refresh while the app is closed (WorkManager, low-power)
+• Clean, minimalist design
+
+Privacy:
+• Single permission: INTERNET
+• Connects only to imraneggy.github.io (network-config-enforced allowlist)
+• No analytics, no telemetry, no advertising, no account
+• Open-source: github.com/imraneggy/transfer-rate
+
+Requires Android 14+.
+
+Disclaimer: Rates are indicative and may differ at the provider. Not financial advice. Not affiliated with any of the listed remittance providers.

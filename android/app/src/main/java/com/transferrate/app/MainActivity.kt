@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.transferrate.app.data.PrefetchScheduler
 import com.transferrate.app.ui.RatesScreen
 import com.transferrate.app.ui.RatesUiState
 import com.transferrate.app.ui.RatesViewModel
@@ -30,6 +31,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        // Schedule the periodic prefetch worker. Idempotent — KEEP policy
+        // means calling this every launch doesn't reset the schedule clock.
+        PrefetchScheduler.schedule(this)
+
         setContent {
             // Theme mode state — System (default), Light, Dark.
             // rememberSaveable persists across rotation and process death.
