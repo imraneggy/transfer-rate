@@ -128,9 +128,10 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Currently 7 verified providers: Wise, Aspora, Remitly, " +
-                    "Al Ansari Exchange, GCC Exchange, Index Exchange, plus " +
-                    "the mid-market reference.",
+                    "Currently 9 verified providers: Wise, Aspora, Remitly, " +
+                    "Al Ansari, Al Dahab, Federal Exchange, GCC Exchange, " +
+                    "Index Exchange, LuLu Exchange, plus the mid-market " +
+                    "reference benchmark.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -205,7 +206,9 @@ fun AboutScreen(onBack: () -> Unit) {
                 "Rates shown are indicative and may differ at the provider. " +
                 "Confirm at the provider's app or website before sending money. " +
                 "Not financial advice. Not affiliated with any of the listed " +
-                "remittance providers.",
+                "remittance providers. Provider names and logos are trademarks " +
+                "of their respective owners, used here for nominative " +
+                "identification in a comparison context only.",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.fillMaxWidth(),

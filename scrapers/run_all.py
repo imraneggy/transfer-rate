@@ -235,7 +235,7 @@ def _apply_manual_rates(
 
 
 def _append_to_history(
-    payload: dict, history_path: Path, max_age_days: int = 7
+    payload: dict, history_path: Path, max_age_days: int = 10
 ) -> None:
     """Append today's rates into a rolling history file.
 
@@ -306,7 +306,7 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=Path("public/rates.json"))
     parser.add_argument(
         "--history", type=Path, default=Path("public/history.json"),
-        help="Rolling history file (last 7 days of rates per provider)",
+        help="Rolling history file (last 10 days of rates per provider)",
     )
     parser.add_argument(
         "--corridors", nargs="+", default=list(SUPPORTED_TARGETS),

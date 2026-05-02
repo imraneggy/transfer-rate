@@ -259,10 +259,12 @@ private fun ReadyView(
     onSelectCurrency: (String) -> Unit,
     onAmountChange: (Double) -> Unit,
 ) {
-    val ctx = LocalContext.current
     val selected = state.selectedCurrency
     val info = CURRENCIES[selected]
     val midMarket = state.midMarketRate
+
+    // The provider whose history sheet is currently open (null = no sheet).
+    var sheetForProvider by remember { mutableStateOf<ProviderQuote?>(null) }
 
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -304,17 +306,7 @@ private fun ReadyView(
                 midMarket = midMarket,
                 amount = state.selectedAmount,
                 history = historyForProvider,
-                onClick = {
-                    p.url?.let { url ->
-                        runCatching {
-                            val intent = android.content.Intent(
-                                android.content.Intent.ACTION_VIEW,
-                                android.net.Uri.parse(url),
-                            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                            ctx.startActivity(intent)
-                        }
-                    }
-                },
+                onClick = { sheetForProvider = p },
             )
         }
         item {
@@ -328,6 +320,17 @@ private fun ReadyView(
             )
             Spacer(Modifier.height(24.dp))
         }
+    }
+
+    // History bottom sheet for the tapped provider.
+    sheetForProvider?.let { p ->
+        val historyPoints = state.history?.providers?.get(p.providerId).orEmpty()
+        ProviderHistorySheet(
+            provider = p,
+            history = historyPoints,
+            midMarket = midMarket,
+            onDismiss = { sheetForProvider = null },
+        )
     }
 }
 

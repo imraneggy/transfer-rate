@@ -1,31 +1,41 @@
 package com.transferrate.app.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.transferrate.app.R
 
 /**
- * Generated provider avatar — colored circle with the provider's initials.
+ * Provider avatar — official logo when bundled, otherwise initials.
  *
- * Why generated rather than provider-supplied logos:
- *   * No trademark exposure. We never claim affiliation with the providers.
- *   * Deterministic and offline. The avatar is the same across devices,
- *     never broken by a CDN outage, never different shape than expected.
- *   * Visually consistent. All providers feel equally "weighted" in the
- *     comparison list, which is the right framing for an aggregator.
+ * We bundle small (~144x144) favicon-derived PNGs for known providers in
+ * res/drawable-nodpi/logo_<provider_id>.png. When the resource exists,
+ * we render it on a white circle; otherwise we fall back to the
+ * deterministic colored-initials avatar.
  *
- * The color is derived deterministically from the provider_id slug, so
- * each provider gets a stable, distinct color across runs and devices.
+ * Logos are bundled at BUILD TIME from publicly-accessible favicons, so
+ * there is no runtime network call to provider domains — the privacy
+ * guarantee (only fetch from GitHub Pages) is preserved.
+ *
+ * Trademark note: provider names and logos are trademarks of their
+ * respective owners. They are used here for nominative identification
+ * in a comparison context, not branding or endorsement.
  */
 
 private val AVATAR_PALETTE = listOf(
@@ -60,6 +70,19 @@ private fun initialsFor(displayName: String): String {
     }
 }
 
+/**
+ * Look up the bundled logo drawable resource id for a provider, or 0 if none.
+ *
+ * Resource resolution by name lets us add logos by simply dropping a new PNG
+ * into res/drawable-nodpi/ as logo_<provider_id>.png — no code change needed.
+ */
+@Composable
+private fun logoResIdFor(providerId: String): Int {
+    val ctx = LocalContext.current
+    val name = "logo_${providerId}"
+    return ctx.resources.getIdentifier(name, "drawable", ctx.packageName)
+}
+
 @Composable
 fun ProviderAvatar(
     providerId: String,
@@ -67,6 +90,31 @@ fun ProviderAvatar(
     size: androidx.compose.ui.unit.Dp = 40.dp,
     modifier: Modifier = Modifier,
 ) {
+    val logoRes = logoResIdFor(providerId)
+
+    if (logoRes != 0) {
+        // Bundled logo: render on a white-ish circle so transparent and
+        // dark-on-light logos read on any theme.
+        Box(
+            modifier = modifier
+                .size(size)
+                .background(Color(0xFFFFFFFF), CircleShape)
+                .clip(CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                painter = painterResource(id = logoRes),
+                contentDescription = "$displayName logo",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(size)
+                    .padding(size * 0.12f),
+            )
+        }
+        return
+    }
+
+    // Fallback: generated colored circle with initials.
     val base = colorFor(providerId)
     val brush = Brush.linearGradient(
         colors = listOf(
