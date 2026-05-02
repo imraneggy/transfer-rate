@@ -582,8 +582,11 @@ private fun AmountPanel(
             colors = OutlinedTextFieldDefaults.colors(),
         )
         Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(1000.0, 5000.0, 10_000.0, 25_000.0, 50_000.0).forEach { v ->
+        // LazyRow so chips can scroll horizontally on narrow screens.
+        // A regular Row with 5 chips overflowed at ~360dp width and the
+        // "50,000" label wrapped to two lines.
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(listOf(1000.0, 5000.0, 10_000.0, 25_000.0, 50_000.0)) { v ->
                 AmountChip(
                     label = formatAmount(v),
                     selected = (amount == v),
@@ -610,11 +613,16 @@ private fun AmountChip(label: String, selected: Boolean, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
+        // softWrap = false + maxLines = 1: defense in depth so the chip
+        // renders "50,000" as a single line even if the parent constrains
+        // width tighter than the text would otherwise need.
         Text(
             text = label,
             color = fg,
             fontWeight = FontWeight.SemiBold,
             fontSize = 13.sp,
+            maxLines = 1,
+            softWrap = false,
         )
     }
 }
