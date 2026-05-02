@@ -2,8 +2,8 @@
   "schema_version": 2,
   "base": "AED",
   "amount_base": 1000.0,
-  "started_at": "2026-05-02T14:06:02Z",
-  "completed_at": "2026-05-02T14:06:07Z",
+  "started_at": "2026-05-02T14:06:39Z",
+  "completed_at": "2026-05-02T14:06:43Z",
   "corridors": {
     "INR": [
       {
@@ -22,7 +22,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:03Z"
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "wise",
@@ -40,7 +40,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:02Z"
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "aspora",
@@ -58,7 +58,7 @@
         "note": null,
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:03Z"
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "remitly",
@@ -76,7 +76,7 @@
         "note": null,
         "promo_rate": 25.95,
         "promo_note": "First transfer \u2265 AED 3500",
-        "fetched_at": "2026-05-02T14:06:03Z"
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "al_ansari",
@@ -94,7 +94,25 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:07Z"
+        "fetched_at": "2026-05-02T14:06:43Z"
+      },
+      {
+        "provider_id": "al_dahab",
+        "provider_name": "Al Dahab Exchange",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": 25.74,
+        "fee_base": null,
+        "received_quote": 25740.0,
+        "effective_rate": 25.74,
+        "delivery_estimate": null,
+        "url": "https://aldahabexchange.ae/",
+        "status": "ok",
+        "note": "Daily ticker rate from Al Dahab Exchange homepage.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -112,7 +130,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:02Z"
+        "fetched_at": "2026-05-02T14:06:39Z"
       },
       {
         "provider_id": "index_exchange",
@@ -130,7 +148,7 @@
         "note": "Indicative rate from indexexchange.ae homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T14:06:03Z"
+        "fetched_at": "2026-05-02T14:06:40Z"
       }
     ]
   }
