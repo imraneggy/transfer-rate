@@ -113,33 +113,39 @@ fun RatesScreen(
                     )
                 },
                 actions = {
-                    // Use crisp Material vector icons for high legibility
+                    // Use crisp local vector drawables for high legibility
                     // on every density. Previously these were unicode
                     // glyphs (⚙ ☀ ☾ ⓘ ↻) which rendered poorly on some
-                    // devices and made the toolbar feel cheap.
+                    // devices and made the toolbar feel cheap. Local
+                    // drawables avoid pulling in androidx.compose
+                    // material-icons-extended (~5MB).
                     val iconColor = MaterialTheme.colorScheme.onBackground
                     IconButton(onClick = onShowAbout) {
                         androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Outlined.Info,
+                            painter = androidx.compose.ui.res.painterResource(
+                                id = R.drawable.ic_info_outline,
+                            ),
                             contentDescription = "About",
                             tint = iconColor,
                         )
                     }
                     IconButton(onClick = onCycleThemeMode) {
-                        val themeIcon = when (themeMode) {
-                            ThemeMode.System -> androidx.compose.material.icons.Icons.Outlined.Settings
-                            ThemeMode.Light  -> androidx.compose.material.icons.Icons.Outlined.LightMode
-                            ThemeMode.Dark   -> androidx.compose.material.icons.Icons.Outlined.DarkMode
+                        val iconRes = when (themeMode) {
+                            ThemeMode.System -> R.drawable.ic_settings_outline
+                            ThemeMode.Light  -> R.drawable.ic_light_mode
+                            ThemeMode.Dark   -> R.drawable.ic_dark_mode
                         }
                         androidx.compose.material3.Icon(
-                            imageVector = themeIcon,
+                            painter = androidx.compose.ui.res.painterResource(id = iconRes),
                             contentDescription = "Theme: ${themeMode.label}",
                             tint = iconColor,
                         )
                     }
                     IconButton(onClick = { vm.refresh() }) {
                         androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Outlined.Refresh,
+                            painter = androidx.compose.ui.res.painterResource(
+                                id = R.drawable.ic_refresh,
+                            ),
                             contentDescription = "Refresh rates",
                             tint = iconColor,
                         )
