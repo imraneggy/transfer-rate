@@ -30,6 +30,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import java.time.Duration
+import java.time.Instant
+import java.time.format.DateTimeParseException
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,9 +50,31 @@ import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.CurrencyInfo
 import com.transferrate.app.data.ProviderQuote
 
+/** Theme override modes for the user-facing toggle. */
+enum class ThemeMode {
+    System, Light, Dark;
+
+    fun next(): ThemeMode = when (this) {
+        System -> Light
+        Light -> Dark
+        Dark -> System
+    }
+
+    /** Glyph + label for the toggle button. */
+    val glyph: String get() = when (this) {
+        System -> "⚙"   // gear (current = system)
+        Light -> "☀"    // sun (current = light)
+        Dark -> "☾"     // moon (current = dark)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RatesScreen(vm: RatesViewModel = viewModel()) {
+fun RatesScreen(
+    vm: RatesViewModel = viewModel(),
+    themeMode: ThemeMode = ThemeMode.System,
+    onCycleThemeMode: () -> Unit = {},
+) {
     val state by vm.state.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -63,8 +88,19 @@ fun RatesScreen(vm: RatesViewModel = viewModel()) {
                     )
                 },
                 actions = {
+                    IconButton(onClick = onCycleThemeMode) {
+                        Text(
+                            themeMode.glyph,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                     IconButton(onClick = { vm.refresh() }) {
-                        Text("↻", fontSize = 22.sp)
+                        Text(
+                            "↻",
+                            fontSize = 22.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -83,6 +119,33 @@ fun RatesScreen(vm: RatesViewModel = viewModel()) {
                 )
             }
         }
+    }
+}
+
+/**
+ * Convert an ISO 8601 UTC timestamp to a friendly relative phrase
+ * ("just now", "5 minutes ago", "2 hours ago").
+ *
+ * Relative time is far more useful than a raw timestamp when users
+ * compare the displayed rate to live sources like Google. They can see
+ * at a glance how stale the data is and decide whether to refresh.
+ */
+private fun relativeTime(iso: String): String {
+    return try {
+        val instant = Instant.parse(iso)
+        val seconds = Duration.between(instant, Instant.now()).seconds
+        when {
+            seconds < 0 -> "just now"
+            seconds < 60 -> "just now"
+            seconds < 120 -> "1 minute ago"
+            seconds < 3600 -> "${seconds / 60} minutes ago"
+            seconds < 7200 -> "1 hour ago"
+            seconds < 86400 -> "${seconds / 3600} hours ago"
+            seconds < 172800 -> "1 day ago"
+            else -> "${seconds / 86400} days ago"
+        }
+    } catch (_: DateTimeParseException) {
+        iso
     }
 }
 
@@ -256,7 +319,7 @@ private fun MidMarketHeader(
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = "Updated $completedAt · Wise live FX",
+                text = "Updated ${relativeTime(completedAt)} · Google Finance",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.55f),
             )
@@ -460,7 +523,31 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                     color = MaterialTheme.colorScheme.outline,
                 )
             }
-            "investigating" -> StatusDot(Color(0xFF94A3B8))
+            "investigating" -> {
+                if (midMarket != null) {
+                    // Honest fallback: when we don't yet have a verified provider
+                    // rate, show the mid-market rate as an estimate. The "≈" prefix
+                    // and "Estimated · awaiting verification" label make clear
+                    // this is not the provider's actual rate.
+                    Text(
+                        text = "≈ %.4f".format(midMarket),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.outline,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontFeatureSettings = "tnum",
+                        ),
+                    )
+                    Text(
+                        "Estimated · awaiting verification",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        textAlign = TextAlign.End,
+                    )
+                } else {
+                    StatusDot(Color(0xFF94A3B8))
+                }
+            }
             else -> StatusDot(MaterialTheme.colorScheme.error)
         }
     }

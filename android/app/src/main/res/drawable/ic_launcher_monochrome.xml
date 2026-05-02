@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Themed-icon variant (Android 13+).
-  Same shapes as the foreground but in a single channel — the launcher
+  Themed-icon variant (Android 13+). Same three-bar shape; the launcher
   tints this to match the user's wallpaper-derived theme color.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,23 +11,11 @@
 
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M32,44
-                          L66,44
-                          L66,38
-                          L80,47
-                          L66,56
-                          L66,50
-                          L32,50
-                          Z" />
-
+        android:pathData="M29,24 L79,24 A7,7 0 0 1 79,38 L29,38 A7,7 0 0 1 29,24 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M76,58
-                          L42,58
-                          L42,52
-                          L28,61
-                          L42,70
-                          L42,64
-                          L76,64
-                          Z" />
+        android:pathData="M37,46 L71,46 A7,7 0 0 1 71,60 L37,60 A7,7 0 0 1 37,46 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,68 L63,68 A7,7 0 0 1 63,82 L45,82 A7,7 0 0 1 45,68 Z" />
 </vector>

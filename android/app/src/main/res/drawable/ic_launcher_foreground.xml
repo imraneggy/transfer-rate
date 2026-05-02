@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon foreground — two horizontal arrows facing opposite directions,
-  the universal currency-exchange symbol. Drawn in white on a 108dp canvas.
+  Launcher icon foreground — three horizontal bars descending in length,
+  visualising a rate-comparison chart. White on teal background.
 
-  Content is kept inside the 66dp safe zone (centered: x in [21,87], y in [21,87])
-  so masks (circle/squircle/teardrop) never crop the meaningful shapes.
+  Content stays inside the 66dp safe zone of the 108dp adaptive canvas
+  (centered at x:[20,88], y:[24,82]) so masks (circle/squircle/teardrop)
+  never crop the meaningful shapes.
+
+  Bar geometry:
+    Bar 1 (top, longest):     x = 22..86 (w=64)  y = 24..38  h=14  rounded r=7
+    Bar 2 (middle):           x = 30..78 (w=48)  y = 46..60  h=14  rounded r=7
+    Bar 3 (bottom, shortest): x = 38..70 (w=32)  y = 68..82  h=14  rounded r=7
+
+  Each bar is a stadium shape (full semicircles at both ends).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -12,32 +20,18 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Top arrow: pointing RIGHT (sender currency flowing out)
-         Body: rectangle x=32..68, y=44..50 (height 6, length 36)
-         Head: triangle from y=40..54, point at x=78
-         Combined shape (clockwise from top-left of body): -->
+    <!-- Bar 1: longest, top — represents the best rate -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M32,44
-                          L66,44
-                          L66,38
-                          L80,47
-                          L66,56
-                          L66,50
-                          L32,50
-                          Z" />
+        android:pathData="M29,24 L79,24 A7,7 0 0 1 79,38 L29,38 A7,7 0 0 1 29,24 Z" />
 
-    <!-- Bottom arrow: pointing LEFT (receive currency flowing in)
-         Body: rectangle x=40..76, y=58..64 (height 6, length 36)
-         Head: triangle from y=54..68, point at x=28 -->
+    <!-- Bar 2: middle -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M76,58
-                          L42,58
-                          L42,52
-                          L28,61
-                          L42,70
-                          L42,64
-                          L76,64
-                          Z" />
+        android:pathData="M37,46 L71,46 A7,7 0 0 1 71,60 L37,60 A7,7 0 0 1 37,46 Z" />
+
+    <!-- Bar 3: shortest, bottom -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,68 L63,68 A7,7 0 0 1 63,82 L45,82 A7,7 0 0 1 45,68 Z" />
 </vector>

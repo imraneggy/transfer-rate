@@ -17,28 +17,30 @@ sealed interface RatesUiState {
         val selectedCurrency: String,
         val refreshing: Boolean = false,
     ) : RatesUiState {
-        /** Wise's mid-market rate for the selected corridor — the objective benchmark.
-         *  We pull this out separately so the UI can headline it and compute deltas. */
+        /** Independent mid-market rate (provider_id == "mid_market"), shown in
+         *  the header card. Sourced from open.er-api.com — NOT from Wise — so
+         *  it is genuinely an objective external benchmark.
+         *  Wise itself stays in the provider comparison list. */
         val midMarketRate: Double?
             get() = doc.corridors[selectedCurrency]
-                ?.firstOrNull { it.providerId == "wise" && it.status == "ok" }
+                ?.firstOrNull { it.providerId == "mid_market" && it.status == "ok" }
                 ?.rate
 
-        /** Quotes for the selected corridor, EXCLUDING the mid-market provider
-         *  (Wise) when we have its rate — it's promoted to the header card.
+        /** Quotes for the selected corridor, EXCLUDING only the mid-market
+         *  benchmark (which is promoted to the header). Wise and all other
+         *  providers remain in the list.
          *  Sorted: ok by best rate, then stale, then investigating, then error. */
         val visibleQuotes: List<ProviderQuote>
             get() {
                 val all = doc.corridors[selectedCurrency] ?: emptyList()
-                val withoutBenchmark = if (midMarketRate != null) {
-                    all.filterNot { it.providerId == "wise" }
-                } else all
-                return withoutBenchmark.sortedWith(
-                    compareBy(
-                        { statusOrder(it.status) },
-                        { -(it.effectiveRate ?: it.rate ?: 0.0) },
+                return all
+                    .filterNot { it.providerId == "mid_market" }
+                    .sortedWith(
+                        compareBy(
+                            { statusOrder(it.status) },
+                            { -(it.effectiveRate ?: it.rate ?: 0.0) },
+                        )
                     )
-                )
             }
 
         /** The best (highest) rate among OK quotes (excl. benchmark), for the BEST badge. */

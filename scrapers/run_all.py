@@ -45,7 +45,10 @@ from typing import Dict, List
 
 from .base import BaseProvider, Quote, SUPPORTED_TARGETS
 
-# Tier 1 — working scrapers (real data)
+# Tier 0 — independent mid-market benchmark (rendered as header in app, not in list)
+from .mid_market import MidMarketProvider
+
+# Tier 1 — real remittance providers with verified rates
 from .wise import WiseProvider
 from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
@@ -85,7 +88,9 @@ from .mashreq_quick import MashreqQuickProvider
 # Display order: working providers first, then UAE exchange houses,
 # then global remitters, then bank-remit products, then app-only services.
 PROVIDERS: List[BaseProvider] = [
-    # --- Working ---
+    # --- Independent mid-market benchmark (extracted to header in UI) ---
+    MidMarketProvider(),
+    # --- Working real providers ---
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
