@@ -63,6 +63,7 @@ from .al_ansari import AlAnsariProvider
 from .al_dahab import AlDahabProvider
 from .federal_exchange import FederalExchangeProvider
 from .gcc_exchange import GccExchangeProvider
+from .gold import fetch_gold, GoldHistoryPoint
 
 
 # Display order. Mid-market first (extracted to header), then real providers.
@@ -317,6 +318,59 @@ def _append_to_history(
     os.replace(tmp, history_path)
 
 
+def _merge_uae_gold_history(
+    side: dict, history_path: Path, max_days: int = 30
+) -> dict:
+    """Maintain a rolling UAE gold history file and fold it into `side`.
+
+    Khaleej Times only exposes today's UAE gold rate. We keep our own
+    daily series so the app can show a 30-day chart for both UAE and
+    India consistently.
+    """
+    from datetime import date as _date
+
+    # Load existing history (date -> {22k, 24k})
+    rolling: dict = {}
+    if history_path.exists():
+        try:
+            loaded = json.loads(history_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                for d, v in loaded.items():
+                    if isinstance(v, dict) and "22k" in v and "24k" in v:
+                        rolling[d] = v
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Append today's reading if both 22K and 24K are present
+    today = _date.today().isoformat()
+    if (
+        side.get("status") == "ok"
+        and side.get("per_g_22k") is not None
+        and side.get("per_g_24k") is not None
+    ):
+        rolling[today] = {
+            "22k": float(side["per_g_22k"]),
+            "24k": float(side["per_g_24k"]),
+        }
+
+    # Prune to the most recent `max_days`
+    keep = sorted(rolling.keys(), reverse=True)[:max_days]
+    pruned = {d: rolling[d] for d in keep}
+
+    # Persist
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = history_path.with_suffix(history_path.suffix + ".tmp")
+    tmp.write_text(json.dumps(pruned, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, history_path)
+
+    # Fold into the side payload (newest first)
+    side["history"] = [
+        {"date": d, "per_g_22k": pruned[d]["22k"], "per_g_24k": pruned[d]["24k"]}
+        for d in sorted(pruned.keys(), reverse=True)
+    ]
+    return side
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run scrapers across all corridors")
     parser.add_argument("--amount", type=float, default=DEFAULT_AMOUNT)
@@ -324,6 +378,11 @@ def main() -> int:
     parser.add_argument(
         "--history", type=Path, default=Path("public/history.json"),
         help="Rolling history file (last 10 days of rates per provider)",
+    )
+    parser.add_argument(
+        "--gold-history", type=Path, default=Path("data/uae_gold_history.json"),
+        help="Locally-maintained UAE gold history (Khaleej Times only "
+             "shows today; we keep our own series)",
     )
     parser.add_argument(
         "--corridors", nargs="+", default=list(SUPPORTED_TARGETS),
@@ -369,6 +428,21 @@ def main() -> int:
     for c in fresh:
         fresh[c].sort(key=lambda q: order.get(q.provider_id, 99))
 
+    # Gold module — pulled separately from the FX corridors and embedded
+    # at the top level. Failures here are isolated: rates.json publishes
+    # with `gold: null` if the gold scrape fails entirely.
+    gold_payload = None
+    try:
+        gold = fetch_gold()
+        gold_dict = gold.to_dict()
+        # Maintain UAE history locally (KT only shows today)
+        gold_dict["uae"] = _merge_uae_gold_history(
+            gold_dict["uae"], args.gold_history
+        )
+        gold_payload = gold_dict
+    except Exception as exc:
+        print(f"warning: gold module failed: {exc}", file=sys.stderr)
+
     payload = {
         "schema_version": 2,
         "base": "AED",
@@ -376,6 +450,7 @@ def main() -> int:
         "started_at": started,
         "completed_at": _now_iso(),
         "corridors": {c: [q.to_dict() for q in fresh[c]] for c in args.corridors},
+        "gold": gold_payload,
     }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)

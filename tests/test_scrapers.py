@@ -23,6 +23,7 @@ from scrapers.aspora import AsporaProvider
 from scrapers.al_ansari import AlAnsariProvider
 from scrapers.al_dahab import AlDahabProvider
 from scrapers.federal_exchange import FederalExchangeProvider
+from scrapers.gold import fetch_uae_gold, fetch_india_gold
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
 from scrapers.lulu import LuluProvider
@@ -287,6 +288,38 @@ def test_mid_market_falls_back_to_open_erapi(httpx_mock):
     assert q.status == "ok"
     assert q.rate == 25.879247
     assert "Open ExchangeRate" in (q.note or "")
+
+
+# --- Gold (UAE / India) -------------------------------------------------
+
+def test_uae_gold_extracts_24k_and_22k(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://www\.khaleejtimes\.com/gold-forex.*"),
+        text=fixture_text("khaleej_gold.html"),
+        headers={"content-type": "text/html"},
+    )
+    side = fetch_uae_gold()
+    assert side.status == "ok"
+    assert side.currency == "AED"
+    assert side.per_g_24k == 556.00
+    assert side.per_g_22k == 514.75
+
+
+def test_india_gold_extracts_history_series(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://www\.bankbazaar\.com/gold-rate-india\.html.*"),
+        text=fixture_text("bankbazaar_gold.html"),
+        headers={"content-type": "text/html"},
+    )
+    side = fetch_india_gold(history_days=30)
+    assert side.status == "ok"
+    assert side.currency == "INR"
+    assert side.per_g_24k == 14632.0
+    assert side.per_g_22k == 13935.0
+    # Should have 3 days of history from the fixture (de-duplicated)
+    assert len(side.history) == 3
+    assert side.history[0].date == "2026-05-02"
+    assert side.history[0].per_g_24k == 14632.0
 
 
 # --- Sanity: every provider in the registry has a valid id -------------

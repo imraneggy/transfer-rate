@@ -33,6 +33,22 @@ val Manrope: FontFamily = FontFamily(
 )
 
 /**
+ * Space Grotesk is a distinctive geometric display sans by Florian
+ * Karsten. Its quirky lower-case letter shapes (especially `g`, `k`,
+ * `t`) give the brand a tech-forward identity at large sizes without
+ * being illegible at body sizes. SIL OFL 1.1 licensed.
+ *
+ * Used for display headlines and the wordmark; body text remains
+ * Manrope (better at small sizes, more conservative numerals).
+ */
+val SpaceGrotesk: FontFamily = FontFamily(
+    Font(R.font.space_grotesk_regular,  FontWeight.Normal),
+    Font(R.font.space_grotesk_medium,   FontWeight.Medium),
+    Font(R.font.space_grotesk_semibold, FontWeight.SemiBold),
+    Font(R.font.space_grotesk_bold,     FontWeight.Bold),
+)
+
+/**
  * Material 3 Typography overridden to use Manrope at every level.
  *
  * Sizes follow the Material 3 type-scale defaults but with tightened
@@ -41,44 +57,46 @@ val Manrope: FontFamily = FontFamily(
  * the brand feels confident.
  */
 val ExchangiaTypography: Typography = Typography(
+    // Display levels: Space Grotesk for distinctive brand voice.
     displayLarge = TextStyle(
-        fontFamily = Manrope,
-        fontWeight = FontWeight.ExtraBold,
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Bold,
         fontSize = 57.sp,
         lineHeight = 64.sp,
         letterSpacing = (-0.8).sp,
     ),
     displayMedium = TextStyle(
-        fontFamily = Manrope,
-        fontWeight = FontWeight.ExtraBold,
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
         letterSpacing = (-0.5).sp,
     ),
     displaySmall = TextStyle(
-        fontFamily = Manrope,
+        fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
         lineHeight = 44.sp,
         letterSpacing = (-0.3).sp,
     ),
 
+    // Headline levels: Space Grotesk SemiBold for confident hierarchy.
     headlineLarge = TextStyle(
-        fontFamily = Manrope,
+        fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
         letterSpacing = (-0.2).sp,
     ),
     headlineMedium = TextStyle(
-        fontFamily = Manrope,
-        fontWeight = FontWeight.Bold,
+        fontFamily = SpaceGrotesk,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp,
     ),
     headlineSmall = TextStyle(
-        fontFamily = Manrope,
+        fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
         lineHeight = 32.sp,

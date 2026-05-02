@@ -76,11 +76,19 @@ enum class ThemeMode {
         Dark -> System
     }
 
-    /** Glyph + label for the toggle button. */
+    /** Human label used in the IconButton's contentDescription. */
+    val label: String get() = when (this) {
+        System -> "system"
+        Light -> "light"
+        Dark -> "dark"
+    }
+
+    /** Legacy glyph (kept for any non-icon callers; prefer Icons.Outlined). */
+    @Deprecated("Use Icons.Outlined Settings/LightMode/DarkMode instead.")
     val glyph: String get() = when (this) {
-        System -> "⚙"   // gear (current = system)
-        Light -> "☀"    // sun (current = light)
-        Dark -> "☾"     // moon (current = dark)
+        System -> "⚙"
+        Light -> "☀"
+        Dark -> "☾"
     }
 }
 
@@ -105,25 +113,35 @@ fun RatesScreen(
                     )
                 },
                 actions = {
+                    // Use crisp Material vector icons for high legibility
+                    // on every density. Previously these were unicode
+                    // glyphs (⚙ ☀ ☾ ⓘ ↻) which rendered poorly on some
+                    // devices and made the toolbar feel cheap.
+                    val iconColor = MaterialTheme.colorScheme.onBackground
                     IconButton(onClick = onShowAbout) {
-                        Text(
-                            "ⓘ",
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
+                        androidx.compose.material3.Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Outlined.Info,
+                            contentDescription = "About",
+                            tint = iconColor,
                         )
                     }
                     IconButton(onClick = onCycleThemeMode) {
-                        Text(
-                            themeMode.glyph,
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
+                        val themeIcon = when (themeMode) {
+                            ThemeMode.System -> androidx.compose.material.icons.Icons.Outlined.Settings
+                            ThemeMode.Light  -> androidx.compose.material.icons.Icons.Outlined.LightMode
+                            ThemeMode.Dark   -> androidx.compose.material.icons.Icons.Outlined.DarkMode
+                        }
+                        androidx.compose.material3.Icon(
+                            imageVector = themeIcon,
+                            contentDescription = "Theme: ${themeMode.label}",
+                            tint = iconColor,
                         )
                     }
                     IconButton(onClick = { vm.refresh() }) {
-                        Text(
-                            "↻",
-                            fontSize = 22.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
+                        androidx.compose.material3.Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Outlined.Refresh,
+                            contentDescription = "Refresh rates",
+                            tint = iconColor,
                         )
                     }
                 },
@@ -265,6 +283,7 @@ private fun ReadyView(
 
     // The provider whose history sheet is currently open (null = no sheet).
     var sheetForProvider by remember { mutableStateOf<ProviderQuote?>(null) }
+    var goldSheetOpen by remember { mutableStateOf(false) }
 
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -280,11 +299,37 @@ private fun ReadyView(
             }
         }
         item {
-            MidMarketHeader(
-                info = info,
-                midMarket = midMarket,
-                completedAt = state.doc.completedAt,
-            )
+            // 50/50 row: mid-market FX rate (left) + gold rate module (right).
+            // When the gold module is unavailable the FX header stretches
+            // back to full width.
+            val gold = state.doc.gold
+            if (gold != null) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        MidMarketHeader(
+                            info = info,
+                            midMarket = midMarket,
+                            completedAt = state.doc.completedAt,
+                        )
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        GoldHeader(
+                            gold = gold,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { goldSheetOpen = true },
+                        )
+                    }
+                }
+            } else {
+                MidMarketHeader(
+                    info = info,
+                    midMarket = midMarket,
+                    completedAt = state.doc.completedAt,
+                )
+            }
         }
         item { FirstLaunchHint() }
         item {
@@ -331,6 +376,16 @@ private fun ReadyView(
             midMarket = midMarket,
             onDismiss = { sheetForProvider = null },
         )
+    }
+
+    // Gold history sheet
+    if (goldSheetOpen) {
+        state.doc.gold?.let { g ->
+            GoldHistorySheet(
+                gold = g,
+                onDismiss = { goldSheetOpen = false },
+            )
+        }
     }
 }
 
@@ -671,11 +726,18 @@ private fun ProviderCard(
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        // weight(1f) + maxLines=1 + ellipsize so the
+                        // BEST/MANUAL badge always has room next to a
+                        // long provider name on narrow screens.
                         Text(
                             p.providerName,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false),
                         )
                         if (isBest) {
                             Spacer(Modifier.width(8.dp))
@@ -772,12 +834,17 @@ private fun BestBadge() {
             )
             .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
+        // maxLines = 1 + softWrap = false: defends against the
+        // "BES + T" wrapping bug seen on narrow phones when the
+        // provider-name column was long enough to crush the badge.
         Text(
             text = "BEST",
             color = MaterialTheme.colorScheme.onSecondary,
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
             letterSpacing = 0.6.sp,
+            maxLines = 1,
+            softWrap = false,
         )
     }
 }
@@ -798,6 +865,8 @@ private fun ManualBadge() {
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
             letterSpacing = 0.6.sp,
+            maxLines = 1,
+            softWrap = false,
         )
     }
 }

@@ -32,6 +32,38 @@ data class RatesDocument(
     @SerialName("started_at") val startedAt: String,
     @SerialName("completed_at") val completedAt: String,
     val corridors: Map<String, List<ProviderQuote>>,
+    /** Optional: UAE vs India gold rate side-by-side. Null when scraper failed. */
+    val gold: GoldDocument? = null,
+)
+
+/**
+ * Gold rate module — UAE (Khaleej Times) and India (BankBazaar) rates
+ * per gram in their local currency, plus a 30-day daily history series.
+ */
+@Serializable
+data class GoldDocument(
+    val uae: GoldSide,
+    val india: GoldSide,
+    @SerialName("fetched_at") val fetchedAt: String,
+)
+
+@Serializable
+data class GoldSide(
+    val currency: String,                              // "AED" or "INR"
+    @SerialName("per_g_24k") val perG24k: Double? = null,
+    @SerialName("per_g_22k") val perG22k: Double? = null,
+    val source: String,                                // human label
+    @SerialName("source_url") val sourceUrl: String,
+    val status: String,                                // "ok" | "error"
+    val note: String? = null,
+    val history: List<GoldHistoryPoint> = emptyList(),
+)
+
+@Serializable
+data class GoldHistoryPoint(
+    val date: String,                                  // YYYY-MM-DD
+    @SerialName("per_g_24k") val perG24k: Double,
+    @SerialName("per_g_22k") val perG22k: Double,
 )
 
 @Serializable
