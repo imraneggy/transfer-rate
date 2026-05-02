@@ -1,6 +1,7 @@
 package com.transferrate.app.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.transferrate.app.data.ProviderQuote
 import com.transferrate.app.data.RatesDocument
@@ -15,6 +16,7 @@ sealed interface RatesUiState {
     data class Ready(
         val doc: RatesDocument,
         val selectedCurrency: String,
+        val selectedAmount: Double = 1000.0,
         val refreshing: Boolean = false,
     ) : RatesUiState {
         /** Independent mid-market rate (provider_id == "mid_market"), shown in
@@ -54,13 +56,29 @@ sealed interface RatesUiState {
 }
 
 class RatesViewModel(
-    private val repo: RatesRepository = RatesRepository(),
-) : ViewModel() {
+    application: Application,
+) : AndroidViewModel(application) {
+
+    private val repo = RatesRepository(application.applicationContext)
 
     private val _state = MutableStateFlow<RatesUiState>(RatesUiState.Loading)
     val state: StateFlow<RatesUiState> = _state.asStateFlow()
 
-    init { refresh() }
+    init {
+        // Stale-while-revalidate: show cached data instantly on cold start,
+        // then trigger a background refresh so the user sees fresh values
+        // shortly after.
+        viewModelScope.launch {
+            repo.loadCached().fold(
+                onSuccess = { doc ->
+                    val selected = pickCurrency(doc, null)
+                    _state.value = RatesUiState.Ready(doc, selected, refreshing = true)
+                    fetchFresh()
+                },
+                onFailure = { fetchFresh() },
+            )
+        }
+    }
 
     fun refresh() {
         val current = _state.value
@@ -69,24 +87,38 @@ class RatesViewModel(
         } else {
             _state.value = RatesUiState.Loading
         }
+        fetchFresh()
+    }
+
+    private fun fetchFresh() {
         viewModelScope.launch {
+            val previousSelected = (_state.value as? RatesUiState.Ready)?.selectedCurrency
             repo.fetch().fold(
                 onSuccess = { doc ->
-                    val previousSelected = (current as? RatesUiState.Ready)?.selectedCurrency
-                    val selected = previousSelected
-                        ?.takeIf { doc.corridors.containsKey(it) }
-                        ?: doc.corridors.keys.firstOrNull { it == "INR" }
-                        ?: doc.corridors.keys.firstOrNull()
-                        ?: "INR"
+                    val selected = pickCurrency(doc, previousSelected)
                     _state.value = RatesUiState.Ready(doc, selected)
                 },
                 onFailure = { e ->
-                    _state.value = RatesUiState.Failed(
-                        e.message ?: e::class.simpleName ?: "unknown error"
-                    )
+                    // If we already have cached data showing, keep it visible
+                    // and just clear the refreshing flag — DON'T blow it away.
+                    val current = _state.value
+                    if (current is RatesUiState.Ready) {
+                        _state.value = current.copy(refreshing = false)
+                    } else {
+                        _state.value = RatesUiState.Failed(
+                            e.message ?: e::class.simpleName ?: "unknown error"
+                        )
+                    }
                 },
             )
         }
+    }
+
+    private fun pickCurrency(doc: RatesDocument, previous: String?): String {
+        return previous?.takeIf { doc.corridors.containsKey(it) }
+            ?: doc.corridors.keys.firstOrNull { it == "INR" }
+            ?: doc.corridors.keys.firstOrNull()
+            ?: "INR"
     }
 
     fun selectCurrency(code: String) {
@@ -94,6 +126,16 @@ class RatesViewModel(
         if (s is RatesUiState.Ready && s.selectedCurrency != code && doc(s).corridors.containsKey(code)) {
             _state.value = s.copy(selectedCurrency = code)
         }
+    }
+
+    /** Update the user's send amount. Bounded at the View layer; we just
+     *  refuse implausible values defensively. */
+    fun setAmount(amount: Double) {
+        val s = _state.value
+        if (s !is RatesUiState.Ready) return
+        if (amount !in 1.0..1_000_000.0) return
+        if (s.selectedAmount == amount) return
+        _state.value = s.copy(selectedAmount = amount)
     }
 
     private fun doc(s: RatesUiState.Ready): RatesDocument = s.doc

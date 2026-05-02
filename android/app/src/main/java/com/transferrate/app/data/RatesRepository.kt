@@ -1,10 +1,13 @@
 package com.transferrate.app.data
 
+import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 /**
@@ -21,6 +24,7 @@ import java.util.concurrent.TimeUnit
  *     don't break older clients in the field.
  */
 class RatesRepository(
+    private val context: Context? = null,
     // Override in tests. Production uses the GitHub Pages URL.
     private val ratesUrl: String =
         "https://imraneggy.github.io/transfer-rate/rates.json",
@@ -32,14 +36,35 @@ class RatesRepository(
         .callTimeout(15, TimeUnit.SECONDS)
         .followRedirects(true)
         .followSslRedirects(true)
-        .retryOnConnectionFailure(false)
+        .retryOnConnectionFailure(true)
         .build()
 
     private val json = Json {
         ignoreUnknownKeys = true
-        isLenient = false        // strict parsing — no quirks
+        isLenient = false
         explicitNulls = false
         coerceInputValues = false
+    }
+
+    private val cacheFile: File?
+        get() = context?.filesDir?.let { File(it, "rates-cache.json") }
+
+    /**
+     * Stale-while-revalidate: read the on-disk cache (if any), return it
+     * immediately if it exists and is younger than 24h. The caller can
+     * then trigger fetch() to revalidate in the background.
+     */
+    suspend fun loadCached(): Result<RatesDocument> = withContext(Dispatchers.IO) {
+        runCatching {
+            val f = cacheFile ?: error("no context, cannot load cache")
+            if (!f.exists()) error("no cache yet")
+            val ageMs = System.currentTimeMillis() - f.lastModified()
+            if (ageMs > CACHE_MAX_AGE_MS) {
+                error("cache too old (${ageMs / 60_000} min)")
+            }
+            val text = f.readText(Charsets.UTF_8)
+            json.decodeFromString<RatesDocument>(text).validate()
+        }
     }
 
     suspend fun fetch(): Result<RatesDocument> = withContext(Dispatchers.IO) {
@@ -61,8 +86,15 @@ class RatesRepository(
                 require(body.length < 1_000_000) {
                     "Document larger than 1 MB — refusing"
                 }
-                json.decodeFromString<RatesDocument>(body).validate()
+                val doc = json.decodeFromString<RatesDocument>(body).validate()
+                // Persist for next cold start
+                cacheFile?.runCatching { writeText(body, Charsets.UTF_8) }
+                doc
             }
         }
+    }
+
+    companion object {
+        private const val CACHE_MAX_AGE_MS = 24L * 60L * 60L * 1000L  // 24 hours
     }
 }

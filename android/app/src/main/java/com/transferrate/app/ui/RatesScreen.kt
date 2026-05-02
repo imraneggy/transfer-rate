@@ -15,6 +15,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -30,6 +44,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeParseException
@@ -114,10 +129,19 @@ fun RatesScreen(
             when (val s = state) {
                 is RatesUiState.Loading -> CenteredSpinner()
                 is RatesUiState.Failed -> ErrorView(s.message) { vm.refresh() }
-                is RatesUiState.Ready -> ReadyView(
-                    state = s,
-                    onSelectCurrency = vm::selectCurrency,
-                )
+                is RatesUiState.Ready -> {
+                    PullToRefreshBox(
+                        isRefreshing = s.refreshing,
+                        onRefresh = { vm.refresh() },
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        ReadyView(
+                            state = s,
+                            onSelectCurrency = vm::selectCurrency,
+                            onAmountChange = vm::setAmount,
+                        )
+                    }
+                }
             }
         }
     }
@@ -161,23 +185,63 @@ private fun CenteredSpinner() {
     }
 }
 
+/**
+ * Full-screen error state. Friendlier than the previous one-line message:
+ * shows a large glyph, a clear primary message, the underlying technical
+ * detail in a quieter style, and a prominent retry button shaped as a
+ * filled tonal button rather than an icon-only IconButton.
+ */
 @Composable
 private fun ErrorView(message: String, onRetry: () -> Unit) {
+    val isOffline = message.contains("Unable to resolve", ignoreCase = true) ||
+                    message.contains("UnknownHost", ignoreCase = true) ||
+                    message.contains("ConnectException", ignoreCase = true) ||
+                    message.contains("timeout", ignoreCase = true)
+    val (glyph, headline, hint) = when {
+        isOffline -> Triple(
+            "📡",
+            "Can't reach the rate feed",
+            "Check your internet connection and tap retry. Cached rates aren't available yet.",
+        )
+        else -> Triple(
+            "⚠",
+            "Couldn't load rates",
+            "An unexpected error occurred while fetching the latest rates.",
+        )
+    }
     Column(
-        Modifier.fillMaxSize().padding(24.dp),
+        Modifier.fillMaxSize().padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(stringResource(R.string.error_loading), fontWeight = FontWeight.SemiBold)
+        Text(glyph, fontSize = 56.sp)
+        Spacer(Modifier.height(16.dp))
+        Text(
+            headline,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            hint,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
         Spacer(Modifier.height(8.dp))
         Text(
             message,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.outline,
             textAlign = TextAlign.Center,
+            maxLines = 3,
         )
-        Spacer(Modifier.height(20.dp))
-        IconButton(onClick = onRetry) { Text("Retry") }
+        Spacer(Modifier.height(28.dp))
+        androidx.compose.material3.FilledTonalButton(onClick = onRetry) {
+            Text("Try again")
+        }
     }
 }
 
@@ -185,6 +249,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
 private fun ReadyView(
     state: RatesUiState.Ready,
     onSelectCurrency: (String) -> Unit,
+    onAmountChange: (Double) -> Unit,
 ) {
     val ctx = LocalContext.current
     val selected = state.selectedCurrency
@@ -195,10 +260,6 @@ private fun ReadyView(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // Currency picker only shown when there's more than one corridor.
-        // If the orchestrator emits a single corridor (current state — INR
-        // only), the picker is suppressed; the screen reads as a dedicated
-        // single-corridor display rather than a "choose between one option."
         if (state.doc.corridors.size > 1) {
             item {
                 CurrencyChipRow(
@@ -215,6 +276,12 @@ private fun ReadyView(
                 completedAt = state.doc.completedAt,
             )
         }
+        item {
+            AmountPanel(
+                amount = state.selectedAmount,
+                onAmountChange = onAmountChange,
+            )
+        }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = (p.status == "ok" || p.status == "manual")
                     && state.bestRate != null
@@ -223,6 +290,7 @@ private fun ReadyView(
                 p = p,
                 isBest = isBest,
                 midMarket = midMarket,
+                amount = state.selectedAmount,
                 onClick = {
                     p.url?.let { url ->
                         runCatching {
@@ -379,11 +447,118 @@ private fun CurrencyChip(info: CurrencyInfo, isSelected: Boolean, onClick: () ->
     }
 }
 
+/**
+ * Send-amount input panel. Three things:
+ *   - Quick-pick chips for common amounts (1k, 5k, 10k, 25k, 50k AED)
+ *   - A text field for custom amounts
+ *   - Updates state on focus-loss / IME action so we don't recompute on
+ *     every keystroke (which would cause the LazyColumn to re-layout
+ *     every typed character)
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AmountPanel(
+    amount: Double,
+    onAmountChange: (Double) -> Unit,
+) {
+    var fieldValue by rememberSaveable(stateSaver = androidx.compose.runtime.saveable.Saver(
+        save = { it.text },
+        restore = { TextFieldValue(it) },
+    )) { mutableStateOf(TextFieldValue(formatAmount(amount))) }
+    val focusManager = LocalFocusManager.current
+
+    // If the underlying amount changes (e.g. quick-chip), reflect that in the
+    // text field — but only if the user isn't currently editing.
+    LaunchedEffect(amount) {
+        val currentText = fieldValue.text.replace(",", "").trim()
+        val currentNum = currentText.toDoubleOrNull()
+        if (currentNum != amount) {
+            fieldValue = TextFieldValue(formatAmount(amount))
+        }
+    }
+
+    fun commitAmount(text: String) {
+        val cleaned = text.replace(",", "").trim()
+        val n = cleaned.toDoubleOrNull()
+        if (n != null && n in 1.0..1_000_000.0) {
+            onAmountChange(n)
+            fieldValue = TextFieldValue(formatAmount(n))
+        } else {
+            // Snap back to the current valid amount
+            fieldValue = TextFieldValue(formatAmount(amount))
+        }
+    }
+
+    Column(Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = fieldValue,
+            onValueChange = { fieldValue = it },
+            label = { Text("Sending") },
+            prefix = { Text("AED ") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done,
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    commitAmount(fieldValue.text)
+                    focusManager.clearFocus()
+                },
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(),
+        )
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(1000.0, 5000.0, 10_000.0, 25_000.0, 50_000.0).forEach { v ->
+                AmountChip(
+                    label = formatAmount(v),
+                    selected = (amount == v),
+                    onClick = {
+                        onAmountChange(v)
+                        fieldValue = TextFieldValue(formatAmount(v))
+                        focusManager.clearFocus()
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AmountChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val bg = if (selected) MaterialTheme.colorScheme.primary
+             else MaterialTheme.colorScheme.surfaceVariant
+    val fg = if (selected) MaterialTheme.colorScheme.onPrimary
+             else MaterialTheme.colorScheme.onSurfaceVariant
+    Box(
+        modifier = Modifier
+            .background(bg, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+    ) {
+        Text(
+            text = label,
+            color = fg,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 13.sp,
+        )
+    }
+}
+
+private fun formatAmount(value: Double): String {
+    val asLong = value.toLong()
+    return if (asLong.toDouble() == value) "%,d".format(asLong)
+    else "%,.2f".format(value)
+}
+
 @Composable
 private fun ProviderCard(
     p: ProviderQuote,
     isBest: Boolean,
     midMarket: Double?,
+    amount: Double,
     onClick: () -> Unit,
 ) {
     val containerColor = when {
@@ -453,11 +628,44 @@ private fun ProviderCard(
                 Spacer(Modifier.width(8.dp))
                 RateView(p, midMarket = midMarket)
             }
+            // "You receive" line: shows the actual receive amount for the
+            // user's chosen send amount. Only meaningful when we have a
+            // working rate (not for stub/error/investigating).
+            val rate = p.effectiveRate ?: p.rate
+            if ((p.status == "ok" || p.status == "manual") && rate != null) {
+                Spacer(Modifier.height(8.dp))
+                ReceiveLine(rate = rate, amount = amount, quoteCode = p.quote)
+            }
             if (p.status == "ok" && p.promoRate != null) {
                 Spacer(Modifier.height(10.dp))
                 PromoBadge(p.promoRate, p.promoNote, p.quote)
             }
         }
+    }
+}
+
+@Composable
+private fun ReceiveLine(rate: Double, amount: Double, quoteCode: String) {
+    val received = rate * amount
+    val sym = CURRENCIES[quoteCode]?.symbol ?: ""
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "You receive",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "$sym " + "%,.2f".format(received),
+            style = MaterialTheme.typography.titleSmall.copy(
+                fontFeatureSettings = "tnum",
+            ),
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
