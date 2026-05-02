@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+      Base theme. We extend the platform Material light theme (no action bar
+      since we draw our own TopAppBar in Compose).
+
+      Splash screen (Android 12+ / API 31+): the OS reads
+      windowSplashScreenBackground and windowSplashScreenAnimatedIcon from
+      our launcher activity's theme and draws them while the app cold-starts.
+    -->
     <style name="Theme.TransferRate" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- Splash screen attributes (API 31+; ignored on lower; we are min 34) -->
+        <item name="android:windowSplashScreenBackground">@color/splash_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <!--
+          Optional: how long the splash holds visible after first frame is
+          available. 0 = transition as soon as Compose draws. Tune up to
+          ~500ms if you want users to definitely register the brand.
+        -->
+        <item name="android:windowSplashScreenAnimationDuration">200</item>
     </style>
 </resources>

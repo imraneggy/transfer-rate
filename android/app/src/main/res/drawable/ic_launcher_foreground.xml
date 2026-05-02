@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon foreground — three horizontal bars descending in length,
-  visualising a rate-comparison chart. White on teal background.
+  Launcher icon foreground — bold T monogram in white.
+  Adaptive canvas is 108x108 dp; content stays inside the 66dp safe zone
+  ([21..87] x [21..87]) so any mask (circle/squircle/teardrop) won't crop.
 
-  Content stays inside the 66dp safe zone of the 108dp adaptive canvas
-  (centered at x:[20,88], y:[24,82]) so masks (circle/squircle/teardrop)
-  never crop the meaningful shapes.
+  Geometry (centered):
+    Crossbar: x = 22..86  y = 22..38   (width 64, thickness 16, r=4)
+    Stem:     x = 46..62  y = 22..86   (width 16, length 64, bottom r=4)
 
-  Bar geometry:
-    Bar 1 (top, longest):     x = 22..86 (w=64)  y = 24..38  h=14  rounded r=7
-    Bar 2 (middle):           x = 30..78 (w=48)  y = 46..60  h=14  rounded r=7
-    Bar 3 (bottom, shortest): x = 38..70 (w=32)  y = 68..82  h=14  rounded r=7
-
-  Each bar is a stadium shape (full semicircles at both ends).
+  Both shapes are pure white; the teal background lives in
+  ic_launcher_background.xml. Two paths for clarity (could be merged
+  into one via constructive geometry, but two paths render identically
+  and the source is more legible).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -20,18 +19,28 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Bar 1: longest, top — represents the best rate -->
+    <!-- Crossbar (top horizontal) — rounded outer corners only -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M29,24 L79,24 A7,7 0 0 1 79,38 L29,38 A7,7 0 0 1 29,24 Z" />
+        android:pathData="M26,22
+                          L82,22
+                          A4,4 0 0 1 86,26
+                          L86,34
+                          A4,4 0 0 1 82,38
+                          L26,38
+                          A4,4 0 0 1 22,34
+                          L22,26
+                          A4,4 0 0 1 26,22
+                          Z" />
 
-    <!-- Bar 2: middle -->
+    <!-- Stem (vertical) — rounded only at the bottom; top merges into crossbar -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M37,46 L71,46 A7,7 0 0 1 71,60 L37,60 A7,7 0 0 1 37,46 Z" />
-
-    <!-- Bar 3: shortest, bottom -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M45,68 L63,68 A7,7 0 0 1 63,82 L45,82 A7,7 0 0 1 45,68 Z" />
+        android:pathData="M46,22
+                          L62,22
+                          L62,82
+                          A4,4 0 0 1 58,86
+                          L50,86
+                          A4,4 0 0 1 46,82
+                          Z" />
 </vector>

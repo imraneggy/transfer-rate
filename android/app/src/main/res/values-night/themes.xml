@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+      Night-mode theme: the launcher background and splash background stay
+      teal so the brand identity is consistent regardless of system theme.
+      Status bar appearance differs (dark icons on dark background).
+    -->
     <style name="Theme.TransferRate" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <item name="android:windowSplashScreenBackground">@color/splash_bg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="android:windowSplashScreenAnimationDuration">200</item>
     </style>
 </resources>
