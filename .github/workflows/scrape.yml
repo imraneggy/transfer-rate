@@ -62,7 +62,11 @@ jobs:
           git config user.email "transfer-rate-bot@users.noreply.github.com"
           if [ -n "$(git status --porcelain public/rates.json)" ]; then
             git add public/rates.json
-            git commit -m "rates: scheduled update [skip ci]"
+            # Intentionally NO [skip ci] tag here.
+            # scrape.yml's `paths: scrapers/**` filter prevents this commit
+            # from re-triggering scrape (the diff is in public/), and pages.yml
+            # specifically wants this push event to fire so it can republish.
+            git commit -m "rates: scheduled update"
             git push
           else
             echo "no changes"
