@@ -19,8 +19,8 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 14
-        versionName = "0.12.1"
+        versionCode = 15
+        versionName = "0.12.2"
 
         resourceConfigurations += listOf("en")
     }
