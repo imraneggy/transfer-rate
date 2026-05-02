@@ -1,21 +1,30 @@
-# Scheduled scraper for AED -> INR rates.
+# Scrape AED -> INR rates and publish them to GitHub Pages.
 #
-# Runs every 15 minutes, executes scrapers/run_all.py, commits the resulting
-# public/rates.json. The committed file is what the Android app fetches.
+# This single workflow does:
+#   1. Run scrapers/run_all.py to write public/rates.json.
+#   2. Commit the JSON to main (so we get free git history of every rate).
+#   3. Upload public/ as a Pages artifact.
+#   4. Deploy to GitHub Pages.
+#
+# Why one workflow instead of two:
+#   GitHub Actions' GITHUB_TOKEN deliberately does NOT trigger downstream
+#   workflows when it commits — to prevent accidental loops. Splitting
+#   "scrape" and "pages" into separate workflows therefore breaks the
+#   chain: the bot's commit never triggers pages.yml. Combining them in
+#   one run sidesteps this entirely.
 #
 # Security hardening:
-#   * Top-level `permissions: {}` denies everything by default. We grant the
-#     `contents: write` permission ONLY to the commit step.
-#   * Third-party actions are pinned by full commit SHA (mutable tags can be
-#     re-pointed by attackers; SHAs are immutable).
-#   * No secrets are referenced — this workflow needs none. Public data only.
+#   * Top-level `permissions: {}` denies everything by default.
+#   * Job-scoped `permissions:` grants the minimum needed for each step.
+#   * Third-party actions are pinned by full commit SHA.
+#   * No external secrets referenced — public data only.
 #   * `concurrency.cancel-in-progress: true` prevents two runs racing.
 name: scrape
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # every 15 minutes UTC
-  workflow_dispatch: {}       # allow manual trigger from the Actions tab
+    - cron: "*/15 * * * *"   # every 15 min UTC (GitHub may de-prioritise on free tier)
+  workflow_dispatch: {}
   push:
     branches: [main]
     paths:
@@ -25,7 +34,7 @@ on:
 permissions: {}
 
 concurrency:
-  group: scrape
+  group: scrape-and-publish
   cancel-in-progress: true
 
 jobs:
@@ -33,7 +42,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
-      contents: write   # only this job can write — minimum needed to commit
+      contents: write   # commit rates.json
+      pages: write      # deploy to Pages
+      id-token: write   # OIDC token used by deploy-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -47,8 +61,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --require-hashes -r requirements.txt 2>/dev/null || \
-            pip install -r requirements.txt
+          pip install -r requirements.txt
 
       - name: Run scrapers
         run: python -m scrapers.run_all --out public/rates.json
@@ -62,12 +75,20 @@ jobs:
           git config user.email "transfer-rate-bot@users.noreply.github.com"
           if [ -n "$(git status --porcelain public/rates.json)" ]; then
             git add public/rates.json
-            # Intentionally NO [skip ci] tag here.
-            # scrape.yml's `paths: scrapers/**` filter prevents this commit
-            # from re-triggering scrape (the diff is in public/), and pages.yml
-            # specifically wants this push event to fire so it can republish.
             git commit -m "rates: scheduled update"
             git push
           else
             echo "no changes"
           fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: public
+
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
