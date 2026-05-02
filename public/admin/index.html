@@ -200,37 +200,21 @@
 <script>
 "use strict";
 
-// === Provider catalog (mirror of scrapers/run_all.py PROVIDERS) ===
+// === Provider catalog ===
+//
+// As of v0.7, the app shows only providers with verified public rate
+// sources. Stubs for app-only services and providers without identified
+// public APIs were removed to keep the comparison list clean.
+//
+// All entries below have working scrapers in scrapers/run_all.py. Manual
+// entry is currently dormant (manual_rates only override "investigating"
+// status, which no provider has post-v0.7) but the form is preserved
+// in case a stub provider gets added back to the orchestrator later.
 const PROVIDERS = [
-  // App-only (highest priority for manual entry)
-  { id: "botim",         name: "Botim Pay",       category: "app-only" },
-  { id: "comera",        name: "Comera",          category: "app-only" },
-  { id: "eand",          name: "e& Money",        category: "app-only" },
-  { id: "careem",        name: "Careem Pay",      category: "app-only" },
-  // UAE exchange houses
-  { id: "lulu",          name: "LuLu Money",            category: "exchange-house" },
-  { id: "al_ansari",     name: "Al Ansari Exchange",    category: "exchange-house" },
-  { id: "al_fardan",     name: "Al Fardan Exchange",    category: "exchange-house" },
-  { id: "unimoni",       name: "Unimoni",               category: "exchange-house" },
-  { id: "sharaf",        name: "Sharaf Exchange",       category: "exchange-house" },
-  { id: "joyalukkas",    name: "Joyalukkas Exchange",   category: "exchange-house" },
-  { id: "gcc_exchange",  name: "GCC Exchange",          category: "exchange-house" },
-  { id: "index_exchange",name: "Index Exchange",        category: "exchange-house" },
-  { id: "wall_street",   name: "Wall Street Exchange",  category: "exchange-house" },
-  { id: "lari",          name: "Lari Exchange",         category: "exchange-house" },
-  { id: "orient",        name: "Orient Exchange",       category: "exchange-house" },
-  { id: "al_razouki",    name: "Al Razouki Exchange",   category: "exchange-house" },
-  { id: "habib",         name: "Habib Exchange",        category: "exchange-house" },
-  // Global
-  { id: "western_union", name: "Western Union",         category: "global" },
-  { id: "moneygram",     name: "MoneyGram",             category: "global" },
-  { id: "worldremit",    name: "WorldRemit",            category: "global" },
-  { id: "instarem",      name: "InstaReM",              category: "global" },
-  { id: "xoom",          name: "Xoom (PayPal)",         category: "global" },
-  // Bank remit
-  { id: "emirates_nbd",  name: "Emirates NBD DirectRemit", category: "bank" },
-  { id: "fab_remit",     name: "FAB Remit",                 category: "bank" },
-  { id: "mashreq_quick", name: "Mashreq QuickRemit",        category: "bank" },
+  { id: "wise",           name: "Wise",            category: "online" },
+  { id: "aspora",         name: "Aspora",          category: "online" },
+  { id: "remitly",        name: "Remitly",         category: "online" },
+  { id: "index_exchange", name: "Index Exchange",  category: "exchange-house" },
 ];
 
 // Active corridors. Mirrors scrapers/base.py SUPPORTED_TARGETS.
@@ -346,12 +330,10 @@ if (pat) loadCurrent();
 function renderForm() {
   const c = document.getElementById("providersContainer");
   c.replaceChildren();
-  const groups = ["app-only","exchange-house","global","bank"];
+  const groups = ["online","exchange-house"];
   const titles = {
-    "app-only":       "App-only services (highest priority)",
+    "online":         "Online providers",
     "exchange-house": "UAE exchange houses",
-    "global":         "Global remitters",
-    "bank":           "Bank remittance products",
   };
   groups.forEach(group => {
     const groupProvs = PROVIDERS.filter(p => p.category === group);

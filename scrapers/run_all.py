@@ -10,27 +10,30 @@ Output is a single combined JSON document at public/rates.json:
       "completed_at": "...",
       "corridors": {
         "INR": [<provider_quote>, ...],
-        "USD": [<provider_quote>, ...],
         ...
       }
     }
 
 Design choices:
 
-  1. **Concurrency with hard isolation** — each (provider, corridor) pair
-     runs in its own thread with a strict timeout. One slow provider
-     cannot hang the run.
+  1. **Only providers with verified public rate sources are included.**
+     Providers without a working scraper are not listed at all — no stubs,
+     no estimates. Cleaner UX in the app and less noise.
 
-  2. **Stale tolerance** — if a (provider, corridor) cell fails this
-     run, we keep the previous successful quote (if any) but mark it
+  2. **Concurrency with hard isolation** — each (provider, corridor) pair
+     runs in its own thread with a strict timeout.
+
+  3. **Stale tolerance** — if a (provider, corridor) cell fails this run,
+     we keep the previous successful quote (if any) but mark it
      status="stale" with the original `fetched_at`.
 
-  3. **Atomic write** — temp file + os.replace, so readers never see
-     a half-written document.
+  4. **Atomic write** — temp file + os.replace, so readers never see a
+     half-written document.
 
-  4. **Investigation stubs always present** — every corridor lists every
-     provider, even when most of them are stubs. Users see the full
-     coverage roadmap, contributors see the targets to fix.
+  5. **Manual override layer** — `data/manual-rates.json` can override
+     entries (kept for future use, e.g. emergency corrections; currently
+     no provider expects manual override since all listed providers have
+     working scrapers).
 """
 from __future__ import annotations
 
@@ -45,84 +48,28 @@ from typing import Dict, List
 
 from .base import BaseProvider, Quote, SUPPORTED_TARGETS
 
-# Tier 0 — independent mid-market benchmark (rendered as header in app, not in list)
+# Tier 0 — independent mid-market benchmark (extracted to header in app, not in list)
 from .mid_market import MidMarketProvider
 
-# Tier 1 — real remittance providers with verified rates
+# Tier 1 — providers with verified public rate sources (real working scrapers)
 from .wise import WiseProvider
 from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
-
-# Tier 2 — stubbed (placeholder, parser pending)
-from .lulu import LuluProvider
-from .careem import CareemProvider
-from .botim import BotimProvider
-from .comera import ComeraProvider
-from .eand import EandProvider
-
-# Tier 3 — additional UAE exchange houses, bank remit products,
-# and global remitters (all stubbed; parsers pending contributor work)
-from .al_ansari import AlAnsariProvider
-from .al_fardan import AlFardanProvider
-from .unimoni import UnimoniProvider
-from .sharaf import SharafProvider
-from .joyalukkas import JoyalukkasProvider
-from .gcc_exchange import GccExchangeProvider
 from .index_exchange import IndexExchangeProvider
-from .wall_street import WallStreetProvider
-from .lari import LariProvider
-from .orient import OrientProvider
-from .al_razouki import AlRazoukiProvider
-from .habib import HabibProvider
-from .western_union import WesternUnionProvider
-from .moneygram import MoneyGramProvider
-from .worldremit import WorldRemitProvider
-from .instarem import InstaRemProvider
-from .xoom import XoomProvider
-# Bank remittance products
-from .emirates_nbd import EmiratesNbdProvider
-from .fab_remit import FabRemitProvider
-from .mashreq_quick import MashreqQuickProvider
 
 
-# Display order: working providers first, then UAE exchange houses,
-# then global remitters, then bank-remit products, then app-only services.
+# Display order. Mid-market first (extracted to header), then real providers.
+# Stubs for app-only services (Botim, Comera, e&) and providers without
+# discovered public APIs (LuLu, Al Ansari, GCC, etc.) are intentionally
+# NOT in this list — they would just clutter the UI with "estimated"
+# placeholders. To re-add a stub, import it from scrapers/<name>.py and
+# include it below.
 PROVIDERS: List[BaseProvider] = [
-    # --- Independent mid-market benchmark (extracted to header in UI) ---
     MidMarketProvider(),
-    # --- Working real providers ---
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
-    # --- Major UAE exchange houses (stubs) ---
-    LuluProvider(),
-    AlAnsariProvider(),
-    AlFardanProvider(),
-    UnimoniProvider(),
-    SharafProvider(),
-    JoyalukkasProvider(),
-    GccExchangeProvider(),
     IndexExchangeProvider(),
-    WallStreetProvider(),
-    LariProvider(),
-    OrientProvider(),
-    AlRazoukiProvider(),
-    HabibProvider(),
-    # --- Global remitters (stubs) ---
-    WesternUnionProvider(),
-    MoneyGramProvider(),
-    WorldRemitProvider(),
-    InstaRemProvider(),
-    XoomProvider(),
-    # --- Bank remittance products (stubs) ---
-    EmiratesNbdProvider(),
-    FabRemitProvider(),
-    MashreqQuickProvider(),
-    # --- App-only services (stubs) ---
-    CareemProvider(),
-    EandProvider(),
-    BotimProvider(),
-    ComeraProvider(),
 ]
 
 PER_CALL_TIMEOUT_S = 25.0
@@ -169,7 +116,6 @@ def _merge_with_previous(
     except (json.JSONDecodeError, OSError):
         return fresh
 
-    # Tolerate either schema v1 (flat providers list) or v2 (corridors map)
     prev_corridors: Dict[str, Dict[str, dict]] = {}
     if isinstance(prev.get("corridors"), dict):
         for corridor, items in prev["corridors"].items():
@@ -215,27 +161,11 @@ def _merge_with_previous(
 def _apply_manual_rates(
     fresh: Dict[str, List[Quote]], manual_path: Path
 ) -> Dict[str, List[Quote]]:
-    """Override stub Quotes with manually-entered rates from data/manual-rates.json.
+    """Override entries with manually-entered rates from data/manual-rates.json.
 
-    Schema (v1):
-      {
-        "schema_version": 1,
-        "rates": {
-          "<provider_id>": {
-            "<currency_code>": {
-              "rate": 25.62,
-              "fee_aed": 0.0,
-              "fetched_at": "2026-05-02T10:00:00Z",
-              "note": "From provider's app, sample 1000 AED transfer"
-            }
-          }
-        }
-      }
-
-    Manual rates only override `status="investigating"` cells (the stubs).
-    They do NOT override `status="ok"` cells from real scrapers — that
-    would be misleading. To override a working scraper, the maintainer
-    must remove or fix the scraper itself.
+    Currently overrides only `status="investigating"` entries. Since v0.7
+    removed all stubs, this layer is dormant unless a contributor adds
+    a stub provider back. Kept for future flexibility.
     """
     if not manual_path.exists():
         return fresh
@@ -306,9 +236,7 @@ def main() -> int:
 
     started = _now_iso()
 
-    # Build all (provider, corridor) work units.
     work = [(p, c) for c in args.corridors for p in PROVIDERS]
-
     fresh: Dict[str, List[Quote]] = {c: [] for c in args.corridors}
 
     with cf.ThreadPoolExecutor(max_workers=min(20, len(work))) as pool:
@@ -333,12 +261,9 @@ def main() -> int:
                 )
             fresh[c].append(quote)
 
-    # Apply manual overrides BEFORE stale-merge so manual entries take
-    # priority over old auto-scraped values.
     fresh = _apply_manual_rates(fresh, args.manual)
     fresh = _merge_with_previous(fresh, args.out)
 
-    # Stable display order within each corridor: keep PROVIDERS order.
     order = {p.id: i for i, p in enumerate(PROVIDERS)}
     for c in fresh:
         fresh[c].sort(key=lambda q: order.get(q.provider_id, 99))
@@ -357,7 +282,6 @@ def main() -> int:
     tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, args.out)
 
-    # Summary
     total = sum(len(v) for v in fresh.values())
     ok = sum(1 for v in fresh.values() for q in v if q.status == "ok")
     err = sum(1 for v in fresh.values() for q in v if q.status == "error")
