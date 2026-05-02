@@ -2,8 +2,8 @@
   "schema_version": 2,
   "base": "AED",
   "amount_base": 1000.0,
-  "started_at": "2026-05-02T06:08:03Z",
-  "completed_at": "2026-05-02T06:08:03Z",
+  "started_at": "2026-05-02T06:55:33Z",
+  "completed_at": "2026-05-02T06:55:33Z",
   "corridors": {
     "INR": [
       {
@@ -22,7 +22,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -40,7 +40,7 @@
         "note": null,
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -58,7 +58,7 @@
         "note": null,
         "promo_rate": 25.95,
         "promo_note": "First transfer \u2265 AED 3500",
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -76,25 +76,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "INR",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -112,7 +94,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -130,7 +112,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -148,7 +130,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -166,7 +148,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -184,7 +166,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -202,7 +184,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -220,7 +202,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -238,7 +220,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -256,7 +310,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -274,7 +328,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "INR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -292,7 +472,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -310,7 +490,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -328,7 +508,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "PKR": [
@@ -348,7 +528,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -366,7 +546,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->PKR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -384,7 +564,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->PKR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -402,25 +582,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "PKR",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -438,7 +600,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -456,7 +618,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -474,7 +636,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -492,7 +654,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -510,7 +672,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -528,7 +690,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -546,7 +708,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -564,7 +726,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -582,7 +816,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -600,7 +834,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "PKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -618,7 +978,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -636,7 +996,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -654,7 +1014,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "PHP": [
@@ -674,7 +1034,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -692,7 +1052,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->PHP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -710,7 +1070,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->PHP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -728,25 +1088,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "PHP",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -764,7 +1106,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -782,7 +1124,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -800,7 +1142,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -818,7 +1160,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -836,7 +1178,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -854,7 +1196,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -872,7 +1214,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -890,7 +1232,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -908,7 +1322,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -926,7 +1340,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "PHP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -944,7 +1484,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -962,7 +1502,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -980,7 +1520,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "BDT": [
@@ -1000,7 +1540,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -1018,7 +1558,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->BDT not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -1036,7 +1576,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->BDT would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -1054,25 +1594,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "BDT",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1090,7 +1612,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -1108,7 +1630,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -1126,7 +1648,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -1144,7 +1666,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -1162,7 +1684,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1180,7 +1702,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1198,7 +1720,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -1216,7 +1738,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -1234,7 +1828,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -1252,7 +1846,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "BDT",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -1270,7 +1990,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -1288,7 +2008,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -1306,7 +2026,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "EGP": [
@@ -1326,7 +2046,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -1344,7 +2064,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->EGP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -1362,7 +2082,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->EGP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -1380,25 +2100,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "EGP",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1416,7 +2118,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -1434,7 +2136,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -1452,7 +2154,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -1470,7 +2172,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -1488,7 +2190,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1506,7 +2208,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1524,7 +2226,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -1542,7 +2244,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -1560,7 +2334,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -1578,7 +2352,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "EGP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -1596,7 +2496,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -1614,7 +2514,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -1632,7 +2532,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "USD": [
@@ -1652,7 +2552,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -1670,7 +2570,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->USD not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -1688,7 +2588,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->USD would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -1706,25 +2606,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "USD",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1742,7 +2624,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -1760,7 +2642,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -1778,7 +2660,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -1796,7 +2678,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -1814,7 +2696,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1832,7 +2714,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1850,7 +2732,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -1868,7 +2750,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -1886,7 +2840,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -1904,7 +2858,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "USD",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -1922,7 +3002,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -1940,7 +3020,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -1958,7 +3038,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "EUR": [
@@ -1978,7 +3058,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -1996,7 +3076,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->EUR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -2014,7 +3094,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->EUR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -2032,25 +3112,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "EUR",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -2068,7 +3130,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -2086,7 +3148,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -2104,7 +3166,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -2122,7 +3184,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -2140,7 +3202,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -2158,7 +3220,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -2176,7 +3238,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -2194,7 +3256,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -2212,7 +3346,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -2230,7 +3364,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "EUR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -2248,7 +3508,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -2266,7 +3526,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -2284,7 +3544,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "GBP": [
@@ -2304,7 +3564,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -2322,7 +3582,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->GBP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -2340,7 +3600,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->GBP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -2358,25 +3618,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "GBP",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -2394,7 +3636,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -2412,7 +3654,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -2430,7 +3672,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -2448,7 +3690,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -2466,7 +3708,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -2484,7 +3726,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -2502,7 +3744,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -2520,7 +3762,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -2538,7 +3852,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -2556,7 +3870,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "GBP",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -2574,7 +4014,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -2592,7 +4032,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -2610,7 +4050,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "NPR": [
@@ -2630,7 +4070,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -2648,7 +4088,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->NPR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -2666,7 +4106,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->NPR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -2684,25 +4124,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "NPR",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -2720,7 +4142,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -2738,7 +4160,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -2756,7 +4178,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -2774,7 +4196,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -2792,7 +4214,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -2810,7 +4232,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -2828,7 +4250,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -2846,7 +4268,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -2864,7 +4358,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -2882,7 +4376,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "NPR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -2900,7 +4520,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -2918,7 +4538,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -2936,7 +4556,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ],
     "LKR": [
@@ -2956,7 +4576,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "aspora",
@@ -2974,7 +4594,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->LKR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "remitly",
@@ -2992,7 +4612,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->LKR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "lulu",
@@ -3010,25 +4630,7 @@
         "note": "Public rate page not yet identified. Discovery candidates: lulumoney.com, lulufinancialholdings.com, /api/rates.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
-      },
-      {
-        "provider_id": "careem",
-        "provider_name": "Careem Pay",
-        "base": "AED",
-        "quote": "LKR",
-        "amount_base": 1000.0,
-        "rate": null,
-        "fee_base": null,
-        "received_quote": null,
-        "effective_rate": null,
-        "delivery_estimate": null,
-        "url": null,
-        "status": "investigating",
-        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
-        "promo_rate": null,
-        "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_ansari",
@@ -3046,7 +4648,7 @@
         "note": "alansariexchange.com \u2014 parser pending. Major UAE exchange house (founded 1966).",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "al_fardan",
@@ -3064,7 +4666,7 @@
         "note": "alfardanexchange.com \u2014 parser pending. UAE exchange house since 1971.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "unimoni",
@@ -3082,7 +4684,7 @@
         "note": "unimoni.ae \u2014 parser pending. Formerly UAE Exchange.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "sharaf",
@@ -3100,7 +4702,7 @@
         "note": "sharafexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "joyalukkas",
@@ -3118,7 +4720,7 @@
         "note": "joyalukkasexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -3136,7 +4738,7 @@
         "note": "gccexchange.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "index_exchange",
@@ -3154,7 +4756,7 @@
         "note": "indexexchange.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "wall_street",
@@ -3172,7 +4774,79 @@
         "note": "wallstreet.ae \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "lari",
+        "provider_name": "Lari Exchange",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "lariexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "orient",
+        "provider_name": "Orient Exchange",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "orientexchange.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "al_razouki",
+        "provider_name": "Al Razouki Exchange",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "alrazouki.ae \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "habib",
+        "provider_name": "Habib Exchange",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "habibexchange.com \u2014 parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "western_union",
@@ -3190,7 +4864,7 @@
         "note": "westernunion.com/ae \u2014 has a public quote API but requires rotating IDs. Parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "moneygram",
@@ -3208,7 +4882,133 @@
         "note": "moneygram.com \u2014 parser pending.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "worldremit",
+        "provider_name": "WorldRemit",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "worldremit.com \u2014 has a public quote API; parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "instarem",
+        "provider_name": "InstaReM",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "instarem.com \u2014 parser pending. Owned by Nium.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "xoom",
+        "provider_name": "Xoom (PayPal)",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "xoom.com \u2014 parser pending. Owned by PayPal.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "emirates_nbd",
+        "provider_name": "Emirates NBD DirectRemit",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "emiratesnbd.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "fab_remit",
+        "provider_name": "FAB Remit",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "bankfab.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "mashreq_quick",
+        "provider_name": "Mashreq QuickRemit",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "mashreqbank.com \u2014 bank remittance product. Parser pending.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
+      },
+      {
+        "provider_id": "careem",
+        "provider_name": "Careem Pay",
+        "base": "AED",
+        "quote": "LKR",
+        "amount_base": 1000.0,
+        "rate": null,
+        "fee_base": null,
+        "received_quote": null,
+        "effective_rate": null,
+        "delivery_estimate": null,
+        "url": null,
+        "status": "investigating",
+        "note": "Public rate page not yet identified. Careem Pay is mostly in-app; potentially scrape from careem.com/pay marketing pages.",
+        "promo_rate": null,
+        "promo_note": null,
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "eand",
@@ -3226,7 +5026,7 @@
         "note": "No stable public rate page yet. Contributions welcome.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "botim",
@@ -3244,7 +5044,7 @@
         "note": "App-only service, no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       },
       {
         "provider_id": "comera",
@@ -3262,7 +5062,7 @@
         "note": "App-only service (e& International), no public rate endpoint yet.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-02T06:08:03Z"
+        "fetched_at": "2026-05-02T06:55:33Z"
       }
     ]
   }
