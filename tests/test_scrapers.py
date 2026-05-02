@@ -18,6 +18,7 @@ import re
 
 import pytest
 
+from scrapers.ahalia import AhaliaProvider
 from scrapers.aspora import AsporaProvider
 from scrapers.al_ansari import AlAnsariProvider
 from scrapers.al_dahab import AlDahabProvider
@@ -167,6 +168,38 @@ def test_al_dahab_handles_missing_corridor(httpx_mock):
     )
     with pytest.raises(RuntimeError, match="not in marquee"):
         AlDahabProvider().fetch(target_currency="EUR")
+
+
+# --- Ahalia Exchange ----------------------------------------------------
+
+def test_ahalia_extracts_rate_from_cc_data(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://ahaliaexchange\.com.*"),
+        text=fixture_text("ahalia_page.html"),
+        headers={"content-type": "text/html"},
+    )
+    q = AhaliaProvider().fetch()
+    assert q.status == "ok"
+    assert q.provider_id == "ahalia"
+    assert q.rate == 25.67  # cc_data value, NOT the table 24.55
+    assert q.base == "AED"
+    assert q.quote == "INR"
+
+
+def test_ahalia_supports_php_via_phpr_key(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://ahaliaexchange\.com.*"),
+        text=fixture_text("ahalia_page.html"),
+        headers={"content-type": "text/html"},
+    )
+    q = AhaliaProvider().fetch(target_currency="PHP")
+    assert q.status == "ok"
+    assert q.rate == 16.68
+
+
+def test_ahalia_rejects_unknown_currency():
+    with pytest.raises(RuntimeError, match="no cc_data key"):
+        AhaliaProvider().fetch(target_currency="XYZ")
 
 
 # --- TransferGo ---------------------------------------------------------

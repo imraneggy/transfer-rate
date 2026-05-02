@@ -58,6 +58,7 @@ from .remitly import RemitlyProvider
 from .transfergo import TransferGoProvider
 from .index_exchange import IndexExchangeProvider
 from .lulu import LuluProvider
+from .ahalia import AhaliaProvider
 from .al_ansari import AlAnsariProvider
 from .al_dahab import AlDahabProvider
 from .federal_exchange import FederalExchangeProvider
@@ -83,6 +84,7 @@ PROVIDERS: List[BaseProvider] = [
     # re-enable once we have a different access path.
     AlAnsariProvider(),
     AlDahabProvider(),
+    AhaliaProvider(),
     FederalExchangeProvider(),
     GccExchangeProvider(),
     IndexExchangeProvider(),

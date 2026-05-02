@@ -126,9 +126,9 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Currently 9 verified providers: Wise, Aspora, Remitly, " +
-                    "Al Ansari, Al Dahab, Federal Exchange, GCC Exchange, " +
-                    "Index Exchange, LuLu Exchange, plus the mid-market " +
+                    "Currently 10 verified providers: Wise, Aspora, Remitly, " +
+                    "TransferGo, Ahalia, Al Ansari, Al Dahab, Federal Exchange, " +
+                    "GCC Exchange, Index Exchange, plus the mid-market " +
                     "reference benchmark.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

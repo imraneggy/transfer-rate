@@ -108,7 +108,7 @@ fun SplashScreen(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Mid-market benchmark + 9 providers",
+                text = "Mid-market benchmark + 10 providers",
                 color = Color.White.copy(alpha = 0.55f),
                 fontSize = 13.sp,
             )
