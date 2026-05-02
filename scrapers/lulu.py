@@ -71,30 +71,20 @@ class LuluProvider(BaseProvider):
             "Referer": "https://www.luluexchange.com/",
         }
 
-        # GitHub Actions runners hit connect timeouts to lieservices.luluone.com
-        # (non-standard port 9443; cloud datacenter outbound is firewalled
-        # more strictly than residential). Use a longer timeout and one
-        # retry — local dev rarely needs it but CI does.
-        import httpx
-        last_exc = None
-        for attempt in (1, 2):
-            try:
-                with httpx.Client(
-                    timeout=httpx.Timeout(connect=20.0, read=20.0, write=10.0, pool=20.0),
-                    follow_redirects=True,
-                ) as c:
-                    r = c.get(url, headers=headers)
-                    r.raise_for_status()
-                    data = r.json()
-                    break
-            except (httpx.ConnectTimeout, httpx.ReadTimeout, httpx.RemoteProtocolError) as exc:
-                last_exc = exc
-                if attempt == 2:
-                    raise RuntimeError(
-                        f"LuLu API connect timeout after retry: {exc}. "
-                        f"Likely a GitHub Actions outbound network issue to "
-                        f"port 9443; works from non-cloud IPs."
-                    ) from exc
+        # Use the centralized retry-with-backoff helper. LuLu's port 9443
+        # is firewalled from GitHub Actions runners, so retries don't
+        # actually help in CI — but they do help on flaky residential
+        # networks where the initial connect occasionally drops.
+        from .utils import get_with_retry
+        try:
+            r = get_with_retry(
+                url, headers=headers, timeout=20.0, max_attempts=3,
+            )
+            data = r.json()
+        except Exception as exc:
+            raise RuntimeError(
+                f"LuLu API request failed: {type(exc).__name__}: {exc}"
+            ) from exc
 
         rates = (data.get("payload") or {}).get("rates") or []
         if not isinstance(rates, list):
