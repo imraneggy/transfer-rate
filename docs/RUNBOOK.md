@@ -129,6 +129,76 @@ git commit -m "ops: pull rates.json"
 git push
 ```
 
+## Reliable 15-minute refresh
+
+GitHub Actions throttles `schedule:` workflows on the free tier — our
+`cron: 0,15,30,45 * * * *` definition fires every 15 minutes ON PAPER, but
+in practice GitHub may delay it to roughly hourly during peak load. The
+official documented workaround is to use `workflow_dispatch` (which is
+NOT subject to the same throttling) via an external pinger.
+
+### One-time setup with cron-job.org (free, ~5 minutes)
+
+**Step 1 — create a narrowly-scoped PAT just for this**
+
+1. Visit https://github.com/settings/personal-access-tokens/new
+2. **Token name**: `transfer-rate-cron-pinger`
+3. **Expiration**: 1 year (set a calendar reminder to rotate)
+4. **Resource owner**: your account
+5. **Repository access**: *Only select repositories* → `imraneggy/transfer-rate`
+6. **Permissions** → Repository permissions:
+   - **Actions**: *Read and write* (this is the only permission needed)
+   - Leave all others as default (No access)
+7. Generate token → copy it. You will not see it again.
+
+This token cannot read your code, modify files, or do anything except
+trigger your workflows. If cron-job.org is ever breached, the worst
+attacker can do is fire your scrape workflow more often.
+
+**Step 2 — set up the cron job**
+
+1. Sign up free at https://cron-job.org/en/signup/. Verify the email.
+2. Click **Create cronjob** → fill in:
+   - **Title**: `transfer-rate scrape`
+   - **URL**:
+     ```
+     https://api.github.com/repos/imraneggy/transfer-rate/actions/workflows/269638606/dispatches
+     ```
+   - **Schedule** → **Every 15 minutes**: tick all minutes that are multiples
+     of 15 (`0`, `15`, `30`, `45`), all hours, all days.
+   - **Save** → not yet, first set the request details below.
+3. Switch to the **Advanced** tab:
+   - **Request method**: `POST`
+   - **Request body** (raw): `{"ref":"main"}`
+   - **Headers** — add three:
+     ```
+     Authorization: Bearer <paste-the-PAT-from-step-1>
+     Accept: application/vnd.github+json
+     Content-Type: application/json
+     ```
+4. Save the cronjob.
+5. Run it once manually (the **Run** button on the cronjob detail page) to
+   verify. Expected result: HTTP 204 No Content.
+
+**Step 3 — verify it works**
+
+Open https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml.
+You should see a new run firing every 15 minutes from now on, with the
+trigger event shown as `workflow_dispatch`.
+
+If you ever need to disable: log into cron-job.org and toggle the cronjob
+off. The schedule-based runs will continue at their (slower) cadence.
+
+### Token rotation
+
+The PAT created above expires in 1 year. To rotate:
+
+1. Generate a new one with the same scope (steps 1 above).
+2. Edit the cronjob in cron-job.org → Advanced → Headers → replace the
+   `Authorization` header with the new token.
+3. Save → run once to verify.
+4. Delete the old token from your GitHub PAT list.
+
 ## Manual rate entry (admin UI)
 
 For app-only providers without a public rate endpoint (Botim, e&amp; Money,

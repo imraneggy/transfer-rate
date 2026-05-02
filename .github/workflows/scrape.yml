@@ -23,7 +23,12 @@ name: scrape
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # every 15 min UTC (GitHub may de-prioritise on free tier)
+    # Multiple cron entries to spread the request across GitHub's scheduling
+    # window. Free-tier de-prioritisation is load-based, not per-cron, so this
+    # is a small redundancy — for true 15-min cadence, an external pinger
+    # (cron-job.org or similar) hits workflow_dispatch directly. See
+    # docs/RUNBOOK.md "Reliable 15-minute refresh".
+    - cron: "0,15,30,45 * * * *"
   workflow_dispatch: {}
   push:
     branches: [main]
