@@ -72,6 +72,11 @@ jobs:
         run: python -m scrapers.run_all --out public/rates.json
         env:
           PYTHONUNBUFFERED: "1"
+          # Optional Cloudflare Worker proxy URL for LuLu (port 9443
+          # is firewalled from GHA datacenter outbound). When unset
+          # the LuLu cell will report status=error; that's expected.
+          # Setup: see infra/lulu-proxy/README.md
+          LULU_PROXY_URL: ${{ secrets.LULU_PROXY_URL }}
 
       - name: Commit if changed
         run: |

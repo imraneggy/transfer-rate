@@ -77,11 +77,11 @@ PROVIDERS: List[BaseProvider] = [
     AsporaProvider(),
     RemitlyProvider(),
     TransferGoProvider(),
-    # LuluProvider() — scraper works locally (residential IP) but
-    # GitHub Actions runners hit ConnectTimeout on port 9443. LuLu's
-    # API host (lieservices.luluone.com:9443) appears to firewall
-    # cloud datacenter outbound. Module retained for documentation;
-    # re-enable once we have a different access path.
+    # LuluProvider hits a port-9443 API; in CI, set the LULU_PROXY_URL
+    # env var to a Cloudflare Worker that forwards on standard 443
+    # (template at infra/lulu-proxy/). Without the proxy the cell will
+    # report status=error in CI but still succeed on residential IPs.
+    LuluProvider(),
     AlAnsariProvider(),
     AlDahabProvider(),
     AhaliaProvider(),

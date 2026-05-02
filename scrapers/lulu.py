@@ -6,6 +6,11 @@ key embedded in their JavaScript (key is public — every browser visitor
 sends the same one). The endpoint returns ALL currencies for the
 configured 'aglcid' (location id) in a single response.
 
+CI access: LuLu's API runs on non-standard port 9443 which GitHub
+Actions runners block by default. If the env var LULU_PROXY_URL is
+set (e.g. to a Cloudflare Worker that forwards on port 443) we use
+that instead. See infra/lulu-proxy/ for the worker template.
+
 Discovery process (recorded for future maintainers):
   1. Homepage HTML had `<p>0</p>inr` placeholder, JS-rendered.
   2. Inspected /wp-content/themes/lulu_exchange/assets/js/custom.js,
@@ -31,6 +36,7 @@ Verified live 2026-05-02: AED -> INR = 25.7300.
 """
 from __future__ import annotations
 
+import os
 import urllib.parse
 
 from .base import BaseProvider, Quote
@@ -61,15 +67,30 @@ class LuluProvider(BaseProvider):
             f'"aglcid":{self.AGLCID_UAE},'
             f'"instype":"LR"}}'
         )
-        url = (
-            f"{self.API_HOST}{self.API_PATH}"
-            f"?payload={urllib.parse.quote(payload_obj)}"
-        )
-        headers = {
-            "x-gravitee-api-key": self.GRAVITEE_KEY,
-            "Origin": "https://www.luluexchange.com",
-            "Referer": "https://www.luluexchange.com/",
-        }
+
+        # Optional proxy: when LULU_PROXY_URL is set (e.g. to a Cloudflare
+        # Worker), route via 443 instead of upstream port 9443. Lets the
+        # scraper succeed in firewalled environments like GitHub Actions.
+        proxy_url = (os.environ.get("LULU_PROXY_URL") or "").strip()
+        if proxy_url:
+            base = proxy_url.rstrip("/")
+            url = f"{base}/?payload={urllib.parse.quote(payload_obj)}"
+            # Worker forwards the Gravitee key itself; we don't need to
+            # send it. Keep Origin/Referer for upstream sanity.
+            headers = {
+                "Accept": "application/json",
+                "User-Agent": "transfer-rate-bot/1.0",
+            }
+        else:
+            url = (
+                f"{self.API_HOST}{self.API_PATH}"
+                f"?payload={urllib.parse.quote(payload_obj)}"
+            )
+            headers = {
+                "x-gravitee-api-key": self.GRAVITEE_KEY,
+                "Origin": "https://www.luluexchange.com",
+                "Referer": "https://www.luluexchange.com/",
+            }
 
         # Use the centralized retry-with-backoff helper. LuLu's port 9443
         # is firewalled from GitHub Actions runners, so retries don't
