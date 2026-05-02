@@ -72,7 +72,11 @@ PROVIDERS: List[BaseProvider] = [
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
-    LuluProvider(),
+    # LuluProvider() — scraper works locally (residential IP) but
+    # GitHub Actions runners hit ConnectTimeout on port 9443. LuLu's
+    # API host (lieservices.luluone.com:9443) appears to firewall
+    # cloud datacenter outbound. Module retained for documentation;
+    # re-enable once we have a different access path.
     AlAnsariProvider(),
     GccExchangeProvider(),
     IndexExchangeProvider(),
