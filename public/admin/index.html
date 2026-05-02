@@ -99,6 +99,45 @@
   code { background: var(--bg-alt); padding: 1px 6px; border-radius: 3px; font-size: 0.9em; }
   details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
   .footer-note { color: var(--fg-muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
+
+  /* Quick paste banner */
+  .quickpaste {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .quickpaste.armed {
+    background: rgba(0,102,91,0.08);
+    border-color: var(--accent);
+  }
+  .quickpaste h2 { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+  .quickpaste .subtle { color: var(--fg-muted); font-size: 0.85rem; margin: 0 0 10px; }
+  .quickpaste .detected {
+    font-size: 1.4rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    margin: 6px 0;
+  }
+  .qp-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px;
+  }
+  .qp-chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+  }
+  .qp-chip:hover { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .qp-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+  .qp-chip.busy { background: var(--accent); color: var(--accent-fg); }
+  .qp-chip.recent { border-color: var(--accent); }
+  .qp-divider { height: 0; flex-basis: 100%; }
 </style>
 </head>
 <body>
@@ -123,6 +162,17 @@
 
 <section class="panel" id="loadingSection" style="display:none">
   <p>Loading current manual-rates.json…</p>
+</section>
+
+<section class="quickpaste" id="qpSection" style="display:none">
+  <h2>📋 Quick paste</h2>
+  <p class="subtle" id="qpHint">Copy a rate from any app, then tap the button below to capture it.</p>
+  <button id="qpReadBtn" class="secondary" type="button">Read rate from clipboard</button>
+  <div id="qpResult" style="display:none;margin-top:6px">
+    <div class="detected" id="qpValue">—</div>
+    <p class="subtle" style="margin:0">Tap the provider this rate belongs to:</p>
+    <div class="qp-chips" id="qpChips"></div>
+  </div>
 </section>
 
 <section id="formSection" style="display:none">
@@ -272,6 +322,7 @@ let currentSha = null;
 async function loadCurrent() {
   document.getElementById("loadingSection").style.display = "block";
   document.getElementById("formSection").style.display = "none";
+  document.getElementById("qpSection").style.display = "none";
   authStatus.textContent = "loading…";
   try {
     const meta = await ghGet(FILE_PATH);
@@ -281,6 +332,8 @@ async function loadCurrent() {
     if (!currentDoc.rates) currentDoc.rates = {};
     authStatus.textContent = "(token OK)";
     renderForm();
+    // Show quick-paste once auth is verified and form is loaded
+    document.getElementById("qpSection").style.display = "block";
   } catch (e) {
     authStatus.textContent = "error: " + e.message;
     toast("Couldn't load: " + e.message, "error");
@@ -376,6 +429,129 @@ function buildProviderCard(p) {
 
   return div;
 }
+
+// === Quick paste ============================================================
+//
+// User copies a rate (e.g. "25.62") from any provider's app/site, switches
+// to this admin page, taps "Read rate from clipboard". The page extracts
+// the rate-shaped number, then offers a chip-row of provider buttons.
+// One tap on a provider commits manual-rates.json with that (provider,
+// currency, rate) entry — bypassing the per-cell typing.
+//
+// The chip order is "most-recently-saved" first so frequent providers
+// float to the top. localStorage tracks recency.
+const QP_RECENT_KEY = "transfer-rate.admin.recent";
+
+function recentList() {
+  try { return JSON.parse(localStorage.getItem(QP_RECENT_KEY) || "[]"); }
+  catch { return []; }
+}
+function recordRecent(providerId) {
+  const list = recentList().filter(x => x !== providerId);
+  list.unshift(providerId);
+  localStorage.setItem(QP_RECENT_KEY, JSON.stringify(list.slice(0, 10)));
+}
+
+async function readClipboardRate() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text) {
+      toast("Clipboard is empty", "error");
+      return null;
+    }
+    // Extract first plausible rate-shaped number (use INR bounds since
+    // we're INR-only at this scope; broaden if multi-currency returns).
+    const matches = Array.from(text.matchAll(/[0-9]+\.?[0-9]*/g))
+      .map(m => parseFloat(m[0]))
+      .filter(n => Number.isFinite(n));
+    const [lo, hi] = BOUNDS["INR"] || [0.0001, 10000];
+    const inRange = matches.filter(n => n >= lo && n <= hi);
+    if (!inRange.length) {
+      toast(`No INR-shaped rate (${lo}–${hi}) in clipboard. Got: "${text.slice(0,40)}"`, "error");
+      return null;
+    }
+    return inRange[0];
+  } catch (e) {
+    toast("Clipboard access denied. Tap the button to grant permission.", "error");
+    return null;
+  }
+}
+
+function renderQuickPaste(rate) {
+  document.getElementById("qpValue").textContent = "1 AED = " + rate.toFixed(4) + " INR";
+  const chips = document.getElementById("qpChips");
+  chips.replaceChildren();
+
+  // Recency-ordered: recently-saved first, then everyone else
+  const recents = recentList();
+  const ordered = [
+    ...recents.map(id => PROVIDERS.find(p => p.id === id)).filter(Boolean),
+    ...PROVIDERS.filter(p => !recents.includes(p.id)),
+  ];
+
+  ordered.forEach(p => {
+    const chip = document.createElement("button");
+    chip.className = "qp-chip" + (recents.includes(p.id) ? " recent" : "");
+    chip.type = "button";
+    chip.textContent = p.name;
+    chip.dataset.providerId = p.id;
+    chip.addEventListener("click", () => quickSave(p, rate, chip));
+    chips.appendChild(chip);
+  });
+  document.getElementById("qpResult").style.display = "block";
+  document.getElementById("qpSection").classList.add("armed");
+  document.getElementById("qpHint").textContent =
+    "Tap the provider this rate belongs to. The form below will update.";
+}
+
+async function quickSave(provider, rate, chipEl) {
+  if (!currentDoc) { toast("Load the form first", "error"); return; }
+  // Clone current rates, set/update the (provider, INR) entry
+  const newRates = JSON.parse(JSON.stringify(currentDoc.rates || {}));
+  if (!newRates[provider.id]) newRates[provider.id] = {};
+  newRates[provider.id]["INR"] = {
+    rate: rate,
+    fee_aed: 0,
+    fetched_at: new Date().toISOString(),
+    note: "Quick-pasted from clipboard",
+  };
+  const newDoc = {
+    schema_version: 1,
+    _doc: currentDoc._doc,
+    updated_at: new Date().toISOString(),
+    rates: newRates,
+  };
+  const newJson = JSON.stringify(newDoc, null, 2) + "\n";
+  const message = "admin: quick-paste " + provider.name + " INR=" + rate;
+  // Mark chip as busy
+  chipEl.classList.add("busy");
+  chipEl.textContent = provider.name + " · saving…";
+  document.querySelectorAll(".qp-chip").forEach(c => { if (c !== chipEl) c.disabled = true; });
+  try {
+    const result = await ghPut(FILE_PATH, b64encode(newJson), currentSha, message);
+    currentSha = result.content.sha;
+    currentDoc = newDoc;
+    recordRecent(provider.id);
+    toast("Saved " + provider.name + " · " + rate.toFixed(4) + " INR", "ok");
+    // Re-render the main form so the user sees the new value
+    renderForm();
+    // Reset paste UI for another capture
+    document.getElementById("qpResult").style.display = "none";
+    document.getElementById("qpSection").classList.remove("armed");
+    document.getElementById("qpHint").textContent =
+      "Saved! Copy the next rate and tap again to capture.";
+  } catch (e) {
+    toast("Save failed: " + e.message, "error");
+    chipEl.classList.remove("busy");
+    chipEl.textContent = provider.name;
+    document.querySelectorAll(".qp-chip").forEach(c => c.disabled = false);
+  }
+}
+
+document.getElementById("qpReadBtn").addEventListener("click", async () => {
+  const rate = await readClipboardRate();
+  if (rate !== null) renderQuickPaste(rate);
+});
 
 // === Save ===
 document.getElementById("saveBtn").addEventListener("click", async () => {
