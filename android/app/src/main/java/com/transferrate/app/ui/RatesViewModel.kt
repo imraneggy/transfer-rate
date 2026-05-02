@@ -3,6 +3,7 @@ package com.transferrate.app.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.transferrate.app.data.HistoryDocument
 import com.transferrate.app.data.ProviderQuote
 import com.transferrate.app.data.RatesDocument
 import com.transferrate.app.data.RatesRepository
@@ -18,6 +19,7 @@ sealed interface RatesUiState {
         val selectedCurrency: String,
         val selectedAmount: Double = 1000.0,
         val refreshing: Boolean = false,
+        val history: HistoryDocument? = null,
     ) : RatesUiState {
         /** Independent mid-market rate (provider_id == "mid_market"), shown in
          *  the header card. Sourced from open.er-api.com — NOT from Wise — so
@@ -93,14 +95,19 @@ class RatesViewModel(
     private fun fetchFresh() {
         viewModelScope.launch {
             val previousSelected = (_state.value as? RatesUiState.Ready)?.selectedCurrency
+            val previousHistory = (_state.value as? RatesUiState.Ready)?.history
             repo.fetch().fold(
                 onSuccess = { doc ->
                     val selected = pickCurrency(doc, previousSelected)
-                    _state.value = RatesUiState.Ready(doc, selected)
+                    _state.value = RatesUiState.Ready(
+                        doc = doc,
+                        selectedCurrency = selected,
+                        history = previousHistory,
+                    )
+                    // Fire history fetch in parallel — non-blocking.
+                    fetchHistory()
                 },
                 onFailure = { e ->
-                    // If we already have cached data showing, keep it visible
-                    // and just clear the refreshing flag — DON'T blow it away.
                     val current = _state.value
                     if (current is RatesUiState.Ready) {
                         _state.value = current.copy(refreshing = false)
@@ -110,6 +117,20 @@ class RatesViewModel(
                         )
                     }
                 },
+            )
+        }
+    }
+
+    private fun fetchHistory() {
+        viewModelScope.launch {
+            repo.fetchHistory().fold(
+                onSuccess = { hist ->
+                    val current = _state.value
+                    if (current is RatesUiState.Ready) {
+                        _state.value = current.copy(history = hist)
+                    }
+                },
+                onFailure = { /* non-fatal — sparklines simply absent */ },
             )
         }
     }

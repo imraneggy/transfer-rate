@@ -286,11 +286,15 @@ private fun ReadyView(
             val isBest = (p.status == "ok" || p.status == "manual")
                     && state.bestRate != null
                     && (p.effectiveRate ?: p.rate) == state.bestRate
+            val historyForProvider = state.history?.providers?.get(p.providerId)
+                ?.map { it.rate }
+                ?: emptyList()
             ProviderCard(
                 p = p,
                 isBest = isBest,
                 midMarket = midMarket,
                 amount = state.selectedAmount,
+                history = historyForProvider,
                 onClick = {
                     p.url?.let { url ->
                         runCatching {
@@ -559,6 +563,7 @@ private fun ProviderCard(
     isBest: Boolean,
     midMarket: Double?,
     amount: Double,
+    history: List<Double>,
     onClick: () -> Unit,
 ) {
     val containerColor = when {
@@ -628,13 +633,22 @@ private fun ProviderCard(
                 Spacer(Modifier.width(8.dp))
                 RateView(p, midMarket = midMarket)
             }
-            // "You receive" line: shows the actual receive amount for the
-            // user's chosen send amount. Only meaningful when we have a
-            // working rate (not for stub/error/investigating).
             val rate = p.effectiveRate ?: p.rate
             if ((p.status == "ok" || p.status == "manual") && rate != null) {
                 Spacer(Modifier.height(8.dp))
                 ReceiveLine(rate = rate, amount = amount, quoteCode = p.quote)
+            }
+            // Sparkline of past rates (last 7 days). Only render when we
+            // have at least 2 history points; one point is just a dot.
+            if (history.size >= 2 && (p.status == "ok" || p.status == "manual")) {
+                Spacer(Modifier.height(10.dp))
+                Sparkline(
+                    values = history,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp),
+                )
             }
             if (p.status == "ok" && p.promoRate != null) {
                 Spacer(Modifier.height(10.dp))

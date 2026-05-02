@@ -134,38 +134,56 @@ fun SplashScreen(
  */
 @Composable
 fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
+    // Match the launcher icon: three bars at varying opacity, the tallest
+    // in brand gold, plus a subtle baseline and an accent dot.
     val white = Color.White
+    val whiteFaded = Color.White.copy(alpha = 0.55f)
+    val whiteMid = Color.White.copy(alpha = 0.78f)
+    val baseline = Color.White.copy(alpha = 0.22f)
+    val gold = Color(0xFFFFD980)
     Canvas(modifier = Modifier.size(size)) {
         val w = this.size.width
         val h = this.size.height
-        // Bars occupy the central 90% of the canvas
         val bottom = h * 0.93f
-        val top1 = h * 0.55f   // shortest
-        val top2 = h * 0.36f   // medium
-        val top3 = h * 0.18f   // tallest
+        val top1 = h * 0.55f
+        val top2 = h * 0.36f
+        val top3 = h * 0.18f
         val barWidth = w * 0.18f
         val gap = (w - barWidth * 3) / 4f
         val r = barWidth / 2f
 
+        // Baseline (chart axis)
+        drawRect(
+            color = baseline,
+            topLeft = Offset(w * 0.10f, bottom + h * 0.005f),
+            size = Size(w * 0.80f, h * 0.025f),
+        )
+
+        // Bars
         listOf(
-            (gap + barWidth * 0) to top1,
-            (gap * 2 + barWidth * 1) to top2,
-            (gap * 3 + barWidth * 2) to top3,
-        ).forEach { (x, top) ->
-            // Body of the bar (rectangle)
+            Triple(gap + barWidth * 0, top1, whiteFaded),
+            Triple(gap * 2 + barWidth * 1, top2, whiteMid),
+            Triple(gap * 3 + barWidth * 2, top3, gold),
+        ).forEach { (x, top, color) ->
             drawRoundRect(
-                color = white,
+                color = color,
                 topLeft = Offset(x, top),
                 size = Size(barWidth, bottom - top),
                 cornerRadius = CornerRadius(r, r),
             )
-            // Cover the bottom corners (we only want the top rounded;
-            // the round-rect would round all four corners equally)
             drawRect(
-                color = white,
+                color = color,
                 topLeft = Offset(x, top + r),
                 size = Size(barWidth, bottom - top - r),
             )
         }
+
+        // Accent dot above the tallest (gold) bar
+        val tallestX = (gap * 3 + barWidth * 2) + barWidth / 2f
+        drawCircle(
+            color = gold,
+            radius = w * 0.035f,
+            center = Offset(tallestX, top3 - w * 0.07f),
+        )
     }
 }

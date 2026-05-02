@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Themed-icon variant (Android 13+). Same ascending-bars design; the
-  launcher tints it to match the user's wallpaper-derived theme.
+  Themed-icon variant (Android 13+). Single channel; the launcher tints
+  to wallpaper-derived theme color. Same geometry as foreground but all
+  in white at varying opacity for the ranking effect.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -11,11 +12,20 @@
 
     <path
         android:fillColor="#FFFFFF"
+        android:fillAlpha="0.22"
+        android:pathData="M20,86 L88,86 L88,90 L20,90 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.55"
         android:pathData="M22,66 A8,8 0 0 1 30,58 L30,58 A8,8 0 0 1 38,66 L38,86 L22,86 Z" />
     <path
         android:fillColor="#FFFFFF"
+        android:fillAlpha="0.78"
         android:pathData="M46,50 A8,8 0 0 1 54,42 L54,42 A8,8 0 0 1 62,50 L62,86 L46,86 Z" />
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M70,34 A8,8 0 0 1 78,26 L78,26 A8,8 0 0 1 86,34 L86,86 L70,86 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M78,18 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
 </vector>

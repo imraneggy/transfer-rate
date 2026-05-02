@@ -67,6 +67,25 @@ class RatesRepository(
         }
     }
 
+    /** Fetch the rolling 7-day history for sparkline rendering. */
+    suspend fun fetchHistory(): Result<HistoryDocument> = withContext(Dispatchers.IO) {
+        runCatching {
+            val historyUrl = ratesUrl.removeSuffix("rates.json") + "history.json"
+            val req = Request.Builder()
+                .url(historyUrl)
+                .header("Accept", "application/json")
+                .header("User-Agent", "TransferRateApp/0.8.0 Android")
+                .get()
+                .build()
+            http.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) error("HTTP ${resp.code}")
+                val body = resp.body?.string() ?: error("Empty body")
+                require(body.length < 5_000_000) { "History too large: ${body.length}" }
+                json.decodeFromString<HistoryDocument>(body).validate()
+            }
+        }
+    }
+
     suspend fun fetch(): Result<RatesDocument> = withContext(Dispatchers.IO) {
         runCatching {
             val req = Request.Builder()

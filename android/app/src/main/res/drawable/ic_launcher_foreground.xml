@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon foreground — three ascending vertical bars in white.
+  Launcher icon foreground — three ascending bars with visual hierarchy
+  + a gold accent on the "winning" (tallest) bar.
 
-  Reads as a bar chart / ranking visualisation: "shortest = lowest rate,
-  tallest = best rate." The universal visual shorthand for "comparison" /
-  "ranking" — instantly communicates the app's purpose.
+  Design intent:
+    * Ranking is now visually obvious — bars brighten as they get taller
+      (60% / 80% white) and the tallest is in the brand gold.
+    * A subtle baseline (white 25%) underlies the bars to clearly signal
+      "this is a chart" rather than abstract rectangles.
+    * Geometry stays inside the 66dp safe zone of the 108dp adaptive
+      canvas so any mask (circle/squircle/teardrop) won't crop content.
 
-  Geometry on the 108dp adaptive canvas (66dp safe zone, [21..87] each axis):
-
-    Bar 1 (left, shortest):   x = 22..38   y = 58..86   h = 28
-    Bar 2 (middle):           x = 46..62   y = 42..86   h = 44
-    Bar 3 (right, tallest):   x = 70..86   y = 26..86   h = 60
-
-    Width: 16 each.  Top corners: rounded r=8 (full semicircle).
-    Bottom corners: square (sit on the same baseline).
-
-  Each bar is drawn as a single path: rectangle with rounded top.
+  Reads at any size. Communicates "rate comparison + best deal" instantly.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -23,36 +19,31 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Bar 1: left, shortest -->
+    <!-- Baseline: thin horizontal grounding the bars (chart x-axis) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M22,66
-                          A8,8 0 0 1 30,58
-                          L30,58
-                          A8,8 0 0 1 38,66
-                          L38,86
-                          L22,86
-                          Z" />
+        android:fillAlpha="0.22"
+        android:pathData="M20,86 L88,86 L88,90 L20,90 Z" />
 
-    <!-- Bar 2: middle -->
+    <!-- Bar 1: left, shortest — dim white (low rank) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M46,50
-                          A8,8 0 0 1 54,42
-                          L54,42
-                          A8,8 0 0 1 62,50
-                          L62,86
-                          L46,86
-                          Z" />
+        android:fillAlpha="0.55"
+        android:pathData="M22,66 A8,8 0 0 1 30,58 L30,58 A8,8 0 0 1 38,66 L38,86 L22,86 Z" />
 
-    <!-- Bar 3: right, tallest -->
+    <!-- Bar 2: middle — brighter white -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M70,34
-                          A8,8 0 0 1 78,26
-                          L78,26
-                          A8,8 0 0 1 86,34
-                          L86,86
-                          L70,86
-                          Z" />
+        android:fillAlpha="0.78"
+        android:pathData="M46,50 A8,8 0 0 1 54,42 L54,42 A8,8 0 0 1 62,50 L62,86 L46,86 Z" />
+
+    <!-- Bar 3: right, tallest — gold accent (the "winner" / best rate) -->
+    <path
+        android:fillColor="#FFD980"
+        android:pathData="M70,34 A8,8 0 0 1 78,26 L78,26 A8,8 0 0 1 86,34 L86,86 L70,86 Z" />
+
+    <!-- Tiny accent dot above the gold bar — emphasises "best" / "rising" -->
+    <path
+        android:fillColor="#FFD980"
+        android:pathData="M78,18 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
 </vector>

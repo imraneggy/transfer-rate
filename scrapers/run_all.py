@@ -230,10 +230,80 @@ def _apply_manual_rates(
     return fresh
 
 
+def _append_to_history(
+    payload: dict, history_path: Path, max_age_days: int = 7
+) -> None:
+    """Append today's rates into a rolling history file.
+
+    Schema:
+        {
+          "schema_version": 1,
+          "updated_at": "...",
+          "providers": {
+            "<provider_id>": [
+              {"t": "2026-05-01T08:00:00Z", "rate": 25.81},
+              ...
+            ]
+          }
+        }
+
+    Pruned to the last `max_age_days` days. App renders a sparkline per
+    provider from this. INR-only for now (the only corridor with
+    multiple working providers); when other corridors come online,
+    extend to a {corridor: {provider: [...]}} two-level map.
+    """
+    from datetime import timedelta
+    history: dict = {"schema_version": 1, "providers": {}}
+    if history_path.exists():
+        try:
+            loaded = json.loads(history_path.read_text(encoding="utf-8"))
+            if loaded.get("schema_version") == 1 and isinstance(loaded.get("providers"), dict):
+                history = loaded
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    completed_at = payload.get("completed_at") or _now_iso()
+    inr = payload.get("corridors", {}).get("INR", [])
+    for q in inr:
+        if q.get("status") not in ("ok", "manual"):
+            continue
+        rate = q.get("rate")
+        pid = q.get("provider_id")
+        if not pid or not isinstance(rate, (int, float)) or rate <= 0:
+            continue
+        bucket = history["providers"].setdefault(pid, [])
+        # Avoid adjacent duplicates from manual re-triggers
+        if bucket and bucket[-1].get("t") == completed_at:
+            continue
+        bucket.append({"t": completed_at, "rate": float(rate)})
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=max_age_days)
+    cutoff_iso = cutoff.strftime("%Y-%m-%dT%H:%M:%SZ")
+    for pid in list(history["providers"].keys()):
+        history["providers"][pid] = [
+            e for e in history["providers"][pid]
+            if e.get("t", "") >= cutoff_iso
+        ]
+        # Drop empty buckets
+        if not history["providers"][pid]:
+            del history["providers"][pid]
+
+    history["updated_at"] = _now_iso()
+
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = history_path.with_suffix(history_path.suffix + ".tmp")
+    tmp.write_text(json.dumps(history, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, history_path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run scrapers across all corridors")
     parser.add_argument("--amount", type=float, default=DEFAULT_AMOUNT)
     parser.add_argument("--out", type=Path, default=Path("public/rates.json"))
+    parser.add_argument(
+        "--history", type=Path, default=Path("public/history.json"),
+        help="Rolling history file (last 7 days of rates per provider)",
+    )
     parser.add_argument(
         "--corridors", nargs="+", default=list(SUPPORTED_TARGETS),
         help="Subset of corridors to run (default: all)",
@@ -291,6 +361,14 @@ def main() -> int:
     tmp = args.out.with_suffix(args.out.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, args.out)
+
+    # Append to rolling history (7-day window). The app fetches this
+    # separately and renders sparklines per provider.
+    try:
+        _append_to_history(payload, args.history)
+    except Exception as exc:
+        # Non-fatal — rate.json is the primary artifact; history is bonus.
+        print(f"warning: history update failed: {exc}", file=sys.stderr)
 
     total = sum(len(v) for v in fresh.values())
     ok = sum(1 for v in fresh.values() for q in v if q.status == "ok")

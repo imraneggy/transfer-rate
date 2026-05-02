@@ -71,6 +71,41 @@ fun RatesDocument.validate(): RatesDocument {
     return this
 }
 
+/**
+ * Rolling 7-day history per provider (mirror of public/history.json).
+ *
+ *   {
+ *     "schema_version": 1,
+ *     "updated_at": "...",
+ *     "providers": {
+ *       "wise": [{"t": "...", "rate": 25.81}, ...],
+ *       ...
+ *     }
+ *   }
+ */
+@Serializable
+data class HistoryDocument(
+    @SerialName("schema_version") val schemaVersion: Int,
+    @SerialName("updated_at") val updatedAt: String,
+    val providers: Map<String, List<HistoryPoint>>,
+)
+
+@Serializable
+data class HistoryPoint(
+    val t: String,
+    val rate: Double,
+)
+
+fun HistoryDocument.validate(): HistoryDocument {
+    require(schemaVersion == 1) { "Unsupported history schema_version: $schemaVersion" }
+    providers.values.forEach { points ->
+        points.forEach { p ->
+            require(p.rate in 0.0001..10000.0) { "History rate out of range" }
+        }
+    }
+    return this
+}
+
 /** Display metadata for each supported currency. Symbol + full name. */
 data class CurrencyInfo(val code: String, val symbol: String, val flag: String, val name: String)
 
