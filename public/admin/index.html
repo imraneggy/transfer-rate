@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>transfer-rate · admin</title>
+<style>
+  :root {
+    --fg: #1a1a1a;
+    --fg-muted: #5a5a5a;
+    --bg: #fcfaf7;
+    --bg-alt: #f1efea;
+    --accent: #00665b;
+    --accent-fg: #ffffff;
+    --border: #d8d6d0;
+    --error: #b00020;
+    --ok: #1b7b33;
+    --warn: #b15a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e6e3dc;
+      --fg-muted: #a09c93;
+      --bg: #131312;
+      --bg-alt: #2c2a26;
+      --accent: #6fdba0;
+      --accent-fg: #003821;
+      --border: #44483f;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--fg); background: var(--bg);
+    line-height: 1.45;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { margin-bottom: 20px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  .sub { color: var(--fg-muted); font-size: 0.95rem; margin: 0 0 16px; }
+  .auth, .panel {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .auth h2, .panel h2 { margin: 0 0 8px; font-size: 1rem; font-weight: 600; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  label { display: block; font-size: 0.85rem; color: var(--fg-muted); margin-bottom: 4px; }
+  input[type="text"], input[type="number"], input[type="password"] {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--fg);
+    font-size: 16px; font-family: inherit;
+  }
+  input[type="number"] { font-variant-numeric: tabular-nums; }
+  button {
+    background: var(--accent); color: var(--accent-fg);
+    border: none; border-radius: 8px; padding: 10px 16px;
+    font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button.danger    { background: transparent; color: var(--error); border: 1px solid var(--error); }
+  .provider {
+    background: var(--bg-alt); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .provider h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+  .provider .meta { color: var(--fg-muted); font-size: 0.85rem; margin: 0 0 10px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .grid .cell {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .grid .cell label { font-size: 0.78rem; color: var(--fg-muted); }
+  .grid .cell input { padding: 6px 8px; font-size: 14px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    background: var(--fg); color: var(--bg);
+    padding: 10px 16px; border-radius: 8px;
+    font-size: 0.9rem; opacity: 0; transition: opacity 0.2s;
+    pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 0.95; pointer-events: auto; }
+  .toast.error { background: var(--error); color: white; }
+  .toast.ok    { background: var(--ok);    color: white; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; vertical-align: middle; }
+  .pill.app    { background: rgba(177,90,0,.15); color: var(--warn); }
+  .pill.manual { background: rgba(0,102,91,.15); color: var(--accent); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .small { font-size: 0.85rem; color: var(--fg-muted); }
+  code { background: var(--bg-alt); padding: 1px 6px; border-radius: 3px; font-size: 0.9em; }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  .footer-note { color: var(--fg-muted); font-size: 0.8rem; margin-top: 30px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Manual rate entry</h1>
+  <p class="sub">App-only providers (Botim, e&amp; Money, etc.) don't expose a public rate endpoint. Enter what you saw in the app here, and the next cron tick will publish it.</p>
+</header>
+
+<section class="auth" id="authSection">
+  <h2>1. GitHub access</h2>
+  <p class="small">Paste a fine-grained PAT with <code>contents: read+write</code> on <code>imraneggy/transfer-rate</code>. Stored in your browser only (localStorage); never sent anywhere except GitHub's API.</p>
+  <div class="row" style="margin-top:8px">
+    <input id="patInput" type="password" placeholder="github_pat_…" autocomplete="off">
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button id="saveAuthBtn">Save token &amp; load rates</button>
+    <button id="clearAuthBtn" class="danger" type="button">Forget token</button>
+    <span class="small" id="authStatus"></span>
+  </div>
+</section>
+
+<section class="panel" id="loadingSection" style="display:none">
+  <p>Loading current manual-rates.json…</p>
+</section>
+
+<section id="formSection" style="display:none">
+  <h2 style="margin:8px 0 12px">2. Rates per provider</h2>
+  <p class="small" style="margin-bottom:14px">Leave a field blank to keep the current value (or remove it if currently set). Values must be in plausible range; the orchestrator validates before merging.</p>
+
+  <div id="providersContainer"></div>
+
+  <div class="row" style="margin-top:24px;justify-content:flex-end">
+    <button id="saveBtn">Save all changes</button>
+  </div>
+</section>
+
+<details style="margin-top:30px">
+  <summary>How this works</summary>
+  <p class="small">When you click Save, this page commits a new <code>data/manual-rates.json</code> to the repo via GitHub's Contents API. The next scheduled cron run reads the file and replaces matching <code>"investigating"</code> stubs in <code>public/rates.json</code> with status <code>"manual"</code>. The Android app shows manual rates with a <strong>MANUAL</strong> badge so users know it's an operator-entered value.</p>
+  <p class="small">To trigger a refresh immediately rather than waiting for the cron: visit Actions → "scrape" workflow → Run workflow.</p>
+</details>
+
+<p class="footer-note">transfer-rate admin · zero-server-side · runs entirely in your browser</p>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+
+// === Provider catalog (mirror of scrapers/run_all.py PROVIDERS) ===
+const PROVIDERS = [
+  // App-only (highest priority for manual entry)
+  { id: "botim",         name: "Botim Pay",       category: "app-only" },
+  { id: "comera",        name: "Comera",          category: "app-only" },
+  { id: "eand",          name: "e& Money",        category: "app-only" },
+  { id: "careem",        name: "Careem Pay",      category: "app-only" },
+  // UAE exchange houses
+  { id: "lulu",          name: "LuLu Money",            category: "exchange-house" },
+  { id: "al_ansari",     name: "Al Ansari Exchange",    category: "exchange-house" },
+  { id: "al_fardan",     name: "Al Fardan Exchange",    category: "exchange-house" },
+  { id: "unimoni",       name: "Unimoni",               category: "exchange-house" },
+  { id: "sharaf",        name: "Sharaf Exchange",       category: "exchange-house" },
+  { id: "joyalukkas",    name: "Joyalukkas Exchange",   category: "exchange-house" },
+  { id: "gcc_exchange",  name: "GCC Exchange",          category: "exchange-house" },
+  { id: "index_exchange",name: "Index Exchange",        category: "exchange-house" },
+  { id: "wall_street",   name: "Wall Street Exchange",  category: "exchange-house" },
+  { id: "lari",          name: "Lari Exchange",         category: "exchange-house" },
+  { id: "orient",        name: "Orient Exchange",       category: "exchange-house" },
+  { id: "al_razouki",    name: "Al Razouki Exchange",   category: "exchange-house" },
+  { id: "habib",         name: "Habib Exchange",        category: "exchange-house" },
+  // Global
+  { id: "western_union", name: "Western Union",         category: "global" },
+  { id: "moneygram",     name: "MoneyGram",             category: "global" },
+  { id: "worldremit",    name: "WorldRemit",            category: "global" },
+  { id: "instarem",      name: "InstaReM",              category: "global" },
+  { id: "xoom",          name: "Xoom (PayPal)",         category: "global" },
+  // Bank remit
+  { id: "emirates_nbd",  name: "Emirates NBD DirectRemit", category: "bank" },
+  { id: "fab_remit",     name: "FAB Remit",                 category: "bank" },
+  { id: "mashreq_quick", name: "Mashreq QuickRemit",        category: "bank" },
+];
+
+const CURRENCIES = ["INR","PKR","PHP","BDT","EGP","USD","EUR","GBP","NPR","LKR"];
+
+// Plausible bounds per currency (1 AED -> X). Used to reject typos.
+const BOUNDS = {
+  INR: [10,  50  ], PKR: [40,  150 ], PHP: [ 8,  30  ], BDT: [15,  60  ],
+  EGP: [ 5,  40  ], USD: [0.1, 1   ], EUR: [0.1, 1   ], GBP: [0.1, 1   ],
+  NPR: [20,  80  ], LKR: [40,  150 ],
+};
+
+const REPO_OWNER = "imraneggy";
+const REPO_NAME  = "transfer-rate";
+const FILE_PATH  = "data/manual-rates.json";
+
+// === Auth ===
+let pat = localStorage.getItem("transfer-rate.admin.pat") || "";
+const patInput  = document.getElementById("patInput");
+const authStatus = document.getElementById("authStatus");
+patInput.value = pat;
+if (pat) authStatus.textContent = "(token loaded from browser storage)";
+
+document.getElementById("saveAuthBtn").addEventListener("click", async () => {
+  const v = patInput.value.trim();
+  if (!v) { toast("Enter a token first", "error"); return; }
+  pat = v;
+  localStorage.setItem("transfer-rate.admin.pat", pat);
+  await loadCurrent();
+});
+
+document.getElementById("clearAuthBtn").addEventListener("click", () => {
+  pat = "";
+  localStorage.removeItem("transfer-rate.admin.pat");
+  patInput.value = "";
+  authStatus.textContent = "(cleared)";
+  document.getElementById("formSection").style.display = "none";
+});
+
+// === Toast ===
+function toast(msg, kind) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + (kind || "");
+  setTimeout(() => { t.className = "toast"; }, 3500);
+}
+
+// === GitHub API helpers ===
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    headers: { Authorization: `Bearer ${pat}`, Accept: "application/vnd.github+json" },
+  });
+  if (!r.ok) throw new Error(`GET ${path}: HTTP ${r.status}`);
+  return r.json();
+}
+
+async function ghPut(path, contentBase64, sha, message) {
+  const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${pat}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: message,
+      content: contentBase64,
+      sha: sha,
+      committer: {
+        name: "transfer-rate-admin",
+        email: "transfer-rate-admin@users.noreply.github.com",
+      },
+    }),
+  });
+  if (!r.ok) {
+    const body = await r.text();
+    throw new Error(`PUT ${path}: HTTP ${r.status} ${body.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+// Base64 encode/decode for UTF-8 strings
+function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+function b64decode(s) { return decodeURIComponent(escape(atob(s.replace(/\s/g, "")))); }
+
+// === Load + render ===
+let currentDoc = null;
+let currentSha = null;
+
+async function loadCurrent() {
+  document.getElementById("loadingSection").style.display = "block";
+  document.getElementById("formSection").style.display = "none";
+  authStatus.textContent = "loading…";
+  try {
+    const meta = await ghGet(FILE_PATH);
+    currentSha = meta.sha;
+    const text = b64decode(meta.content);
+    currentDoc = JSON.parse(text);
+    if (!currentDoc.rates) currentDoc.rates = {};
+    authStatus.textContent = "(token OK)";
+    renderForm();
+  } catch (e) {
+    authStatus.textContent = "error: " + e.message;
+    toast("Couldn't load: " + e.message, "error");
+  } finally {
+    document.getElementById("loadingSection").style.display = "none";
+  }
+}
+if (pat) loadCurrent();
+
+function renderForm() {
+  const c = document.getElementById("providersContainer");
+  c.replaceChildren();
+  const groups = ["app-only","exchange-house","global","bank"];
+  const titles = {
+    "app-only":       "App-only services (highest priority)",
+    "exchange-house": "UAE exchange houses",
+    "global":         "Global remitters",
+    "bank":           "Bank remittance products",
+  };
+  groups.forEach(group => {
+    const groupProvs = PROVIDERS.filter(p => p.category === group);
+    if (!groupProvs.length) return;
+    const heading = document.createElement("h3");
+    heading.style.cssText = "margin:24px 0 8px;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--fg-muted)";
+    heading.textContent = titles[group];
+    c.appendChild(heading);
+    groupProvs.forEach(p => c.appendChild(buildProviderCard(p)));
+  });
+  document.getElementById("formSection").style.display = "block";
+}
+
+/**
+ * Build provider card via DOM API only — no innerHTML with templated values.
+ * Defence in depth: even though manual-rates.json is committed by this same
+ * UI, using textContent/setAttribute defends against any malicious value
+ * if the JSON is ever edited externally.
+ */
+function buildProviderCard(p) {
+  const div = document.createElement("div");
+  div.className = "provider";
+  div.dataset.providerId = p.id;
+  const existing = (currentDoc.rates && currentDoc.rates[p.id]) || {};
+
+  // Header: provider name + category pill
+  const h3 = document.createElement("h3");
+  h3.textContent = p.name;
+  const pill = document.createElement("span");
+  pill.className = "pill " + (p.category === "app-only" ? "app" : "manual");
+  pill.textContent = p.category;
+  h3.appendChild(document.createTextNode(" "));
+  h3.appendChild(pill);
+  div.appendChild(h3);
+
+  // Meta line: provider id
+  const meta = document.createElement("p");
+  meta.className = "meta";
+  meta.appendChild(document.createTextNode("Provider id: "));
+  const code = document.createElement("code");
+  code.textContent = p.id;
+  meta.appendChild(code);
+  div.appendChild(meta);
+
+  // Grid of currency inputs
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  CURRENCIES.forEach(cur => {
+    const e = existing[cur] || {};
+    const cell = document.createElement("div");
+    cell.className = "cell";
+
+    const label = document.createElement("label");
+    let labelText = "1 AED → " + cur;
+    if (typeof e.fetched_at === "string" && e.fetched_at.length >= 16) {
+      labelText += " (" + e.fetched_at.slice(0, 16).replace("T", " ") + ")";
+    }
+    label.textContent = labelText;
+    cell.appendChild(label);
+
+    const input = document.createElement("input");
+    input.dataset.currency = cur;
+    input.type = "number";
+    input.step = "0.0001";
+    input.min = "0";
+    input.placeholder = "—";
+    if (typeof e.rate === "number" && Number.isFinite(e.rate)) {
+      input.value = String(e.rate);
+    }
+    cell.appendChild(input);
+
+    grid.appendChild(cell);
+  });
+  div.appendChild(grid);
+
+  return div;
+}
+
+// === Save ===
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  if (!currentDoc) { toast("No data loaded", "error"); return; }
+  const newRates = {};
+  let invalidCount = 0;
+  document.querySelectorAll(".provider").forEach(card => {
+    const pid = card.dataset.providerId;
+    const perCur = {};
+    card.querySelectorAll("input[data-currency]").forEach(inp => {
+      const cur = inp.dataset.currency;
+      const v = inp.value.trim();
+      if (v === "") return;
+      const n = Number(v);
+      if (!Number.isFinite(n) || n <= 0) { invalidCount++; return; }
+      const [lo, hi] = BOUNDS[cur] || [0.0001, 10000];
+      if (n < lo || n > hi) { invalidCount++; return; }
+      perCur[cur] = {
+        rate: n,
+        fee_aed: 0,
+        fetched_at: new Date().toISOString(),
+        note: "Manually entered via admin UI",
+      };
+    });
+    if (Object.keys(perCur).length) newRates[pid] = perCur;
+  });
+  if (invalidCount > 0) {
+    toast(invalidCount + " rate(s) out of plausible range — check inputs", "error");
+    return;
+  }
+  const newDoc = {
+    schema_version: 1,
+    _doc: currentDoc._doc,
+    updated_at: new Date().toISOString(),
+    rates: newRates,
+  };
+  const newJson = JSON.stringify(newDoc, null, 2) + "\n";
+  const message = "admin: update manual rates (" + Object.keys(newRates).length + " providers)";
+  document.getElementById("saveBtn").disabled = true;
+  try {
+    const result = await ghPut(FILE_PATH, b64encode(newJson), currentSha, message);
+    currentSha = result.content.sha;
+    currentDoc = newDoc;
+    toast("Saved · " + Object.keys(newRates).length + " providers · next cron picks it up", "ok");
+  } catch (e) {
+    toast("Save failed: " + e.message, "error");
+  } finally {
+    document.getElementById("saveBtn").disabled = false;
+  }
+});
+</script>
+</body>
+</html>

@@ -75,6 +75,21 @@ transfer-rate/
     └── report.html
 ```
 
+## Manual rate entry
+
+For providers without a public rate endpoint (app-only services like Botim,
+e&amp; Money, Comera, Careem Pay), the maintainer can enter rates manually
+through a static admin page:
+
+* **URL**: <https://imraneggy.github.io/transfer-rate/admin/>
+* **Auth**: fine-grained PAT with `contents: write` on this repo, stored
+  in browser localStorage
+* **Effect**: rates appear in the app with a `MANUAL` badge after the
+  next cron tick
+
+See [`docs/RUNBOOK.md`](docs/RUNBOOK.md#manual-rate-entry-admin-ui) for the
+full operating instructions.
+
 ## Quick start (developer)
 
 ### Run scrapers locally

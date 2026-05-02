@@ -129,6 +129,50 @@ git commit -m "ops: pull rates.json"
 git push
 ```
 
+## Manual rate entry (admin UI)
+
+For app-only providers without a public rate endpoint (Botim, e&amp; Money,
+Comera, Careem Pay, NowMoney), or for any other provider you've personally
+verified, you can enter rates manually:
+
+1. **Open the admin URL**: <https://imraneggy.github.io/transfer-rate/admin/>
+2. **Paste a fine-grained PAT** with `contents: read+write` permission on
+   `imraneggy/transfer-rate`. The token persists in your browser's
+   localStorage so you only enter it once per device.
+3. **Enter rates per (provider, currency)** — leave blanks for fields you
+   don't want to set. Inputs are validated against per-currency plausible
+   bounds (e.g. INR must be 10–50 per AED).
+4. **Click Save** — the admin page commits the new
+   `data/manual-rates.json` to the repo via GitHub's Contents API.
+5. **Wait for next cron tick (~hourly)** OR manually trigger the scrape
+   workflow:
+   ```bash
+   GH_TOKEN=$(cat git.txt) curl -X POST \
+     -H "Authorization: Bearer $GH_TOKEN" \
+     -H "Accept: application/vnd.github+json" \
+     https://api.github.com/repos/imraneggy/transfer-rate/actions/workflows/269638606/dispatches \
+     -d '{"ref":"main"}'
+   ```
+
+Manual rates appear in the app with a `MANUAL` badge to distinguish from
+auto-scraped values. They override `status="investigating"` stubs only —
+they do NOT override working scrapers (which is by design; if a scraper
+breaks, you fix it rather than mask it).
+
+### When to clear a manual entry
+
+- Set the input to blank and Save. The next commit removes that
+  (provider, currency) entry.
+- The corresponding card in the app reverts to the mid-market estimate.
+
+### When to refresh manual entries
+
+- Daily for app-only providers — rates change throughout the day, and
+  yesterday's manual entry quickly becomes misleading.
+- After a stale entry's `fetched_at` exceeds 24 hours, consider it
+  unreliable. The orchestrator does not auto-expire manual entries, so
+  this is your responsibility.
+
 ## On-call expectation
 
 Best-effort. This is volunteer-operated open source. SLAs are aspirational:

@@ -212,6 +212,84 @@ def _merge_with_previous(
     return merged
 
 
+def _apply_manual_rates(
+    fresh: Dict[str, List[Quote]], manual_path: Path
+) -> Dict[str, List[Quote]]:
+    """Override stub Quotes with manually-entered rates from data/manual-rates.json.
+
+    Schema (v1):
+      {
+        "schema_version": 1,
+        "rates": {
+          "<provider_id>": {
+            "<currency_code>": {
+              "rate": 25.62,
+              "fee_aed": 0.0,
+              "fetched_at": "2026-05-02T10:00:00Z",
+              "note": "From provider's app, sample 1000 AED transfer"
+            }
+          }
+        }
+      }
+
+    Manual rates only override `status="investigating"` cells (the stubs).
+    They do NOT override `status="ok"` cells from real scrapers — that
+    would be misleading. To override a working scraper, the maintainer
+    must remove or fix the scraper itself.
+    """
+    if not manual_path.exists():
+        return fresh
+    try:
+        manual = json.loads(manual_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return fresh
+    if manual.get("schema_version") != 1:
+        return fresh
+    rates_map = manual.get("rates")
+    if not isinstance(rates_map, dict):
+        return fresh
+
+    for corridor, quotes in fresh.items():
+        for i, q in enumerate(quotes):
+            if q.status != "investigating":
+                continue
+            entry = rates_map.get(q.provider_id, {}).get(corridor)
+            if not isinstance(entry, dict):
+                continue
+            try:
+                rate = float(entry["rate"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not 0.0001 <= rate <= 10000.0:
+                continue
+            fee = entry.get("fee_aed")
+            try:
+                fee = float(fee) if fee is not None else None
+            except (TypeError, ValueError):
+                fee = None
+            fetched_at = entry.get("fetched_at") or _now_iso()
+            note = entry.get("note") or "Manually entered rate"
+
+            quotes[i] = Quote(
+                provider_id=q.provider_id,
+                provider_name=q.provider_name,
+                base="AED",
+                quote=corridor,
+                amount_base=q.amount_base,
+                rate=rate,
+                fee_base=fee,
+                received_quote=rate * q.amount_base
+                              - (fee * rate if fee else 0.0),
+                effective_rate=rate,
+                delivery_estimate=q.delivery_estimate,
+                url=q.url,
+                status="manual",
+                note=note,
+                fetched_at=fetched_at,
+            )
+    return fresh
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run scrapers across all corridors")
     parser.add_argument("--amount", type=float, default=DEFAULT_AMOUNT)
@@ -219,6 +297,10 @@ def main() -> int:
     parser.add_argument(
         "--corridors", nargs="+", default=list(SUPPORTED_TARGETS),
         help="Subset of corridors to run (default: all)",
+    )
+    parser.add_argument(
+        "--manual", type=Path, default=Path("data/manual-rates.json"),
+        help="Path to manual rates JSON (overrides for stub providers)",
     )
     args = parser.parse_args()
 
@@ -251,6 +333,9 @@ def main() -> int:
                 )
             fresh[c].append(quote)
 
+    # Apply manual overrides BEFORE stale-merge so manual entries take
+    # priority over old auto-scraped values.
+    fresh = _apply_manual_rates(fresh, args.manual)
     fresh = _merge_with_previous(fresh, args.out)
 
     # Stable display order within each corridor: keep PROVIDERS order.
@@ -278,11 +363,12 @@ def main() -> int:
     err = sum(1 for v in fresh.values() for q in v if q.status == "error")
     stale = sum(1 for v in fresh.values() for q in v if q.status == "stale")
     inv = sum(1 for v in fresh.values() for q in v if q.status == "investigating")
+    man = sum(1 for v in fresh.values() for q in v if q.status == "manual")
     print(
         f"wrote {args.out}: corridors={len(fresh)} total={total} "
-        f"ok={ok} stale={stale} error={err} investigating={inv}"
+        f"ok={ok} manual={man} stale={stale} error={err} investigating={inv}"
     )
-    return 0 if (ok + stale) > 0 else 1
+    return 0 if (ok + stale + man) > 0 else 1
 
 
 if __name__ == "__main__":

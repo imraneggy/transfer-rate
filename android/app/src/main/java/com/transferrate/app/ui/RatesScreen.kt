@@ -209,7 +209,7 @@ private fun ReadyView(
             )
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
-            val isBest = p.status == "ok"
+            val isBest = (p.status == "ok" || p.status == "manual")
                     && state.bestRate != null
                     && (p.effectiveRate ?: p.rate) == state.bestRate
             ProviderCard(
@@ -415,6 +415,10 @@ private fun ProviderCard(
                             Spacer(Modifier.width(8.dp))
                             BestBadge()
                         }
+                        if (p.status == "manual") {
+                            Spacer(Modifier.width(8.dp))
+                            ManualBadge()
+                        }
                     }
                     val sub = p.deliveryEstimate
                         ?: when (p.status) {
@@ -471,12 +475,32 @@ private fun BestBadge() {
 }
 
 @Composable
+private fun ManualBadge() {
+    Box(
+        modifier = Modifier
+            .background(
+                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f),
+                RoundedCornerShape(6.dp),
+            )
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "MANUAL",
+            color = MaterialTheme.colorScheme.tertiary,
+            fontWeight = FontWeight.Bold,
+            fontSize = 10.sp,
+            letterSpacing = 0.6.sp,
+        )
+    }
+}
+
+@Composable
 private fun RateView(p: ProviderQuote, midMarket: Double?) {
     val rate = p.effectiveRate ?: p.rate
     val symbol = CURRENCIES[p.quote]?.symbol ?: ""
     Column(horizontalAlignment = Alignment.End) {
         when (p.status) {
-            "ok" -> {
+            "ok", "manual" -> {
                 Text(
                     text = if (rate != null) "%.4f".format(rate) else "—",
                     fontWeight = FontWeight.Bold,

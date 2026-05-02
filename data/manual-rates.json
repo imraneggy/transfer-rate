@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "_doc": "Manually-entered rates for app-only providers. Edit via /admin/ on the published site, or directly in this file. The orchestrator (scrapers/run_all.py) merges these into public/rates.json on each cron tick, replacing 'investigating' stubs with status='manual'. Providers not listed here keep showing the mid-market estimate.",
+  "rates": {}
+}

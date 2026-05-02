@@ -43,10 +43,10 @@ sealed interface RatesUiState {
                     )
             }
 
-        /** The best (highest) rate among OK quotes (excl. benchmark), for the BEST badge. */
+        /** The best (highest) rate among verified quotes (ok or manual), for the BEST badge. */
         val bestRate: Double?
             get() = visibleQuotes
-                .filter { it.status == "ok" }
+                .filter { it.status == "ok" || it.status == "manual" }
                 .mapNotNull { it.effectiveRate ?: it.rate }
                 .maxOrNull()
     }
@@ -101,7 +101,8 @@ class RatesViewModel(
 
 private fun statusOrder(s: String): Int = when (s) {
     "ok" -> 0
-    "stale" -> 1
-    "investigating" -> 2
-    else -> 3
+    "manual" -> 1
+    "stale" -> 2
+    "investigating" -> 3
+    else -> 4
 }
