@@ -58,6 +58,7 @@ from .remitly import RemitlyProvider
 from .index_exchange import IndexExchangeProvider
 from .lulu import LuluProvider
 from .al_ansari import AlAnsariProvider
+from .gcc_exchange import GccExchangeProvider
 
 
 # Display order. Mid-market first (extracted to header), then real providers.
@@ -73,6 +74,7 @@ PROVIDERS: List[BaseProvider] = [
     RemitlyProvider(),
     LuluProvider(),
     AlAnsariProvider(),
+    GccExchangeProvider(),
     IndexExchangeProvider(),
 ]
 
