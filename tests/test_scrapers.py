@@ -20,6 +20,7 @@ import pytest
 
 from scrapers.aspora import AsporaProvider
 from scrapers.al_ansari import AlAnsariProvider
+from scrapers.al_dahab import AlDahabProvider
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
 from scrapers.lulu import LuluProvider
@@ -141,6 +142,29 @@ def test_al_ansari_two_step_with_nonce(httpx_mock):
     q = AlAnsariProvider().fetch()
     assert q.status == "ok"
     assert q.rate == 25.7069
+
+
+# --- Al Dahab Exchange --------------------------------------------------
+
+def test_al_dahab_extracts_rate_from_marquee(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://aldahabexchange\.ae.*"),
+        text=fixture_text("al_dahab_page.html"),
+        headers={"content-type": "text/html"},
+    )
+    q = AlDahabProvider().fetch()
+    assert q.status == "ok"
+    assert q.rate == 25.79
+
+
+def test_al_dahab_handles_missing_corridor(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://aldahabexchange\.ae.*"),
+        text=fixture_text("al_dahab_page.html"),
+        headers={"content-type": "text/html"},
+    )
+    with pytest.raises(RuntimeError, match="not in marquee"):
+        AlDahabProvider().fetch(target_currency="EUR")
 
 
 # --- GCC Exchange -------------------------------------------------------

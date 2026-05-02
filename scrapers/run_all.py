@@ -58,6 +58,7 @@ from .remitly import RemitlyProvider
 from .index_exchange import IndexExchangeProvider
 from .lulu import LuluProvider
 from .al_ansari import AlAnsariProvider
+from .al_dahab import AlDahabProvider
 from .gcc_exchange import GccExchangeProvider
 
 
@@ -78,6 +79,7 @@ PROVIDERS: List[BaseProvider] = [
     # cloud datacenter outbound. Module retained for documentation;
     # re-enable once we have a different access path.
     AlAnsariProvider(),
+    AlDahabProvider(),
     GccExchangeProvider(),
     IndexExchangeProvider(),
 ]
