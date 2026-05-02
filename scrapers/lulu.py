@@ -65,19 +65,36 @@ class LuluProvider(BaseProvider):
             f"{self.API_HOST}{self.API_PATH}"
             f"?payload={urllib.parse.quote(payload_obj)}"
         )
+        headers = {
+            "x-gravitee-api-key": self.GRAVITEE_KEY,
+            "Origin": "https://www.luluexchange.com",
+            "Referer": "https://www.luluexchange.com/",
+        }
 
-        with http_client() as c:
-            r = c.get(
-                url,
-                headers={
-                    "x-gravitee-api-key": self.GRAVITEE_KEY,
-                    # Mimic the in-browser request shape:
-                    "Origin": "https://www.luluexchange.com",
-                    "Referer": "https://www.luluexchange.com/",
-                },
-            )
-            r.raise_for_status()
-            data = r.json()
+        # GitHub Actions runners hit connect timeouts to lieservices.luluone.com
+        # (non-standard port 9443; cloud datacenter outbound is firewalled
+        # more strictly than residential). Use a longer timeout and one
+        # retry — local dev rarely needs it but CI does.
+        import httpx
+        last_exc = None
+        for attempt in (1, 2):
+            try:
+                with httpx.Client(
+                    timeout=httpx.Timeout(connect=20.0, read=20.0, write=10.0, pool=20.0),
+                    follow_redirects=True,
+                ) as c:
+                    r = c.get(url, headers=headers)
+                    r.raise_for_status()
+                    data = r.json()
+                    break
+            except (httpx.ConnectTimeout, httpx.ReadTimeout, httpx.RemoteProtocolError) as exc:
+                last_exc = exc
+                if attempt == 2:
+                    raise RuntimeError(
+                        f"LuLu API connect timeout after retry: {exc}. "
+                        f"Likely a GitHub Actions outbound network issue to "
+                        f"port 9443; works from non-cloud IPs."
+                    ) from exc
 
         rates = (data.get("payload") or {}).get("rates") or []
         if not isinstance(rates, list):
