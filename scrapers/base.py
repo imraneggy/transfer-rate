@@ -6,68 +6,86 @@ from datetime import datetime, timezone
 from typing import Optional
 
 
+# The full set of AED->X target currencies the project tracks.
+# UAE expat sending corridors, ranked roughly by population:
+#   INR  India          (largest expat group)
+#   PKR  Pakistan
+#   PHP  Philippines
+#   BDT  Bangladesh
+#   EGP  Egypt
+#   USD  United States  (also a benchmark)
+#   EUR  Eurozone
+#   GBP  United Kingdom
+#   NPR  Nepal
+#   LKR  Sri Lanka
+SUPPORTED_TARGETS = (
+    "INR", "PKR", "PHP", "BDT", "EGP",
+    "USD", "EUR", "GBP", "NPR", "LKR",
+)
+
+
 @dataclass
 class Quote:
-    """A single rate quote from one provider.
+    """A single rate quote from one provider for one (base, quote) pair.
 
-    All monetary fields are in their native currency (AED for fees, INR for received).
-    Any field a scraper cannot reliably extract should be left as None — partial
+    Any field a scraper cannot reliably extract is left as None. Partial
     data is more useful than no data, and the app treats None as "not shown."
     """
     provider_id: str
     provider_name: str
     base: str                      # "AED"
-    quote: str                     # "INR"
-    amount_base: float             # amount user is sending (e.g. 1000.0 AED)
-    rate: Optional[float]          # advertised/gross rate (1 AED = X INR)
-    fee_base: Optional[float]      # provider fee, in AED
-    received_quote: Optional[float]  # what recipient actually gets, in INR
-    effective_rate: Optional[float]  # received_quote / amount_base — the truth
-    delivery_estimate: Optional[str]  # human-readable, e.g. "within minutes"
-    url: Optional[str]             # deep link or rate page
+    quote: str                     # "INR" / "USD" / etc.
+    amount_base: float
+    rate: Optional[float]
+    fee_base: Optional[float]
+    received_quote: Optional[float]
+    effective_rate: Optional[float]
+    delivery_estimate: Optional[str]
+    url: Optional[str]
     status: str = "ok"             # "ok" | "stale" | "error" | "investigating"
-    note: Optional[str] = None     # error message or context, shown only on non-ok
+    note: Optional[str] = None
 
-    # Optional promotional rate that some providers offer to first-time users.
-    # Distinguished from `rate` (the everyday/sustained rate) so the app can
-    # honestly show both: "you get X today, Y on every transfer after."
-    # If the provider has no promo OR promo == rate, leave both None.
+    # Optional first-transfer / promotional rate. Null when not applicable.
     promo_rate: Optional[float] = None
-    promo_note: Optional[str] = None  # e.g. "First transfer only", "≥3500 AED"
+    promo_note: Optional[str] = None
 
-    fetched_at: str = ""           # ISO 8601 UTC timestamp
+    fetched_at: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)
 
 
 class BaseProvider(ABC):
-    """Abstract scraper interface. Each provider lives in its own module.
+    """Abstract scraper interface. Concrete subclasses implement `fetch`.
 
-    Concrete subclasses must implement fetch_inr() at minimum. They should
-    raise any exception they can't handle internally — the orchestrator
-    catches and converts these to status='error' Quote records, so one
-    flaky provider never breaks the run.
+    Each provider may support a subset of the SUPPORTED_TARGETS. Calling
+    fetch() with an unsupported target should raise — the orchestrator
+    catches and converts to status='error'.
     """
-    id: str = ""           # short slug, e.g. "wise"
-    display_name: str = "" # human name shown in app, e.g. "Wise"
+    id: str = ""
+    display_name: str = ""
 
     @abstractmethod
-    def fetch_inr(self, amount_aed: float = 1000.0) -> Quote:
-        """Return current AED -> INR quote for the given send amount."""
+    def fetch(self, target_currency: str = "INR", amount_base: float = 1000.0) -> Quote:
         raise NotImplementedError
 
     def _now_iso(self) -> str:
         return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    def _stub(self, note: str, status: str = "investigating") -> Quote:
+    def _stub(
+        self,
+        note: str,
+        target_currency: str = "INR",
+        amount_base: float = 1000.0,
+        status: str = "investigating",
+    ) -> Quote:
         """Helper for providers we haven't reverse-engineered yet."""
         return Quote(
             provider_id=self.id,
             provider_name=self.display_name,
             base="AED",
-            quote="INR",
-            amount_base=1000.0,
+            quote=target_currency,
+            amount_base=amount_base,
             rate=None,
             fee_base=None,
             received_quote=None,

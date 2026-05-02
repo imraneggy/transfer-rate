@@ -1,18 +1,14 @@
-"""Wise scraper.
+"""Wise scraper — multi-corridor.
 
-Strategy: Wise exposes a public live-rates endpoint at
-https://wise.com/rates/live which returns the current mid-market rate as a
-small JSON document. This is the "real exchange rate" Wise advertises in
-all marketing. We surface it as Wise's quote.
+Wise's public live-rates endpoint at https://wise.com/rates/live accepts
+any 3-letter source/target pair and returns the current mid-market rate
+as a small JSON document. We loop across our SUPPORTED_TARGETS and emit
+one Quote per corridor.
 
-Note on fees: Wise charges a transparent percentage fee on top of the
-mid-market rate. Their fee depends on the send amount and is published
-behind a separate quote endpoint that requires more parameters. For the
-list view we present the mid-market rate (which IS what Wise charges before
-their fee); a future enhancement could call the quote endpoint to surface
-the post-fee effective rate.
-
-This is the *reference* scraper — copy its structure when adding new ones.
+Wise's transparent fee on top of the mid-market rate is exposed through
+a separate quote endpoint that requires more parameters; for the list
+view we present the mid-market rate (Wise's marketing rate) and leave
+fee/effective_rate as None to be honest about what we know.
 """
 from __future__ import annotations
 
@@ -24,12 +20,12 @@ class WiseProvider(BaseProvider):
     id = "wise"
     display_name = "Wise"
     LIVE_URL = "https://wise.com/rates/live"
-    PRODUCT_URL = "https://wise.com/gb/send-money/send-money-to-india"
+    PRODUCT_URL = "https://wise.com"
 
-    def fetch_inr(self, amount_aed: float = 1000.0) -> Quote:
+    def fetch(self, target_currency: str = "INR", amount_base: float = 1000.0) -> Quote:
         params = {
             "source": "AED",
-            "target": "INR",
+            "target": target_currency,
             "length": 1,
             "resolution": "hourly",
             "unit": "day",
@@ -39,31 +35,28 @@ class WiseProvider(BaseProvider):
             r.raise_for_status()
             data = r.json()
 
-        # Defensive parsing — every field check is explicit so a schema
-        # change produces a clear error, not silently-wrong data.
         try:
             rate = float(data["value"])
-            if data.get("source") != "AED" or data.get("target") != "INR":
-                raise RuntimeError("Wise returned wrong currency pair")
+            if data.get("source") != "AED" or data.get("target") != target_currency:
+                raise RuntimeError(
+                    f"Wise returned wrong pair: source={data.get('source')} "
+                    f"target={data.get('target')}"
+                )
         except (KeyError, TypeError, ValueError) as exc:
             raise RuntimeError(
                 f"Wise schema unrecognised: {type(exc).__name__}: {exc}"
             ) from exc
 
-        # Mid-market rate. Wise's actual fee is not exposed by this endpoint;
-        # we leave fee_base / effective_rate as None to be honest about
-        # what we do and don't know, rather than fabricate a number.
-        received = rate * amount_aed
         return Quote(
             provider_id=self.id,
             provider_name=self.display_name,
             base="AED",
-            quote="INR",
-            amount_base=amount_aed,
+            quote=target_currency,
+            amount_base=amount_base,
             rate=rate,
             fee_base=None,
-            received_quote=received,
-            effective_rate=None,  # unknown without fee
+            received_quote=rate * amount_base,
+            effective_rate=None,
             delivery_estimate="within minutes",
             url=self.PRODUCT_URL,
             status="ok",

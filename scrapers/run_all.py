@@ -1,23 +1,36 @@
-"""Orchestrator: runs every provider scraper, writes public/rates.json.
+"""Orchestrator: runs every provider for every supported corridor.
 
-Design choices for security and reliability:
+Output is a single combined JSON document at public/rates.json:
 
-  1. **Concurrency with hard isolation** — each scraper runs in its own
-     thread with a strict timeout. One slow or hostile provider cannot
-     hang the run.
+    {
+      "schema_version": 2,
+      "base": "AED",
+      "amount_base": 1000.0,
+      "started_at": "...",
+      "completed_at": "...",
+      "corridors": {
+        "INR": [<provider_quote>, ...],
+        "USD": [<provider_quote>, ...],
+        ...
+      }
+    }
 
-  2. **No partial overwrite** — we collect ALL quotes (success or error),
-     then write rates.json atomically. Readers (the Android app) never see
-     a half-written file because we write to a temp path and rename.
+Design choices:
 
-  3. **Stale tolerance** — if a provider fails in this run, we keep the
-     previous successful Quote (if available) but mark it status="stale"
-     with the original `fetched_at`. The app shows stale rates with a
-     warning rather than dropping the provider entirely.
+  1. **Concurrency with hard isolation** — each (provider, corridor) pair
+     runs in its own thread with a strict timeout. One slow provider
+     cannot hang the run.
 
-  4. **Bounded log noise** — exceptions are caught per provider and
-     surfaced in the JSON, never printed in a way that exposes secrets
-     (we have none, but this is defense-in-depth).
+  2. **Stale tolerance** — if a (provider, corridor) cell fails this
+     run, we keep the previous successful quote (if any) but mark it
+     status="stale" with the original `fetched_at`.
+
+  3. **Atomic write** — temp file + os.replace, so readers never see
+     a half-written document.
+
+  4. **Investigation stubs always present** — every corridor lists every
+     provider, even when most of them are stubs. Users see the full
+     coverage roadmap, contributors see the targets to fix.
 """
 from __future__ import annotations
 
@@ -28,50 +41,78 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
-from .base import BaseProvider, Quote
+from .base import BaseProvider, Quote, SUPPORTED_TARGETS
+
+# Tier 1 — working scrapers (real data)
+from .wise import WiseProvider
 from .aspora import AsporaProvider
-from .botim import BotimProvider
+from .remitly import RemitlyProvider
+
+# Tier 2 — stubbed (placeholder, parser pending)
+from .lulu import LuluProvider
 from .careem import CareemProvider
+from .botim import BotimProvider
 from .comera import ComeraProvider
 from .eand import EandProvider
-from .lulu import LuluProvider
-from .remitly import RemitlyProvider
-from .wise import WiseProvider
+
+# Tier 3 — additional UAE exchange houses & global remitters (stubbed)
+from .al_ansari import AlAnsariProvider
+from .al_fardan import AlFardanProvider
+from .unimoni import UnimoniProvider
+from .sharaf import SharafProvider
+from .joyalukkas import JoyalukkasProvider
+from .gcc_exchange import GccExchangeProvider
+from .index_exchange import IndexExchangeProvider
+from .wall_street import WallStreetProvider
+from .western_union import WesternUnionProvider
+from .moneygram import MoneyGramProvider
 
 
-# Order here is the default display order in the app when rates are equal.
+# Display order. Working providers first; investigating below.
 PROVIDERS: List[BaseProvider] = [
     WiseProvider(),
+    AsporaProvider(),
     RemitlyProvider(),
     LuluProvider(),
-    AsporaProvider(),
     CareemProvider(),
+    AlAnsariProvider(),
+    AlFardanProvider(),
+    UnimoniProvider(),
+    SharafProvider(),
+    JoyalukkasProvider(),
+    GccExchangeProvider(),
+    IndexExchangeProvider(),
+    WallStreetProvider(),
+    WesternUnionProvider(),
+    MoneyGramProvider(),
     EandProvider(),
     BotimProvider(),
     ComeraProvider(),
 ]
 
-PER_PROVIDER_TIMEOUT_S = 25.0
-DEFAULT_AMOUNT_AED = 1000.0
+PER_CALL_TIMEOUT_S = 25.0
+DEFAULT_AMOUNT = 1000.0
 
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _run_one(provider: BaseProvider, amount_aed: float) -> Quote:
-    """Run a single provider, never raise to caller."""
+def _run_one(
+    provider: BaseProvider, corridor: str, amount: float
+) -> Quote:
+    """Fetch one (provider, corridor); never raise to caller."""
     try:
-        return provider.fetch_inr(amount_aed=amount_aed)
-    except Exception as exc:  # noqa: BLE001 — we want to catch everything
+        return provider.fetch(target_currency=corridor, amount_base=amount)
+    except Exception as exc:  # noqa: BLE001
         return Quote(
             provider_id=provider.id,
             provider_name=provider.display_name,
             base="AED",
-            quote="INR",
-            amount_base=amount_aed,
+            quote=corridor,
+            amount_base=amount,
             rate=None,
             fee_base=None,
             received_quote=None,
@@ -85,102 +126,112 @@ def _run_one(provider: BaseProvider, amount_aed: float) -> Quote:
 
 
 def _merge_with_previous(
-    fresh: List[Quote], previous_path: Path
-) -> List[Quote]:
-    """If a provider errored this run but has a previous successful quote,
-    keep the previous quote with status='stale' rather than show error."""
+    fresh: Dict[str, List[Quote]], previous_path: Path
+) -> Dict[str, List[Quote]]:
+    """Preserve last good quote when a fresh fetch errored."""
     if not previous_path.exists():
         return fresh
     try:
         prev = json.loads(previous_path.read_text(encoding="utf-8"))
-        prev_by_id = {p["provider_id"]: p for p in prev.get("providers", [])}
-    except (json.JSONDecodeError, KeyError, TypeError):
+    except (json.JSONDecodeError, OSError):
         return fresh
 
-    merged: List[Quote] = []
-    for q in fresh:
-        if q.status == "error" and q.provider_id in prev_by_id:
-            old = prev_by_id[q.provider_id]
-            if old.get("status") == "ok":
-                merged.append(
-                    Quote(
-                        provider_id=old["provider_id"],
-                        provider_name=old["provider_name"],
-                        base=old["base"],
-                        quote=old["quote"],
-                        amount_base=old["amount_base"],
-                        rate=old.get("rate"),
-                        fee_base=old.get("fee_base"),
-                        received_quote=old.get("received_quote"),
-                        effective_rate=old.get("effective_rate"),
-                        delivery_estimate=old.get("delivery_estimate"),
-                        url=old.get("url"),
-                        status="stale",
-                        note=f"Last good fetch: {old.get('fetched_at')}; "
-                             f"current error: {q.note}",
-                        fetched_at=old.get("fetched_at", q.fetched_at),
+    # Tolerate either schema v1 (flat providers list) or v2 (corridors map)
+    prev_corridors: Dict[str, Dict[str, dict]] = {}
+    if isinstance(prev.get("corridors"), dict):
+        for corridor, items in prev["corridors"].items():
+            if isinstance(items, list):
+                prev_corridors[corridor] = {p.get("provider_id"): p for p in items if isinstance(p, dict)}
+    elif isinstance(prev.get("providers"), list):
+        prev_corridors["INR"] = {p.get("provider_id"): p for p in prev["providers"] if isinstance(p, dict)}
+
+    merged: Dict[str, List[Quote]] = {}
+    for corridor, quotes in fresh.items():
+        merged[corridor] = []
+        prev_lookup = prev_corridors.get(corridor, {})
+        for q in quotes:
+            if q.status == "error" and q.provider_id in prev_lookup:
+                old = prev_lookup[q.provider_id]
+                if old.get("status") == "ok":
+                    merged[corridor].append(
+                        Quote(
+                            provider_id=old["provider_id"],
+                            provider_name=old["provider_name"],
+                            base=old["base"],
+                            quote=old["quote"],
+                            amount_base=old["amount_base"],
+                            rate=old.get("rate"),
+                            fee_base=old.get("fee_base"),
+                            received_quote=old.get("received_quote"),
+                            effective_rate=old.get("effective_rate"),
+                            delivery_estimate=old.get("delivery_estimate"),
+                            url=old.get("url"),
+                            status="stale",
+                            note=f"Last good fetch: {old.get('fetched_at')}; "
+                                 f"current error: {q.note}",
+                            promo_rate=old.get("promo_rate"),
+                            promo_note=old.get("promo_note"),
+                            fetched_at=old.get("fetched_at", q.fetched_at),
+                        )
                     )
-                )
-                continue
-        merged.append(q)
+                    continue
+            merged[corridor].append(q)
     return merged
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run all rate scrapers")
+    parser = argparse.ArgumentParser(description="Run scrapers across all corridors")
+    parser.add_argument("--amount", type=float, default=DEFAULT_AMOUNT)
+    parser.add_argument("--out", type=Path, default=Path("public/rates.json"))
     parser.add_argument(
-        "--amount", type=float, default=DEFAULT_AMOUNT_AED,
-        help="Amount in AED to quote (default: 1000)",
-    )
-    parser.add_argument(
-        "--out", type=Path,
-        default=Path("public/rates.json"),
-        help="Output JSON path",
+        "--corridors", nargs="+", default=list(SUPPORTED_TARGETS),
+        help="Subset of corridors to run (default: all)",
     )
     args = parser.parse_args()
 
     started = _now_iso()
 
-    quotes: List[Quote] = []
-    with cf.ThreadPoolExecutor(max_workers=len(PROVIDERS)) as pool:
+    # Build all (provider, corridor) work units.
+    work = [(p, c) for c in args.corridors for p in PROVIDERS]
+
+    fresh: Dict[str, List[Quote]] = {c: [] for c in args.corridors}
+
+    with cf.ThreadPoolExecutor(max_workers=min(20, len(work))) as pool:
         futures = {
-            pool.submit(_run_one, p, args.amount): p for p in PROVIDERS
+            pool.submit(_run_one, p, c, args.amount): (p, c) for p, c in work
         }
-        for fut in cf.as_completed(futures, timeout=PER_PROVIDER_TIMEOUT_S * 2):
+        for fut in cf.as_completed(futures, timeout=PER_CALL_TIMEOUT_S * 4):
+            p, c = futures[fut]
             try:
-                quotes.append(fut.result(timeout=PER_PROVIDER_TIMEOUT_S))
+                quote = fut.result(timeout=PER_CALL_TIMEOUT_S)
             except cf.TimeoutError:
-                p = futures[fut]
-                quotes.append(
-                    Quote(
-                        provider_id=p.id,
-                        provider_name=p.display_name,
-                        base="AED",
-                        quote="INR",
-                        amount_base=args.amount,
-                        rate=None, fee_base=None, received_quote=None,
-                        effective_rate=None, delivery_estimate=None,
-                        url=None, status="error",
-                        note=f"Hard timeout after {PER_PROVIDER_TIMEOUT_S}s",
-                        fetched_at=_now_iso(),
-                    )
+                quote = Quote(
+                    provider_id=p.id,
+                    provider_name=p.display_name,
+                    base="AED", quote=c,
+                    amount_base=args.amount,
+                    rate=None, fee_base=None, received_quote=None,
+                    effective_rate=None, delivery_estimate=None,
+                    url=None, status="error",
+                    note=f"Hard timeout after {PER_CALL_TIMEOUT_S}s",
+                    fetched_at=_now_iso(),
                 )
+            fresh[c].append(quote)
 
-    # Merge with previous successful runs to preserve stale-tolerance.
-    quotes = _merge_with_previous(quotes, args.out)
+    fresh = _merge_with_previous(fresh, args.out)
 
-    # Stable display order: keep the order defined in PROVIDERS.
+    # Stable display order within each corridor: keep PROVIDERS order.
     order = {p.id: i for i, p in enumerate(PROVIDERS)}
-    quotes.sort(key=lambda q: order.get(q.provider_id, 99))
+    for c in fresh:
+        fresh[c].sort(key=lambda q: order.get(q.provider_id, 99))
 
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "base": "AED",
-        "quote": "INR",
         "amount_base": args.amount,
         "started_at": started,
         "completed_at": _now_iso(),
-        "providers": [q.to_dict() for q in quotes],
+        "corridors": {c: [q.to_dict() for q in fresh[c]] for c in args.corridors},
     }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -188,15 +239,16 @@ def main() -> int:
     tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, args.out)
 
-    ok = sum(1 for q in quotes if q.status == "ok")
-    err = sum(1 for q in quotes if q.status == "error")
-    stale = sum(1 for q in quotes if q.status == "stale")
-    inv = sum(1 for q in quotes if q.status == "investigating")
+    # Summary
+    total = sum(len(v) for v in fresh.values())
+    ok = sum(1 for v in fresh.values() for q in v if q.status == "ok")
+    err = sum(1 for v in fresh.values() for q in v if q.status == "error")
+    stale = sum(1 for v in fresh.values() for q in v if q.status == "stale")
+    inv = sum(1 for v in fresh.values() for q in v if q.status == "investigating")
     print(
-        f"wrote {args.out}: ok={ok} stale={stale} error={err} "
-        f"investigating={inv} total={len(quotes)}"
+        f"wrote {args.out}: corridors={len(fresh)} total={total} "
+        f"ok={ok} stale={stale} error={err} investigating={inv}"
     )
-    # Exit non-zero only if EVERYTHING failed — partial failure is normal.
     return 0 if (ok + stale) > 0 else 1
 
 

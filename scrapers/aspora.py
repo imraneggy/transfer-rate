@@ -1,26 +1,18 @@
 """Aspora scraper.
 
-Aspora is a UAE / UK / EU / US -> India focused remittance app. Their
-landing-page widget hydrates client-side from an undocumented JSON
-endpoint at `/forex/rates` on a region-specific host.
+Aspora's public /forex/rates endpoint returns a JSON object keyed by
+SOURCE currency, with values being the rate to INR. Schema (verified
+2026-05-02):
+  {"AED": 25.81, "EUR": 111.15, "GBP": 128.73, ...}
 
-Discovery process (recorded for future maintainers):
-  1. The homepage HTML embeds an Astro Island for CurrencyConverter; the
-     static markup contains "₹--" rather than a live rate.
-  2. The CurrencyConverter JS imports a service `g` that does
-       fetch(`https://${HOST}/forex/rates`)
-     keyed by region (api-z1 = GB, z2 = AE, z3 = US, z4 = EU).
-  3. The endpoint returns
-       {"AED": 25.81, "EUR": 111.15, "GBP": 128.73, ... }
-     where each value is the all-in INR rate for sending 1 unit of that
-     source currency to India. Default fee is zero (flatFee=[0,0] in the
-     widget props), so this is the headline rate the user sees.
-  4. `api-z1` is a global fallback that responds for all currencies; the
-     other region hosts may not resolve from outside their region. We
-     try z1 first.
+This means Aspora exposes multiple SOURCE currencies, all pointing at
+INR. From our app's perspective (sending AED), only the AED entry is
+relevant. If/when we add support for sending FROM other currencies,
+the API is already there.
 
-If Aspora ever moves the endpoint, this will return status="error" with
-the response code or exception class, NOT a guessed value.
+Currently restricted to AED -> INR. For other AED-> targets, the
+provider has no public endpoint we've identified; we raise and the
+orchestrator records status='error' for those corridors.
 """
 from __future__ import annotations
 
@@ -30,8 +22,6 @@ from .base import BaseProvider, Quote
 from .utils import http_client
 
 
-# Region hosts in fallback order. z1 is the UK mirror that responds globally;
-# the others are kept as fallbacks if z1 ever changes posture.
 _HOSTS = (
     "api-z1.aspora.com",
     "api-z2.aspora.com",
@@ -45,7 +35,13 @@ class AsporaProvider(BaseProvider):
     display_name = "Aspora"
     PRODUCT_URL = "https://www.aspora.com/ae"
 
-    def fetch_inr(self, amount_aed: float = 1000.0) -> Quote:
+    def fetch(self, target_currency: str = "INR", amount_base: float = 1000.0) -> Quote:
+        if target_currency != "INR":
+            raise RuntimeError(
+                f"Aspora currently exposes only AED->INR; AED->{target_currency} "
+                f"not supported."
+            )
+
         last_exc: Optional[Exception] = None
         for host in _HOSTS:
             try:
@@ -53,9 +49,6 @@ class AsporaProvider(BaseProvider):
                     r = c.get(
                         f"https://{host}/forex/rates",
                         headers={
-                            # The endpoint is browser-oriented; sending Origin
-                            # and Referer makes us look like a legitimate
-                            # widget call rather than a bot probe.
                             "Origin": "https://www.aspora.com",
                             "Referer": "https://www.aspora.com/ae",
                         },
@@ -83,27 +76,21 @@ class AsporaProvider(BaseProvider):
         except (TypeError, ValueError) as exc:
             raise RuntimeError(f"Aspora AED value malformed: {exc}") from exc
 
-        # Sanity bound: AED -> INR has historically traded ~22-26. A value
-        # outside [10, 50] is almost certainly a wire-format change we should
-        # surface as an error rather than display.
         if not 10.0 <= rate <= 50.0:
             raise RuntimeError(f"Aspora rate out of plausible range: {rate}")
 
-        # Default Aspora widget shows zero fee for the AED corridor (flatFee
-        # prop = 0). The headline rate IS the effective rate the user gets.
         return Quote(
             provider_id=self.id,
             provider_name=self.display_name,
             base="AED",
             quote="INR",
-            amount_base=amount_aed,
+            amount_base=amount_base,
             rate=rate,
             fee_base=0.0,
-            received_quote=rate * amount_aed,
+            received_quote=rate * amount_base,
             effective_rate=rate,
             delivery_estimate="within minutes",
             url=self.PRODUCT_URL,
             status="ok",
-            note=None,
             fetched_at=self._now_iso(),
         )

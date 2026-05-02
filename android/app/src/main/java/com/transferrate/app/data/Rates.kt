@@ -4,25 +4,34 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Wire format mirrors the JSON produced by `scrapers/run_all.py`. Keep these
- * data classes in sync with `scrapers/base.py::Quote`.
+ * Schema v2: a single document carries quotes for all (AED -> X) corridors.
  *
- * Security notes:
- *   - `@Serializable` classes are validated on parse; mismatches throw.
- *   - All numeric fields are nullable so a missing/garbled field doesn't
- *     fail the whole document.
- *   - There is intentionally no field that could carry executable content
- *     (no URLs are auto-opened without user click).
+ * Top-level shape:
+ *   {
+ *     "schema_version": 2,
+ *     "base": "AED",
+ *     "amount_base": 1000.0,
+ *     "started_at":  "...",
+ *     "completed_at": "...",
+ *     "corridors": {
+ *       "INR": [<provider_quote>, ...],
+ *       "USD": [<provider_quote>, ...],
+ *       ...
+ *     }
+ *   }
+ *
+ * Schema v2 is a breaking change from v1 (which had a flat `providers`
+ * list). The reader rejects v1 with a clear message rather than partial
+ * decode.
  */
 @Serializable
 data class RatesDocument(
     @SerialName("schema_version") val schemaVersion: Int,
     val base: String,
-    val quote: String,
     @SerialName("amount_base") val amountBase: Double,
     @SerialName("started_at") val startedAt: String,
     @SerialName("completed_at") val completedAt: String,
-    val providers: List<ProviderQuote>,
+    val corridors: Map<String, List<ProviderQuote>>,
 )
 
 @Serializable
@@ -40,27 +49,40 @@ data class ProviderQuote(
     val url: String? = null,
     val status: String,
     val note: String? = null,
-    // Promotional rate (e.g. first-transfer bonus) — surfaced separately
-    // from `rate` so the UI can honestly show both. Null when the provider
-    // has no promo OR the promo equals the everyday rate.
     @SerialName("promo_rate") val promoRate: Double? = null,
     @SerialName("promo_note") val promoNote: String? = null,
     @SerialName("fetched_at") val fetchedAt: String,
 )
 
-/**
- * Sanity-check a parsed document. We refuse obviously implausible values
- * before they reach the UI — defense-in-depth against a poisoned JSON file.
- */
+/** Sanity-check a parsed document. Bounded ranges before UI rendering. */
 fun RatesDocument.validate(): RatesDocument {
-    require(schemaVersion == 1) { "Unsupported schema version: $schemaVersion" }
-    require(base == "AED" && quote == "INR") { "Unexpected currency pair" }
+    require(schemaVersion == 2) { "Unsupported schema version: $schemaVersion (expected 2)" }
+    require(base == "AED") { "Unexpected base currency: $base" }
     require(amountBase in 1.0..1_000_000.0) { "Amount out of range" }
-    providers.forEach { p ->
-        p.rate?.let { require(it in 0.1..1000.0) { "Rate out of range for ${p.providerId}" } }
-        p.effectiveRate?.let { require(it in 0.1..1000.0) }
-        p.promoRate?.let { require(it in 0.1..1000.0) { "Promo rate out of range for ${p.providerId}" } }
-        p.feeBase?.let { require(it in 0.0..100_000.0) }
+    corridors.forEach { (code, providers) ->
+        require(code.length == 3) { "Corridor code must be 3-letter: $code" }
+        providers.forEach { p ->
+            p.rate?.let { require(it in 0.0001..10000.0) { "Rate out of range for ${p.providerId} in $code" } }
+            p.effectiveRate?.let { require(it in 0.0001..10000.0) }
+            p.promoRate?.let { require(it in 0.0001..10000.0) }
+            p.feeBase?.let { require(it in 0.0..100_000.0) }
+        }
     }
     return this
 }
+
+/** Display metadata for each supported currency. Symbol + full name. */
+data class CurrencyInfo(val code: String, val symbol: String, val flag: String, val name: String)
+
+val CURRENCIES: Map<String, CurrencyInfo> = listOf(
+    CurrencyInfo("INR", "₹",   "🇮🇳", "Indian Rupee"),
+    CurrencyInfo("PKR", "₨",   "🇵🇰", "Pakistani Rupee"),
+    CurrencyInfo("PHP", "₱",   "🇵🇭", "Philippine Peso"),
+    CurrencyInfo("BDT", "৳",   "🇧🇩", "Bangladeshi Taka"),
+    CurrencyInfo("EGP", "E£",  "🇪🇬", "Egyptian Pound"),
+    CurrencyInfo("USD", "$",   "🇺🇸", "US Dollar"),
+    CurrencyInfo("EUR", "€",   "🇪🇺", "Euro"),
+    CurrencyInfo("GBP", "£",   "🇬🇧", "Pound Sterling"),
+    CurrencyInfo("NPR", "रू",  "🇳🇵", "Nepalese Rupee"),
+    CurrencyInfo("LKR", "Rs",  "🇱🇰", "Sri Lankan Rupee"),
+).associateBy { it.code }

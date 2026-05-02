@@ -15,27 +15,71 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+/**
+ * Custom palette tuned for a financial comparison app.
+ * The accent (primary) is a deep teal — evokes trust/banking without
+ * looking generically corporate. Secondary is a warm gold for the
+ * "Best rate" highlight. Neutrals are warm-leaning for readability.
+ */
+
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF006C45),
+    primary = Color(0xFF00665B),         // deep teal
     onPrimary = Color.White,
-    secondary = Color(0xFF4F6354),
-    background = Color(0xFFF7FBF6),
-    surface = Color(0xFFF7FBF6),
+    primaryContainer = Color(0xFFB0F0E2),
+    onPrimaryContainer = Color(0xFF002019),
+
+    secondary = Color(0xFF815400),       // warm gold (BEST badge)
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFFFDDB0),
+    onSecondaryContainer = Color(0xFF291800),
+
+    tertiary = Color(0xFF8B4789),         // accent for promo badge
+    onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFFFD8F4),
+    onTertiaryContainer = Color(0xFF370041),
+
+    background = Color(0xFFFCFAF7),
+    onBackground = Color(0xFF1B1B1B),
+    surface = Color(0xFFFCFAF7),
+    onSurface = Color(0xFF1B1B1B),
+    surfaceVariant = Color(0xFFF1EFEA),
+    onSurfaceVariant = Color(0xFF44483F),
+    outline = Color(0xFF767870),
+    outlineVariant = Color(0xFFC6C7BE),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF6FDBA0),
-    onPrimary = Color(0xFF003821),
-    secondary = Color(0xFFB6CCBB),
-    background = Color(0xFF101510),
-    surface = Color(0xFF101510),
+    primary = Color(0xFF82D5C5),
+    onPrimary = Color(0xFF003730),
+    primaryContainer = Color(0xFF005046),
+    onPrimaryContainer = Color(0xFFB0F0E2),
+
+    secondary = Color(0xFFFFB960),
+    onSecondary = Color(0xFF442B00),
+    secondaryContainer = Color(0xFF624000),
+    onSecondaryContainer = Color(0xFFFFDDB0),
+
+    tertiary = Color(0xFFFFAEEE),
+    onTertiary = Color(0xFF54155E),
+    tertiaryContainer = Color(0xFF6F2F75),
+    onTertiaryContainer = Color(0xFFFFD8F4),
+
+    background = Color(0xFF131312),
+    onBackground = Color(0xFFE5E2DA),
+    surface = Color(0xFF131312),
+    onSurface = Color(0xFFE5E2DA),
+    surfaceVariant = Color(0xFF2C2A26),
+    onSurfaceVariant = Color(0xFFC9C7BE),
+    outline = Color(0xFF92938A),
+    outlineVariant = Color(0xFF44483F),
 )
 
 @Composable
 fun TransferRateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Material You / dynamic color works on Android 12+; we're 14+ so always available.
-    dynamicColor: Boolean = true,
+    // Disabled by default so our crafted palette is the consistent visual identity.
+    // Set to true to opt into Material You dynamic theming on Android 12+.
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current

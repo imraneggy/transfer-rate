@@ -1,9 +1,12 @@
 package com.transferrate.app.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,26 +24,27 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.transferrate.app.R
+import com.transferrate.app.data.CURRENCIES
+import com.transferrate.app.data.CurrencyInfo
 import com.transferrate.app.data.ProviderQuote
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,15 +53,23 @@ fun RatesScreen(vm: RatesViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringRes(R.string.title_aed_inr)) },
+                title = {
+                    Text(
+                        stringResource(R.string.app_name),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
                 actions = {
                     IconButton(onClick = { vm.refresh() }) {
-                        // A small unicode glyph keeps us free of icon dependency bloat.
                         Text("↻", fontSize = 22.sp)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
             )
         }
     ) { padding ->
@@ -63,11 +77,18 @@ fun RatesScreen(vm: RatesViewModel = viewModel()) {
             when (val s = state) {
                 is RatesUiState.Loading -> CenteredSpinner()
                 is RatesUiState.Failed -> ErrorView(s.message) { vm.refresh() }
-                is RatesUiState.Ready -> RatesList(s)
+                is RatesUiState.Ready -> ReadyView(
+                    state = s,
+                    onSelectCurrency = vm::selectCurrency,
+                )
             }
         }
     }
 }
+
+@Composable
+private fun stringResource(id: Int): String =
+    androidx.compose.ui.res.stringResource(id)
 
 @Composable
 private fun CenteredSpinner() {
@@ -83,125 +104,335 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(stringRes(R.string.error_loading))
+        Text(stringResource(R.string.error_loading), fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(8.dp))
         Text(
             message,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
         )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(20.dp))
         IconButton(onClick = onRetry) { Text("Retry") }
     }
 }
 
 @Composable
-private fun RatesList(state: RatesUiState.Ready) {
+private fun ReadyView(
+    state: RatesUiState.Ready,
+    onSelectCurrency: (String) -> Unit,
+) {
     val ctx = LocalContext.current
+    val selected = state.selectedCurrency
+    val info = CURRENCIES[selected]
+
     LazyColumn(
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(
-            horizontal = 16.dp, vertical = 12.dp,
-        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
-            Column {
-                Text(
-                    text = "Quote for AED %.0f".format(state.doc.amountBase),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = "Updated ${state.doc.completedAt}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-                Spacer(Modifier.height(4.dp))
-            }
-        }
-        items(state.doc.providers, key = { it.providerId }) { p ->
-            ProviderCard(p, onClick = {
-                p.url?.let { url ->
-                    runCatching {
-                        val intent = android.content.Intent(
-                            android.content.Intent.ACTION_VIEW,
-                            android.net.Uri.parse(url),
-                        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                        ctx.startActivity(intent)
-                    }
-                }
-            })
+            HeaderBlock(
+                amount = state.doc.amountBase,
+                info = info,
+                completedAt = state.doc.completedAt,
+            )
         }
         item {
-            Spacer(Modifier.height(12.dp))
+            CurrencyChipRow(
+                available = state.doc.corridors.keys,
+                selected = selected,
+                onSelect = onSelectCurrency,
+            )
+            Spacer(Modifier.height(4.dp))
+        }
+        items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
+            val isBest = p.status == "ok"
+                    && state.bestRate != null
+                    && (p.effectiveRate ?: p.rate) == state.bestRate
+            ProviderCard(
+                p = p,
+                isBest = isBest,
+                onClick = {
+                    p.url?.let { url ->
+                        runCatching {
+                            val intent = android.content.Intent(
+                                android.content.Intent.ACTION_VIEW,
+                                android.net.Uri.parse(url),
+                            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                            ctx.startActivity(intent)
+                        }
+                    }
+                },
+            )
+        }
+        item {
+            Spacer(Modifier.height(16.dp))
             Text(
-                text = stringRes(R.string.disclaimer),
+                text = stringResource(R.string.disclaimer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun HeaderBlock(amount: Double, info: CurrencyInfo?, completedAt: String) {
+    Column(Modifier.padding(vertical = 8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "AED %,.0f".format(amount),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = "→",
+                fontSize = 22.sp,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Spacer(Modifier.width(10.dp))
+            if (info != null) {
+                Text(text = info.flag, fontSize = 24.sp)
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = info.code,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+        if (info != null) {
+            Text(
+                text = info.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline,
+            )
+        }
+        Spacer(Modifier.height(2.dp))
+        Text(
+            text = "Updated $completedAt",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+        )
+    }
+}
+
+@Composable
+private fun CurrencyChipRow(
+    available: Set<String>,
+    selected: String,
+    onSelect: (String) -> Unit,
+) {
+    val ordered = CURRENCIES.values.filter { it.code in available }
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 0.dp),
+    ) {
+        items(ordered, key = { it.code }) { info ->
+            CurrencyChip(
+                info = info,
+                isSelected = info.code == selected,
+                onClick = { onSelect(info.code) },
             )
         }
     }
 }
 
 @Composable
-private fun ProviderCard(p: ProviderQuote, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-        onClick = onClick,
+private fun CurrencyChip(info: CurrencyInfo, isSelected: Boolean, onClick: () -> Unit) {
+    val bgColor = if (isSelected) MaterialTheme.colorScheme.primary
+                  else MaterialTheme.colorScheme.surfaceVariant
+    val fgColor = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                  else MaterialTheme.colorScheme.onSurfaceVariant
+    Row(
+        modifier = Modifier
+            .background(bgColor, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(Modifier.padding(16.dp).fillMaxWidth()) {
+        Text(text = info.flag, fontSize = 16.sp)
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = info.code,
+            color = fgColor,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+        )
+    }
+}
+
+@Composable
+private fun ProviderCard(p: ProviderQuote, isBest: Boolean, onClick: () -> Unit) {
+    val containerColor = when {
+        isBest -> MaterialTheme.colorScheme.secondaryContainer
+        p.status == "ok" -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.surface
+    }
+    val border = if (isBest) {
+        Modifier.border(
+            width = 1.5.dp,
+            color = MaterialTheme.colorScheme.secondary,
+            shape = RoundedCornerShape(16.dp),
+        )
+    } else Modifier
+
+    Card(
+        modifier = Modifier.fillMaxWidth().then(border),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        onClick = onClick,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isBest) 2.dp else 0.dp),
+    ) {
+        Column(Modifier.padding(14.dp).fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                StatusDot(p.status)
-                Spacer(Modifier.size(12.dp))
+                ProviderAvatar(p.providerId, p.providerName, size = 44.dp)
+                Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(p.providerName, fontWeight = FontWeight.SemiBold)
-                    if (p.deliveryEstimate != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            p.deliveryEstimate,
+                            p.providerName,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        if (isBest) {
+                            Spacer(Modifier.width(8.dp))
+                            BestBadge()
+                        }
+                    }
+                    val sub = p.deliveryEstimate
+                        ?: when (p.status) {
+                            "ok" -> ""
+                            "stale" -> "Last good rate"
+                            "investigating" -> "Coming soon"
+                            else -> "Unavailable"
+                        }
+                    if (sub.isNotEmpty()) {
+                        Text(
+                            sub,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    if (p.status != "ok" && p.note != null) {
+                    if (p.status != "ok" && p.status != "investigating" && p.note != null) {
                         Text(
                             p.note,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline,
+                            maxLines = 2,
                         )
                     }
                 }
+                Spacer(Modifier.width(8.dp))
                 RateView(p)
             }
             if (p.status == "ok" && p.promoRate != null) {
-                Spacer(Modifier.height(8.dp))
-                PromoBadge(p.promoRate, p.promoNote)
+                Spacer(Modifier.height(10.dp))
+                PromoBadge(p.promoRate, p.promoNote, p.quote)
             }
         }
     }
 }
 
 @Composable
-private fun PromoBadge(promoRate: Double, note: String?) {
+private fun BestBadge() {
+    Box(
+        modifier = Modifier
+            .background(
+                MaterialTheme.colorScheme.secondary,
+                RoundedCornerShape(6.dp),
+            )
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "BEST",
+            color = MaterialTheme.colorScheme.onSecondary,
+            fontWeight = FontWeight.Bold,
+            fontSize = 10.sp,
+            letterSpacing = 0.6.sp,
+        )
+    }
+}
+
+@Composable
+private fun RateView(p: ProviderQuote) {
+    val rate = p.effectiveRate ?: p.rate
+    val symbol = CURRENCIES[p.quote]?.symbol ?: ""
+    Column(horizontalAlignment = Alignment.End) {
+        when (p.status) {
+            "ok" -> {
+                Text(
+                    text = if (rate != null) "%.4f".format(rate) else "—",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                )
+                Text(
+                    "$symbol per AED",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            "stale" -> {
+                Text(
+                    text = if (rate != null) "%.4f".format(rate) else "—",
+                    color = MaterialTheme.colorScheme.outline,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                )
+                Text(
+                    "stale",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+            "investigating" -> StatusDot(Color(0xFF94A3B8))
+            else -> StatusDot(MaterialTheme.colorScheme.error)
+        }
+    }
+}
+
+@Composable
+private fun PromoBadge(promoRate: Double, note: String?, quoteCode: String) {
+    val symbol = CURRENCIES[quoteCode]?.symbol ?: ""
     Row(
         Modifier
             .fillMaxWidth()
             .background(
                 MaterialTheme.colorScheme.tertiaryContainer,
-                RoundedCornerShape(8.dp),
+                RoundedCornerShape(10.dp),
             )
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "%.4f".format(promoRate),
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onTertiaryContainer,
-            style = MaterialTheme.typography.bodySmall,
+            fontSize = 13.sp,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontFeatureSettings = "tnum",
+            ),
         )
-        Spacer(Modifier.size(8.dp))
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = "$symbol",
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            fontSize = 13.sp,
+        )
+        Spacer(Modifier.width(10.dp))
         Text(
             text = note ?: "Promotional rate",
             style = MaterialTheme.typography.bodySmall,
@@ -211,60 +442,8 @@ private fun PromoBadge(promoRate: Double, note: String?) {
 }
 
 @Composable
-private fun RateView(p: ProviderQuote) {
-    val rate = p.effectiveRate ?: p.rate
-    Column(horizontalAlignment = Alignment.End) {
-        when (p.status) {
-            "ok" -> {
-                Text(
-                    text = if (rate != null) "%.4f".format(rate) else "—",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                )
-                Text(
-                    "₹ per AED",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
-            "stale" -> {
-                Text(
-                    text = if (rate != null) "%.4f".format(rate) else "—",
-                    color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    stringRes(R.string.status_stale),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
-            "investigating" -> Text(
-                stringRes(R.string.status_investigating),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            else -> Text(
-                stringRes(R.string.status_error),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
-    }
-}
-
-@Composable
-private fun StatusDot(status: String) {
-    val color = when (status) {
-        "ok" -> Color(0xFF2E7D32)
-        "stale" -> Color(0xFFF57C00)
-        "investigating" -> Color(0xFF455A64)
-        else -> Color(0xFFC62828)
-    }
+private fun StatusDot(color: Color) {
     Box(
         Modifier.size(10.dp).background(color, CircleShape),
     )
 }
-
-@Composable
-private fun stringRes(id: Int) = androidx.compose.ui.res.stringResource(id)

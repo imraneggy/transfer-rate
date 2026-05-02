@@ -1,16 +1,16 @@
-"""e& Money — placeholder."""
+"""Index Exchange — placeholder."""
 from __future__ import annotations
 
 from .base import BaseProvider, Quote
 
 
-class EandProvider(BaseProvider):
-    id = "eand"
-    display_name = "e& Money"
+class IndexExchangeProvider(BaseProvider):
+    id = "index_exchange"
+    display_name = "Index Exchange"
 
     def fetch(self, target_currency: str = "INR", amount_base: float = 1000.0) -> Quote:
         return self._stub(
-            note="No stable public rate page yet. Contributions welcome.",
+            note="indexexchange.ae — parser pending.",
             target_currency=target_currency,
             amount_base=amount_base,
         )
