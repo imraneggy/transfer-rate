@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  OS splash icon (Android 12+). Mirrors the launcher chart-line design,
-  scaled for the splash container's 64dp viewport.
+  OS splash icon (Android 12+). Same Exchangia E logo as launcher
+  foreground, scaled to the splash container's 64dp viewport.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="64dp"
@@ -9,37 +9,33 @@
     android:viewportWidth="64"
     android:viewportHeight="64">
 
-    <!-- Faint baseline band -->
+    <!-- E spine -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.10"
-        android:pathData="M14,48 L50,48 A1.2,1.2 0 0 1 50,50.4 L14,50.4 A1.2,1.2 0 0 1 14,48 Z" />
+        android:fillColor="#00B49E"
+        android:pathData="M16,16 m0,3 a3,3 0 0,1 6,0 v26 a3,3 0 0,1 -6,0 z" />
 
-    <!-- Ascending chart line in gold -->
+    <!-- Top arm -->
     <path
-        android:strokeColor="#FFD980"
-        android:strokeWidth="3.8"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000"
-        android:pathData="M16,42 L28,33 L37,39 L50,18" />
+        android:fillColor="#00B49E"
+        android:pathData="M16,16 m3,0 h21 a3,3 0 0,1 0,6 h-21 a3,3 0 0,1 0,-6 z" />
 
-    <!-- Two mid markers -->
+    <!-- Middle arm -->
     <path
-        android:fillColor="#FFD980"
-        android:fillAlpha="0.55"
-        android:pathData="M28,33 m-1.9,0 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z" />
-    <path
-        android:fillColor="#FFD980"
-        android:fillAlpha="0.55"
-        android:pathData="M37,39 m-1.9,0 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z" />
+        android:fillColor="#00B49E"
+        android:pathData="M16,29 m3,0 h15 a3,3 0 0,1 0,6 h-15 a3,3 0 0,1 0,-6 z" />
 
-    <!-- Final / "current" data point -->
+    <!-- Bottom arm -->
     <path
-        android:fillColor="#FFD980"
-        android:pathData="M50,18 m-4.2,0 a4.2,4.2 0 1,0 8.4,0 a4.2,4.2 0 1,0 -8.4,0 Z" />
+        android:fillColor="#00B49E"
+        android:pathData="M16,42 m3,0 h21 a3,3 0 0,1 0,6 h-21 a3,3 0 0,1 0,-6 z" />
+
+    <!-- INR cue (light cyan) -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.32"
-        android:pathData="M50,18 m-2.1,0 a2.1,2.1 0 1,0 4.2,0 a2.1,2.1 0 1,0 -4.2,0 Z" />
+        android:fillColor="#9DEAD0"
+        android:pathData="M45,19 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" />
+
+    <!-- AED cue (gold) -->
+    <path
+        android:fillColor="#F4B940"
+        android:pathData="M45,45 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" />
 </vector>

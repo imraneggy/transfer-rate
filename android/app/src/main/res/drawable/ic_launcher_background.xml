@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon background.
-  Solid deep teal that matches the app's primary brand color (#00665B).
-  Adaptive icons receive 108dp canvas; the outer 18dp gets masked.
+  Launcher icon background — brand deep navy #0E1F3A.
+
+  Per Exchangia brand brief 2026-05-02. Adaptive icons receive a 108dp
+  canvas; the outer 18dp gets masked by the launcher.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -10,14 +11,14 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Solid teal fill -->
+    <!-- Solid deep navy fill -->
     <path
-        android:fillColor="#00665B"
+        android:fillColor="#0E1F3A"
         android:pathData="M0,0h108v108h-108z" />
 
-    <!-- Subtle radial highlight to add depth without looking "wet" -->
+    <!-- Subtle radial highlight in mid-blue for depth -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.06"
-        android:pathData="M54,54 m-50,0 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0z" />
+        android:fillColor="#1E3A5F"
+        android:fillAlpha="0.55"
+        android:pathData="M54,54 m-58,0 a58,58 0 1,0 116,0 a58,58 0 1,0 -116,0z" />
 </vector>

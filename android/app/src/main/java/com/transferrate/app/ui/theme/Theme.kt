@@ -16,65 +16,81 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Custom palette tuned for a financial comparison app.
- * The accent (primary) is a deep teal — evokes trust/banking without
- * looking generically corporate. Secondary is a warm gold for the
- * "Best rate" highlight. Neutrals are warm-leaning for readability.
+ * Exchangia brand palette (per design brief 2026-05-02).
+ *
+ * Brand swatches:
+ *   - Primary teal:       #00B49E  (the E logo + active controls)
+ *   - Deep navy:          #0E1F3A  (high-contrast text + dark icon variant)
+ *   - Mid blue:           #1E3A5F  (secondary surfaces in dark mode)
+ *   - Accent gold:        #F4B940  (BEST badge / promo accents)
+ *   - Light cyan:         #9DEAD0  (light primaryContainer / soft fills)
+ *   - Off-white surface:  #F4F4F0  (warm-leaning background)
+ *
+ * Both schemes are AAA-contrast for body text on background and AA on
+ * surfaceVariant, verified with the official WCAG calculator.
  */
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF00665B),         // deep teal
+    primary = Color(0xFF00B49E),         // brand teal
     onPrimary = Color.White,
-    primaryContainer = Color(0xFF9DE7D6),  // slightly deeper than v0.9
-    onPrimaryContainer = Color(0xFF00201B),
+    primaryContainer = Color(0xFF9DEAD0),
+    onPrimaryContainer = Color(0xFF00261F),
 
-    secondary = Color(0xFF7A4F00),       // warm gold (BEST badge)
+    secondary = Color(0xFF7E5A00),       // gold for BEST badge (deepened for AA contrast on white)
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFFFDDB0),
-    onSecondaryContainer = Color(0xFF291800),
+    secondaryContainer = Color(0xFFFFE3A8),
+    onSecondaryContainer = Color(0xFF281A00),
 
-    tertiary = Color(0xFF8B4789),        // accent for promo badge
+    tertiary = Color(0xFF1E3A5F),        // mid blue used for promo badge accents
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFD8F4),
-    onTertiaryContainer = Color(0xFF370041),
+    tertiaryContainer = Color(0xFFD3E3FA),
+    onTertiaryContainer = Color(0xFF051A33),
 
-    background = Color(0xFFFCFAF7),
-    onBackground = Color(0xFF1B1B1B),
-    surface = Color(0xFFFCFAF7),
-    onSurface = Color(0xFF1B1B1B),
-    surfaceVariant = Color(0xFFEEEAE2),
-    onSurfaceVariant = Color(0xFF44483F),
+    background = Color(0xFFF4F4F0),      // brand off-white
+    onBackground = Color(0xFF0E1F3A),    // brand deep navy as body text
+    surface = Color(0xFFFAFAF7),
+    onSurface = Color(0xFF0E1F3A),
+    surfaceVariant = Color(0xFFEAEAE2),
+    onSurfaceVariant = Color(0xFF45495A),
     outline = Color(0xFF767870),
-    outlineVariant = Color(0xFFC6C7BE),
+    outlineVariant = Color(0xFFCBCEC4),
+    error = Color(0xFFB3261E),
+    onError = Color.White,
+    errorContainer = Color(0xFFF9DEDC),
+    onErrorContainer = Color(0xFF410E0B),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF82D5C5),
-    onPrimary = Color(0xFF003730),
-    primaryContainer = Color(0xFF00574B),    // deeper for better card prominence
-    onPrimaryContainer = Color(0xFFC4F1E2),
+    primary = Color(0xFF5BD8C0),         // lifted teal for dark surface readability
+    onPrimary = Color(0xFF003830),
+    primaryContainer = Color(0xFF005A4D),
+    onPrimaryContainer = Color(0xFFB6F2DE),
 
-    secondary = Color(0xFFFFB960),
-    onSecondary = Color(0xFF442B00),
-    secondaryContainer = Color(0xFF6E4800),  // slightly brighter so BEST badge pops
-    onSecondaryContainer = Color(0xFFFFDDB0),
+    secondary = Color(0xFFFFD069),       // brighter gold so BEST pops on dark
+    onSecondary = Color(0xFF402D00),
+    secondaryContainer = Color(0xFF604200),
+    onSecondaryContainer = Color(0xFFFFE3A8),
 
-    tertiary = Color(0xFFFFAEEE),
-    onTertiary = Color(0xFF54155E),
-    tertiaryContainer = Color(0xFF6F2F75),
-    onTertiaryContainer = Color(0xFFFFD8F4),
+    tertiary = Color(0xFFA8C8F0),        // mid-blue lifted for dark
+    onTertiary = Color(0xFF002046),
+    tertiaryContainer = Color(0xFF1E3A5F),
+    onTertiaryContainer = Color(0xFFD3E3FA),
 
-    // Subtle hierarchy: bg darkest, surface a touch lighter, surfaceVariant
-    // lighter still — gives provider cards a clearer "lifted" feel without
-    // explicit elevation shadows.
-    background = Color(0xFF101010),
-    onBackground = Color(0xFFE5E2DA),
-    surface = Color(0xFF181818),
-    onSurface = Color(0xFFE5E2DA),
-    surfaceVariant = Color(0xFF2C2A26),
-    onSurfaceVariant = Color(0xFFC9C7BE),
-    outline = Color(0xFF92938A),
-    outlineVariant = Color(0xFF44483F),
+    // Hierarchy: bg darkest navy, surface a touch lighter, surfaceVariant
+    // lifted again — gives provider cards a clearer elevation feel without
+    // explicit shadows.
+    background = Color(0xFF0A1424),      // deep navy
+    onBackground = Color(0xFFE5E8F0),
+    surface = Color(0xFF101D33),
+    onSurface = Color(0xFFE5E8F0),
+    surfaceVariant = Color(0xFF1E2A40),
+    onSurfaceVariant = Color(0xFFC9CDD8),
+    outline = Color(0xFF8A92A1),
+    outlineVariant = Color(0xFF3A445A),
+    error = Color(0xFFFF8A80),
+    onError = Color(0xFF410E0B),
+    errorContainer = Color(0xFF601410),
+    onErrorContainer = Color(0xFFF9DEDC),
 )
 
 @Composable
@@ -102,5 +118,9 @@ fun TransferRateTheme(
         }
     }
 
-    MaterialTheme(colorScheme = colorScheme, content = content)
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = ExchangiaTypography,
+        content = content,
+    )
 }

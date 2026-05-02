@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon foreground (v0.10) — single bold ascending chart line in
-  gold, with three data-point markers, the final point larger to read as
-  "the latest / best rate."
+  Launcher icon foreground (Exchangia brand 2026-05-02).
 
-  Design intent:
-    * Communicates "rates moving" / "comparison chart" instantly without
-      relying on text. Reads at any size from 24dp (notification badge)
-      to 192dp (high-density launcher).
-    * Single shape with one colour story: less busy than the previous
-      three-bar layout, more deliberate, more professional.
-    * Geometry stays inside the 66dp safe zone of the 108dp adaptive
-      canvas so any mask (circle/squircle/teardrop) won't crop content.
+  Stylized "E" letterform in brand teal (#00B49E) with two currency cue
+  accents:
+    - Upper-right cyan ball: INR (₹) cue
+    - Lower-right gold ball: AED (د.إ) cue
+
+  The "E" is built as a single monoline composite of three rounded
+  horizontal arms with a left spine — a clean, geometric reading that
+  works from 24dp notification badges up to 192dp launchers.
+
+  Geometry stays inside the 66dp safe zone of the 108dp adaptive canvas
+  so any mask (circle/squircle/teardrop) won't crop content.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -19,39 +20,47 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Soft baseline glow (a faint horizontal band underlining the chart,
-         signals "axis" without being literal) -->
+    <!-- =====  Letter E  =====
+         Spine (vertical bar on the left, rounded top + bottom).
+         Stroke is approximated as a filled rounded rect to allow gradient/
+         multi-tone fills if we later add depth.  -->
+    <path
+        android:fillColor="#00B49E"
+        android:pathData="M28,28 m0,5 a5,5 0 0,1 10,0 v42 a5,5 0 0,1 -10,0 z" />
+
+    <!-- Top arm of E (long, rounded right end) -->
+    <path
+        android:fillColor="#00B49E"
+        android:pathData="M28,28 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
+
+    <!-- Middle arm of E (shorter, rounded right end) -->
+    <path
+        android:fillColor="#00B49E"
+        android:pathData="M28,49 m5,0 h25 a5,5 0 0,1 0,10 h-25 a5,5 0 0,1 0,-10 z" />
+
+    <!-- Bottom arm of E (long, rounded right end, mirrors top) -->
+    <path
+        android:fillColor="#00B49E"
+        android:pathData="M28,70 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
+
+    <!-- =====  Currency cues  =====
+         INR (₹) cue: light cyan ball at upper-right, attached to the
+         end of the top arm. Suggests "rupee marker" without literal
+         glyph (which would be illegible at small sizes).  -->
+    <path
+        android:fillColor="#9DEAD0"
+        android:pathData="M76,33 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
     <path
         android:fillColor="#FFFFFF"
-        android:fillAlpha="0.10"
-        android:pathData="M22,82 L88,82 A2,2 0 0 1 88,86 L22,86 A2,2 0 0 1 22,82 Z" />
+        android:fillAlpha="0.45"
+        android:pathData="M76,33 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0 z" />
 
-    <!-- The ascending chart line: bold gold polyline with rounded joins -->
+    <!-- AED cue: brand gold ball at lower-right -->
     <path
-        android:strokeColor="#FFD980"
-        android:strokeWidth="6.5"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="#00000000"
-        android:pathData="M26,72 L46,56 L62,66 L84,32" />
-
-    <!-- Mid data-point markers (small, 60% opacity gold) -->
-    <path
-        android:fillColor="#FFD980"
-        android:fillAlpha="0.55"
-        android:pathData="M46,56 m-3.2,0 a3.2,3.2 0 1,0 6.4,0 a3.2,3.2 0 1,0 -6.4,0 Z" />
-    <path
-        android:fillColor="#FFD980"
-        android:fillAlpha="0.55"
-        android:pathData="M62,66 m-3.2,0 a3.2,3.2 0 1,0 6.4,0 a3.2,3.2 0 1,0 -6.4,0 Z" />
-
-    <!-- Final / "current" data point: large solid gold circle with white
-         inner highlight to read as polished, premium -->
-    <path
-        android:fillColor="#FFD980"
-        android:pathData="M84,32 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+        android:fillColor="#F4B940"
+        android:pathData="M76,75 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
     <path
         android:fillColor="#FFFFFF"
-        android:fillAlpha="0.32"
-        android:pathData="M84,32 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 Z" />
+        android:fillAlpha="0.45"
+        android:pathData="M76,75 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0 z" />
 </vector>

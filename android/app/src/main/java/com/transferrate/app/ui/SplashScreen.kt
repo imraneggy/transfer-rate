@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,28 +28,24 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.transferrate.app.R
 import kotlinx.coroutines.delay
 
 /**
- * Branded splash that runs AFTER the OS native splash and BEFORE the
- * rates list shows. Holds for at least [minDurationMs] so the brand
- * registers, then fades when the caller's data is ready.
+ * Branded Exchangia splash that runs AFTER the OS native splash and
+ * BEFORE the rates list. Holds for at least [minDurationMs] so the
+ * brand registers, then dismisses when the caller's data is ready.
  *
- * Design:
- *   - Same teal background as the OS splash (visual continuity)
- *   - The three-bar logo, drawn fresh in Canvas at a comfortable size
- *   - "Transfer Rate" wordmark
- *   - Tagline: "Compare AED -> INR rates"
+ * Composition (per brand brief 2026-05-02):
+ *   - Deep navy backdrop matching the OS splash (visual continuity)
+ *   - The Exchangia "E" logo with INR + AED currency cues
+ *   - "Exchangia" wordmark in Manrope ExtraBold
+ *   - Tagline: "Compare INR rates across UAE"
  *   - Subtle loading indicator at the bottom
  *   - Whole composition fades in over 400ms for a softer transition
  *     from the OS splash
- *
- * The OS splash already showed the icon for ~200ms before this — so by
- * the time the user perceives the "splash", they've actually been seeing
- * the brand for ~1.2 seconds total. Plenty for recognition.
  */
 @Composable
 fun SplashScreen(
@@ -73,6 +69,8 @@ fun SplashScreen(
         label = "splash-fade",
     )
 
+    val white = Color.White
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,40 +82,31 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         ) {
-            BarsLogo(size = 96.dp)
+            ExchangiaLogo(size = 104.dp)
 
-            Spacer(Modifier.height(24.dp))
-
-            Text(
-                text = "Transfer Rate",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.5).sp,
-            )
-
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(28.dp))
 
             Text(
-                text = "Live AED → INR rates",
-                color = Color.White.copy(alpha = 0.78f),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
+                text = "Exchangia",
+                color = white,
+                style = MaterialTheme.typography.displaySmall.copy(
+                    fontSize = 38.sp,
+                ),
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(10.dp))
 
             Text(
-                text = "Mid-market benchmark + 10 providers",
-                color = Color.White.copy(alpha = 0.55f),
-                fontSize = 13.sp,
+                text = androidx.compose.ui.res.stringResource(R.string.app_tagline),
+                color = white.copy(alpha = 0.78f),
+                style = MaterialTheme.typography.titleSmall,
             )
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(44.dp))
 
             CircularProgressIndicator(
                 modifier = Modifier.size(28.dp),
-                color = Color.White.copy(alpha = 0.55f),
+                color = white.copy(alpha = 0.55f),
                 strokeWidth = 2.5.dp,
             )
         }
@@ -125,50 +114,74 @@ fun SplashScreen(
 }
 
 /**
- * The same chart-line logo as the launcher icon, drawn in Canvas so it
- * can sit at any size in the splash and about screen without resource
- * scaling artefacts. Mirrors res/drawable/ic_launcher_foreground.xml.
+ * Compose-drawn version of the Exchangia "E" logo with INR + AED currency
+ * cues. Mirrors the geometry of res/drawable/ic_launcher_foreground.xml so
+ * the OS splash icon and the in-app splash logo are visually identical.
  *
- * Composition: a faint baseline band, a bold gold polyline rising
- * left-to-right with two mid markers and a larger highlighted final
- * data point — communicates "rates trending / latest reading."
+ * Reused by SplashScreen and AboutScreen. Drawn in Canvas (not as a
+ * resource Image) so the size and stroke widths scale precisely without
+ * resource-density fuzz.
  */
 @Composable
-fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
-    val gold = Color(0xFFFFD980)
-    val baseline = Color.White.copy(alpha = 0.10f)
-    val midMarker = gold.copy(alpha = 0.55f)
-    val innerHighlight = Color.White.copy(alpha = 0.32f)
+fun ExchangiaLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
+    val teal = Color(0xFF00B49E)         // brand primary
+    val cyan = Color(0xFF9DEAD0)         // INR cue
+    val gold = Color(0xFFF4B940)         // AED cue
+    val highlight = Color.White.copy(alpha = 0.45f)
 
     Canvas(modifier = Modifier.size(size)) {
         val w = this.size.width
         val h = this.size.height
 
-        // Baseline band along the bottom (axis suggestion)
+        // Coordinates inside a 108x108 logical canvas (matching the
+        // launcher vector drawable). Multiply by w/108 and h/108 to map
+        // to pixels; w == h for square Canvas.
+        fun fx(x: Float) = x * w / 108f
+        fun fy(y: Float) = y * h / 108f
+
+        val armCorner = CornerRadius(fx(5f), fy(5f))
+
+        // E spine: rounded vertical bar, x:[28..38], y:[28..80]
         drawRoundRect(
-            color = baseline,
-            topLeft = Offset(w * 0.20f, h * 0.76f),
-            size = Size(w * 0.60f, h * 0.04f),
-            cornerRadius = CornerRadius(h * 0.02f, h * 0.02f),
+            color = teal,
+            topLeft = Offset(fx(28f), fy(28f)),
+            size = Size(fx(10f), fy(52f)),
+            cornerRadius = armCorner,
+        )
+        // Top arm: x:[33..68], y:[28..38] (overlaps spine slightly)
+        drawRoundRect(
+            color = teal,
+            topLeft = Offset(fx(33f), fy(28f)),
+            size = Size(fx(35f), fy(10f)),
+            cornerRadius = armCorner,
+        )
+        // Middle arm: x:[33..58], y:[49..59]
+        drawRoundRect(
+            color = teal,
+            topLeft = Offset(fx(33f), fy(49f)),
+            size = Size(fx(25f), fy(10f)),
+            cornerRadius = armCorner,
+        )
+        // Bottom arm: x:[33..68], y:[70..80]
+        drawRoundRect(
+            color = teal,
+            topLeft = Offset(fx(33f), fy(70f)),
+            size = Size(fx(35f), fy(10f)),
+            cornerRadius = armCorner,
         )
 
-        // Three line segments forming an ascending zigzag with rounded joins
-        val p0 = Offset(w * 0.24f, h * 0.66f)
-        val p1 = Offset(w * 0.42f, h * 0.52f)
-        val p2 = Offset(w * 0.58f, h * 0.62f)
-        val p3 = Offset(w * 0.79f, h * 0.30f)
-        val strokeW = w * 0.060f
-        val cap = androidx.compose.ui.graphics.StrokeCap.Round
-        drawLine(color = gold, start = p0, end = p1, strokeWidth = strokeW, cap = cap)
-        drawLine(color = gold, start = p1, end = p2, strokeWidth = strokeW, cap = cap)
-        drawLine(color = gold, start = p2, end = p3, strokeWidth = strokeW, cap = cap)
+        // INR cue ball (cyan with white inner highlight)
+        drawCircle(color = cyan, radius = fx(6f), center = Offset(fx(76f), fy(33f)))
+        drawCircle(color = highlight, radius = fx(2.5f), center = Offset(fx(76f), fy(33f)))
 
-        // Mid data-point markers
-        drawCircle(color = midMarker, radius = w * 0.030f, center = p1)
-        drawCircle(color = midMarker, radius = w * 0.030f, center = p2)
-
-        // Final / "current" reading: large filled marker with inner highlight
-        drawCircle(color = gold, radius = w * 0.066f, center = p3)
-        drawCircle(color = innerHighlight, radius = w * 0.033f, center = p3)
+        // AED cue ball (gold with white inner highlight)
+        drawCircle(color = gold, radius = fx(6f), center = Offset(fx(76f), fy(75f)))
+        drawCircle(color = highlight, radius = fx(2.5f), center = Offset(fx(76f), fy(75f)))
     }
 }
+
+/** Backwards-compat alias: BarsLogo() is referenced by AboutScreen. */
+@Composable
+@Deprecated("Renamed to ExchangiaLogo for the v0.11 brand refresh.",
+    replaceWith = ReplaceWith("ExchangiaLogo(size)"))
+fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) = ExchangiaLogo(size)
