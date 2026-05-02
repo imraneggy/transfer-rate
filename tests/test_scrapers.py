@@ -21,6 +21,7 @@ import pytest
 from scrapers.aspora import AsporaProvider
 from scrapers.al_ansari import AlAnsariProvider
 from scrapers.al_dahab import AlDahabProvider
+from scrapers.federal_exchange import FederalExchangeProvider
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
 from scrapers.lulu import LuluProvider
@@ -165,6 +166,27 @@ def test_al_dahab_handles_missing_corridor(httpx_mock):
     )
     with pytest.raises(RuntimeError, match="not in marquee"):
         AlDahabProvider().fetch(target_currency="EUR")
+
+
+# --- Federal Exchange ---------------------------------------------------
+
+def test_federal_exchange_extracts_rate_from_card(httpx_mock):
+    httpx_mock.add_response(
+        url=re.compile(r"https://www\.federalexchange\.ae.*"),
+        text=fixture_text("federal_exchange_page.html"),
+        headers={"content-type": "text/html"},
+    )
+    q = FederalExchangeProvider().fetch()
+    assert q.status == "ok"
+    assert q.provider_id == "federal_exchange"
+    assert q.rate == 25.77
+    assert q.base == "AED"
+    assert q.quote == "INR"
+
+
+def test_federal_exchange_rejects_unknown_currency():
+    with pytest.raises(RuntimeError, match="no known label"):
+        FederalExchangeProvider().fetch(target_currency="XYZ")
 
 
 # --- GCC Exchange -------------------------------------------------------
