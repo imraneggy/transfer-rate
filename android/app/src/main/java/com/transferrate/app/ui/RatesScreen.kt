@@ -125,25 +125,25 @@ private fun ReadyView(
     val ctx = LocalContext.current
     val selected = state.selectedCurrency
     val info = CURRENCIES[selected]
+    val midMarket = state.midMarketRate
 
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         item {
-            HeaderBlock(
-                amount = state.doc.amountBase,
-                info = info,
-                completedAt = state.doc.completedAt,
-            )
-        }
-        item {
             CurrencyChipRow(
                 available = state.doc.corridors.keys,
                 selected = selected,
                 onSelect = onSelectCurrency,
             )
-            Spacer(Modifier.height(4.dp))
+        }
+        item {
+            MidMarketHeader(
+                info = info,
+                midMarket = midMarket,
+                completedAt = state.doc.completedAt,
+            )
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = p.status == "ok"
@@ -152,6 +152,7 @@ private fun ReadyView(
             ProviderCard(
                 p = p,
                 isBest = isBest,
+                midMarket = midMarket,
                 onClick = {
                     p.url?.let { url ->
                         runCatching {
@@ -179,47 +180,87 @@ private fun ReadyView(
     }
 }
 
+/**
+ * Mid-market header — the prominent objective benchmark for this corridor.
+ *
+ * Format:
+ *   1 AED
+ *   = 25.8041 ₹
+ *   Indian Rupee · Mid-market rate
+ *   Updated 2 minutes ago
+ *
+ * Sourced from Wise's /rates/live endpoint, which IS the mid-market
+ * (interbank midpoint) rate. We label it as such so users know it's the
+ * objective benchmark, not Wise's marketing position.
+ */
 @Composable
-private fun HeaderBlock(amount: Double, info: CurrencyInfo?, completedAt: String) {
-    Column(Modifier.padding(vertical = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "AED %,.0f".format(amount),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Spacer(Modifier.width(10.dp))
-            Text(
-                text = "→",
-                fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.outline,
-            )
-            Spacer(Modifier.width(10.dp))
-            if (info != null) {
-                Text(text = info.flag, fontSize = 24.sp)
-                Spacer(Modifier.width(6.dp))
+private fun MidMarketHeader(
+    info: CurrencyInfo?,
+    midMarket: Double?,
+    completedAt: String,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+    ) {
+        Column(Modifier.padding(horizontal = 18.dp, vertical = 16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = info.code,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    text = "1 AED",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.65f),
+                    letterSpacing = 0.6.sp,
                 )
+                Spacer(Modifier.width(8.dp))
+                if (info != null) {
+                    Text(text = info.flag, fontSize = 18.sp)
+                }
             }
-        }
-        if (info != null) {
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = "=",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    text = if (midMarket != null) "%.4f".format(midMarket) else "—",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                )
+                Spacer(Modifier.width(8.dp))
+                if (info != null) {
+                    Text(
+                        text = info.symbol,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
             Text(
-                text = info.name,
+                text = if (info != null) "${info.name} · Mid-market rate" else "Mid-market rate",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f),
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = "Updated $completedAt · Wise live FX",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.55f),
             )
         }
-        Spacer(Modifier.height(2.dp))
-        Text(
-            text = "Updated $completedAt",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
-        )
     }
 }
 
@@ -269,7 +310,12 @@ private fun CurrencyChip(info: CurrencyInfo, isSelected: Boolean, onClick: () ->
 }
 
 @Composable
-private fun ProviderCard(p: ProviderQuote, isBest: Boolean, onClick: () -> Unit) {
+private fun ProviderCard(
+    p: ProviderQuote,
+    isBest: Boolean,
+    midMarket: Double?,
+    onClick: () -> Unit,
+) {
     val containerColor = when {
         isBest -> MaterialTheme.colorScheme.secondaryContainer
         p.status == "ok" -> MaterialTheme.colorScheme.surfaceVariant
@@ -331,7 +377,7 @@ private fun ProviderCard(p: ProviderQuote, isBest: Boolean, onClick: () -> Unit)
                     }
                 }
                 Spacer(Modifier.width(8.dp))
-                RateView(p)
+                RateView(p, midMarket = midMarket)
             }
             if (p.status == "ok" && p.promoRate != null) {
                 Spacer(Modifier.height(10.dp))
@@ -362,7 +408,7 @@ private fun BestBadge() {
 }
 
 @Composable
-private fun RateView(p: ProviderQuote) {
+private fun RateView(p: ProviderQuote, midMarket: Double?) {
     val rate = p.effectiveRate ?: p.rate
     val symbol = CURRENCIES[p.quote]?.symbol ?: ""
     Column(horizontalAlignment = Alignment.End) {
@@ -377,11 +423,27 @@ private fun RateView(p: ProviderQuote) {
                         fontFeatureSettings = "tnum",
                     ),
                 )
-                Text(
-                    "$symbol per AED",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (rate != null && midMarket != null) {
+                    val delta = rate - midMarket
+                    val (label, color) = when {
+                        delta > 0.001 -> "+%.4f".format(delta) to Color(0xFF1B7B33)
+                        delta < -0.001 -> "%.4f".format(delta) to Color(0xFFB71C1C)
+                        else -> "= mid-market" to MaterialTheme.colorScheme.outline
+                    }
+                    Text(
+                        text = "$label vs mid-market",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFeatureSettings = "tnum",
+                        ),
+                        color = color,
+                    )
+                } else {
+                    Text(
+                        "$symbol per AED",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             "stale" -> {
                 Text(

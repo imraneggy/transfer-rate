@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher icon foreground — two horizontal arrows facing opposite directions,
+  the universal currency-exchange symbol. Drawn in white on a 108dp canvas.
+
+  Content is kept inside the 66dp safe zone (centered: x in [21,87], y in [21,87])
+  so masks (circle/squircle/teardrop) never crop the meaningful shapes.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Top arrow: pointing RIGHT (sender currency flowing out)
+         Body: rectangle x=32..68, y=44..50 (height 6, length 36)
+         Head: triangle from y=40..54, point at x=78
+         Combined shape (clockwise from top-left of body): -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,44
+                          L66,44
+                          L66,38
+                          L80,47
+                          L66,56
+                          L66,50
+                          L32,50
+                          Z" />
+
+    <!-- Bottom arrow: pointing LEFT (receive currency flowing in)
+         Body: rectangle x=40..76, y=58..64 (height 6, length 36)
+         Head: triangle from y=54..68, point at x=28 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M76,58
+                          L42,58
+                          L42,52
+                          L28,61
+                          L42,70
+                          L42,64
+                          L76,64
+                          Z" />
+</vector>

@@ -57,7 +57,8 @@ from .botim import BotimProvider
 from .comera import ComeraProvider
 from .eand import EandProvider
 
-# Tier 3 — additional UAE exchange houses & global remitters (stubbed)
+# Tier 3 — additional UAE exchange houses, bank remit products,
+# and global remitters (all stubbed; parsers pending contributor work)
 from .al_ansari import AlAnsariProvider
 from .al_fardan import AlFardanProvider
 from .unimoni import UnimoniProvider
@@ -66,17 +67,30 @@ from .joyalukkas import JoyalukkasProvider
 from .gcc_exchange import GccExchangeProvider
 from .index_exchange import IndexExchangeProvider
 from .wall_street import WallStreetProvider
+from .lari import LariProvider
+from .orient import OrientProvider
+from .al_razouki import AlRazoukiProvider
+from .habib import HabibProvider
 from .western_union import WesternUnionProvider
 from .moneygram import MoneyGramProvider
+from .worldremit import WorldRemitProvider
+from .instarem import InstaRemProvider
+from .xoom import XoomProvider
+# Bank remittance products
+from .emirates_nbd import EmiratesNbdProvider
+from .fab_remit import FabRemitProvider
+from .mashreq_quick import MashreqQuickProvider
 
 
-# Display order. Working providers first; investigating below.
+# Display order: working providers first, then UAE exchange houses,
+# then global remitters, then bank-remit products, then app-only services.
 PROVIDERS: List[BaseProvider] = [
+    # --- Working ---
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
+    # --- Major UAE exchange houses (stubs) ---
     LuluProvider(),
-    CareemProvider(),
     AlAnsariProvider(),
     AlFardanProvider(),
     UnimoniProvider(),
@@ -85,8 +99,22 @@ PROVIDERS: List[BaseProvider] = [
     GccExchangeProvider(),
     IndexExchangeProvider(),
     WallStreetProvider(),
+    LariProvider(),
+    OrientProvider(),
+    AlRazoukiProvider(),
+    HabibProvider(),
+    # --- Global remitters (stubs) ---
     WesternUnionProvider(),
     MoneyGramProvider(),
+    WorldRemitProvider(),
+    InstaRemProvider(),
+    XoomProvider(),
+    # --- Bank remittance products (stubs) ---
+    EmiratesNbdProvider(),
+    FabRemitProvider(),
+    MashreqQuickProvider(),
+    # --- App-only services (stubs) ---
+    CareemProvider(),
     EandProvider(),
     BotimProvider(),
     ComeraProvider(),

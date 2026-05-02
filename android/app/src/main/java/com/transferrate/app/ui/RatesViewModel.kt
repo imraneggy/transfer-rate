@@ -17,17 +17,31 @@ sealed interface RatesUiState {
         val selectedCurrency: String,
         val refreshing: Boolean = false,
     ) : RatesUiState {
-        /** Quotes for the currently selected corridor, sorted: ok by best rate, then stale, then investigating, then error. */
+        /** Wise's mid-market rate for the selected corridor — the objective benchmark.
+         *  We pull this out separately so the UI can headline it and compute deltas. */
+        val midMarketRate: Double?
+            get() = doc.corridors[selectedCurrency]
+                ?.firstOrNull { it.providerId == "wise" && it.status == "ok" }
+                ?.rate
+
+        /** Quotes for the selected corridor, EXCLUDING the mid-market provider
+         *  (Wise) when we have its rate — it's promoted to the header card.
+         *  Sorted: ok by best rate, then stale, then investigating, then error. */
         val visibleQuotes: List<ProviderQuote>
-            get() = (doc.corridors[selectedCurrency] ?: emptyList())
-                .sortedWith(
+            get() {
+                val all = doc.corridors[selectedCurrency] ?: emptyList()
+                val withoutBenchmark = if (midMarketRate != null) {
+                    all.filterNot { it.providerId == "wise" }
+                } else all
+                return withoutBenchmark.sortedWith(
                     compareBy(
                         { statusOrder(it.status) },
                         { -(it.effectiveRate ?: it.rate ?: 0.0) },
                     )
                 )
+            }
 
-        /** The best (highest) rate among the OK quotes, used to highlight the winner. */
+        /** The best (highest) rate among OK quotes (excl. benchmark), for the BEST badge. */
         val bestRate: Double?
             get() = visibleQuotes
                 .filter { it.status == "ok" }
