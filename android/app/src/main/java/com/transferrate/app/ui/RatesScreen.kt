@@ -194,12 +194,18 @@ private fun ReadyView(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item {
-            CurrencyChipRow(
-                available = state.doc.corridors.keys,
-                selected = selected,
-                onSelect = onSelectCurrency,
-            )
+        // Currency picker only shown when there's more than one corridor.
+        // If the orchestrator emits a single corridor (current state — INR
+        // only), the picker is suppressed; the screen reads as a dedicated
+        // single-corridor display rather than a "choose between one option."
+        if (state.doc.corridors.size > 1) {
+            item {
+                CurrencyChipRow(
+                    available = state.doc.corridors.keys,
+                    selected = selected,
+                    onSelect = onSelectCurrency,
+                )
+            }
         }
         item {
             MidMarketHeader(

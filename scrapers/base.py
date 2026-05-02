@@ -6,21 +6,14 @@ from datetime import datetime, timezone
 from typing import Optional
 
 
-# The full set of AED->X target currencies the project tracks.
-# UAE expat sending corridors, ranked roughly by population:
-#   INR  India          (largest expat group)
-#   PKR  Pakistan
-#   PHP  Philippines
-#   BDT  Bangladesh
-#   EGP  Egypt
-#   USD  United States  (also a benchmark)
-#   EUR  Eurozone
-#   GBP  United Kingdom
-#   NPR  Nepal
-#   LKR  Sri Lanka
+# Active corridors the orchestrator generates data for.
+#
+# Currently AED -> INR only. The architecture supports multi-currency
+# (every scraper, the schema, the UI all handle a list of targets) — to
+# re-enable a corridor, just add its 3-letter code back to this tuple.
+# Available codes for re-enabling: PKR, PHP, BDT, EGP, USD, EUR, GBP, NPR, LKR.
 SUPPORTED_TARGETS = (
-    "INR", "PKR", "PHP", "BDT", "EGP",
-    "USD", "EUR", "GBP", "NPR", "LKR",
+    "INR",
 )
 
 
