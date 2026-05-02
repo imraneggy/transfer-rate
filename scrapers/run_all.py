@@ -71,24 +71,37 @@ from .gcc_exchange import GccExchangeProvider
 # NOT in this list — they would just clutter the UI with "estimated"
 # placeholders. To re-add a stub, import it from scrapers/<name>.py and
 # include it below.
-PROVIDERS: List[BaseProvider] = [
-    MidMarketProvider(),
-    WiseProvider(),
-    AsporaProvider(),
-    RemitlyProvider(),
-    TransferGoProvider(),
-    # LuluProvider hits a port-9443 API; in CI, set the LULU_PROXY_URL
-    # env var to a Cloudflare Worker that forwards on standard 443
-    # (template at infra/lulu-proxy/). Without the proxy the cell will
-    # report status=error in CI but still succeed on residential IPs.
-    LuluProvider(),
-    AlAnsariProvider(),
-    AlDahabProvider(),
-    AhaliaProvider(),
-    FederalExchangeProvider(),
-    GccExchangeProvider(),
-    IndexExchangeProvider(),
-]
+def _build_providers() -> List[BaseProvider]:
+    """Construct the provider list, opting LuLu in only when its proxy
+    URL is configured.
+
+    LuLu's rate API runs on TCP port 9443, which GitHub Actions runners
+    block. We ship a Cloudflare Worker template (infra/lulu-proxy/) that
+    proxies it on 443. We include LuLu in the live data only when the
+    LULU_PROXY_URL env var is present — otherwise its cell would show a
+    permanent error state to users, which is worse than not listing it.
+    """
+    providers: List[BaseProvider] = [
+        MidMarketProvider(),
+        WiseProvider(),
+        AsporaProvider(),
+        RemitlyProvider(),
+        TransferGoProvider(),
+        AlAnsariProvider(),
+        AlDahabProvider(),
+        AhaliaProvider(),
+        FederalExchangeProvider(),
+        GccExchangeProvider(),
+        IndexExchangeProvider(),
+    ]
+    if (os.environ.get("LULU_PROXY_URL") or "").strip():
+        # Insert LuLu after TransferGo so the order in the UI is stable
+        # whether or not the proxy is configured.
+        providers.insert(5, LuluProvider())
+    return providers
+
+
+PROVIDERS: List[BaseProvider] = _build_providers()
 
 PER_CALL_TIMEOUT_S = 25.0
 DEFAULT_AMOUNT = 1000.0
