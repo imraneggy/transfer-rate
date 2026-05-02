@@ -3,8 +3,8 @@
   "base": "AED",
   "quote": "INR",
   "amount_base": 1000.0,
-  "started_at": "2026-05-01T23:51:40Z",
-  "completed_at": "2026-05-01T23:51:41Z",
+  "started_at": "2026-05-02T02:37:11Z",
+  "completed_at": "2026-05-02T02:37:12Z",
   "providers": [
     {
       "provider_id": "wise",
@@ -20,7 +20,7 @@
       "url": "https://wise.com/gb/send-money/send-money-to-india",
       "status": "ok",
       "note": "Mid-market rate; provider charges a transparent fee on top.",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:11Z"
     },
     {
       "provider_id": "remitly",
@@ -36,7 +36,7 @@
       "url": null,
       "status": "error",
       "note": "HTTPStatusError: Client error '400 Bad Request' for url 'https://api.remitly.io/v3/calculator/estimate?anchor=SEND&amount=1000.0&conduit=AED%3ABANK_DEPOSIT-INR%3ABANK_DEPOSIT&purpose=OTHER&customer_se",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:12Z"
     },
     {
       "provider_id": "lulu",
@@ -52,7 +52,7 @@
       "url": null,
       "status": "error",
       "note": "HTTPStatusError: Client error '404 Not Found' for url 'https://www.lulumoney.com/exchange-rates'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:12Z"
     },
     {
       "provider_id": "aspora",
@@ -68,7 +68,7 @@
       "url": null,
       "status": "error",
       "note": "RuntimeError: Aspora rate selector did not match \u2014 page structure may have changed. Update _RATE_PATTERN in scrapers/aspora.py.",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:12Z"
     },
     {
       "provider_id": "careem",
@@ -84,7 +84,7 @@
       "url": null,
       "status": "error",
       "note": "HTTPStatusError: Client error '404 Not Found' for url 'https://www.careem.com/en-AE/careem-pay/'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
-      "fetched_at": "2026-05-01T23:51:41Z"
+      "fetched_at": "2026-05-02T02:37:12Z"
     },
     {
       "provider_id": "eand",
@@ -100,7 +100,7 @@
       "url": null,
       "status": "investigating",
       "note": "No stable public rate page yet. Contributions welcome.",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:11Z"
     },
     {
       "provider_id": "botim",
@@ -116,7 +116,7 @@
       "url": null,
       "status": "investigating",
       "note": "App-only service, no public rate endpoint yet. Tracking issue welcome.",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:11Z"
     },
     {
       "provider_id": "comera",
@@ -132,7 +132,7 @@
       "url": null,
       "status": "investigating",
       "note": "App-only service (e& International), no public rate endpoint yet.",
-      "fetched_at": "2026-05-01T23:51:40Z"
+      "fetched_at": "2026-05-02T02:37:11Z"
     }
   ]
 }
