@@ -56,6 +56,8 @@ from .wise import WiseProvider
 from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
 from .index_exchange import IndexExchangeProvider
+from .lulu import LuluProvider
+from .al_ansari import AlAnsariProvider
 
 
 # Display order. Mid-market first (extracted to header), then real providers.
@@ -69,6 +71,8 @@ PROVIDERS: List[BaseProvider] = [
     WiseProvider(),
     AsporaProvider(),
     RemitlyProvider(),
+    LuluProvider(),
+    AlAnsariProvider(),
     IndexExchangeProvider(),
 ]
 
