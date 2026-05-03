@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Adaptive launcher icon manifest (Android 8.0 / API 26+).
-  References two layers (background + foreground) plus an optional
-  monochrome layer for Android 13+ themed icons.
+
+  Background: deep navy vector (drawable/ic_launcher_background.xml).
+  Foreground: high-res PNG of the Exchangia E logo (mipmap-xxxhdpi/
+  ic_launcher_foreground.png) — the design includes the fused INR
+  rupee mark and the UAE crescent which are too detailed to render
+  faithfully in vector path data.
+  Monochrome: simplified vector for Android 13+ themed icons.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
     <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>

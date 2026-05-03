@@ -6,7 +6,10 @@
       Status bar appearance differs (dark icons on dark background).
     -->
     <style name="Theme.TransferRate" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowLightStatusBar">false</item>
+        <!-- Splash bg stays soft-gray in both modes so the white-icon
+             variant of the brand mark reads consistently; the in-app
+             theme then transitions to the dark colour scheme. -->
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
         <item name="android:windowSplashScreenBackground">@color/splash_bg</item>

@@ -3,7 +3,7 @@ package com.transferrate.app.ui
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,10 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.transferrate.app.R
@@ -69,7 +68,9 @@ fun SplashScreen(
         label = "splash-fade",
     )
 
-    val white = Color.White
+    // Brand deep navy on the soft-gray splash backdrop matches the
+    // primary white-bg icon variant from the design brief.
+    val deepNavy = Color(0xFF0A1F44)
 
     Box(
         modifier = Modifier
@@ -82,15 +83,15 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         ) {
-            ExchangiaLogo(size = 104.dp)
+            ExchangiaLogo(size = 128.dp)
 
             Spacer(Modifier.height(28.dp))
 
             Text(
                 text = "Exchangia",
-                color = white,
+                color = deepNavy,
                 style = MaterialTheme.typography.displaySmall.copy(
-                    fontSize = 38.sp,
+                    fontSize = 40.sp,
                 ),
             )
 
@@ -98,7 +99,7 @@ fun SplashScreen(
 
             Text(
                 text = androidx.compose.ui.res.stringResource(R.string.app_tagline),
-                color = white.copy(alpha = 0.78f),
+                color = deepNavy.copy(alpha = 0.65f),
                 style = MaterialTheme.typography.titleSmall,
             )
 
@@ -106,7 +107,7 @@ fun SplashScreen(
 
             CircularProgressIndicator(
                 modifier = Modifier.size(28.dp),
-                color = white.copy(alpha = 0.55f),
+                color = Color(0xFF06B59C), // brand emerald
                 strokeWidth = 2.5.dp,
             )
         }
@@ -114,73 +115,24 @@ fun SplashScreen(
 }
 
 /**
- * Compose-drawn version of the Exchangia "E" logo with INR + AED currency
- * cues. Mirrors the geometry of res/drawable/ic_launcher_foreground.xml so
- * the OS splash icon and the in-app splash logo are visually identical.
+ * In-app Exchangia logo. Renders the high-resolution PNG mark
+ * (res/drawable-nodpi/exchangia_logo.png) extracted from the brand
+ * source — preserves the fused ₹ and crescent details that hand-
+ * coded vector paths cannot match.
  *
- * Reused by SplashScreen and AboutScreen. Drawn in Canvas (not as a
- * resource Image) so the size and stroke widths scale precisely without
- * resource-density fuzz.
+ * Reused by SplashScreen and AboutScreen.
  */
 @Composable
 fun ExchangiaLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
-    val teal = Color(0xFF00B49E)         // brand primary
-    val cyan = Color(0xFF9DEAD0)         // INR cue
-    val gold = Color(0xFFF4B940)         // AED cue
-    val highlight = Color.White.copy(alpha = 0.45f)
-
-    Canvas(modifier = Modifier.size(size)) {
-        val w = this.size.width
-        val h = this.size.height
-
-        // Coordinates inside a 108x108 logical canvas (matching the
-        // launcher vector drawable). Multiply by w/108 and h/108 to map
-        // to pixels; w == h for square Canvas.
-        fun fx(x: Float) = x * w / 108f
-        fun fy(y: Float) = y * h / 108f
-
-        val armCorner = CornerRadius(fx(5f), fy(5f))
-
-        // E spine: rounded vertical bar, x:[28..38], y:[28..80]
-        drawRoundRect(
-            color = teal,
-            topLeft = Offset(fx(28f), fy(28f)),
-            size = Size(fx(10f), fy(52f)),
-            cornerRadius = armCorner,
-        )
-        // Top arm: x:[33..68], y:[28..38] (overlaps spine slightly)
-        drawRoundRect(
-            color = teal,
-            topLeft = Offset(fx(33f), fy(28f)),
-            size = Size(fx(35f), fy(10f)),
-            cornerRadius = armCorner,
-        )
-        // Middle arm: x:[33..58], y:[49..59]
-        drawRoundRect(
-            color = teal,
-            topLeft = Offset(fx(33f), fy(49f)),
-            size = Size(fx(25f), fy(10f)),
-            cornerRadius = armCorner,
-        )
-        // Bottom arm: x:[33..68], y:[70..80]
-        drawRoundRect(
-            color = teal,
-            topLeft = Offset(fx(33f), fy(70f)),
-            size = Size(fx(35f), fy(10f)),
-            cornerRadius = armCorner,
-        )
-
-        // INR cue ball (cyan with white inner highlight)
-        drawCircle(color = cyan, radius = fx(6f), center = Offset(fx(76f), fy(33f)))
-        drawCircle(color = highlight, radius = fx(2.5f), center = Offset(fx(76f), fy(33f)))
-
-        // AED cue ball (gold with white inner highlight)
-        drawCircle(color = gold, radius = fx(6f), center = Offset(fx(76f), fy(75f)))
-        drawCircle(color = highlight, radius = fx(2.5f), center = Offset(fx(76f), fy(75f)))
-    }
+    Image(
+        painter = painterResource(id = R.drawable.exchangia_logo),
+        contentDescription = "Exchangia",
+        contentScale = ContentScale.Fit,
+        modifier = Modifier.size(size),
+    )
 }
 
-/** Backwards-compat alias: BarsLogo() is referenced by AboutScreen. */
+/** Backwards-compat alias: BarsLogo() is referenced by older callers. */
 @Composable
 @Deprecated("Renamed to ExchangiaLogo for the v0.11 brand refresh.",
     replaceWith = ReplaceWith("ExchangiaLogo(size)"))

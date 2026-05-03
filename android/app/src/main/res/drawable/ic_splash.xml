@@ -1,41 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  OS splash icon (Android 12+). Same Exchangia E logo as launcher
-  foreground, scaled to the splash container's 64dp viewport.
+  OS splash icon (Android 12+). Wraps the high-res Exchangia E logo
+  PNG so the OS splash mark and the in-app splash logo are visually
+  identical.
 -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="64dp"
-    android:height="64dp"
-    android:viewportWidth="64"
-    android:viewportHeight="64">
-
-    <!-- E spine -->
-    <path
-        android:fillColor="#00B49E"
-        android:pathData="M16,16 m0,3 a3,3 0 0,1 6,0 v26 a3,3 0 0,1 -6,0 z" />
-
-    <!-- Top arm -->
-    <path
-        android:fillColor="#00B49E"
-        android:pathData="M16,16 m3,0 h21 a3,3 0 0,1 0,6 h-21 a3,3 0 0,1 0,-6 z" />
-
-    <!-- Middle arm -->
-    <path
-        android:fillColor="#00B49E"
-        android:pathData="M16,29 m3,0 h15 a3,3 0 0,1 0,6 h-15 a3,3 0 0,1 0,-6 z" />
-
-    <!-- Bottom arm -->
-    <path
-        android:fillColor="#00B49E"
-        android:pathData="M16,42 m3,0 h21 a3,3 0 0,1 0,6 h-21 a3,3 0 0,1 0,-6 z" />
-
-    <!-- INR cue (light cyan) -->
-    <path
-        android:fillColor="#9DEAD0"
-        android:pathData="M45,19 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" />
-
-    <!-- AED cue (gold) -->
-    <path
-        android:fillColor="#F4B940"
-        android:pathData="M45,45 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" />
-</vector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@mipmap/ic_splash_image"
+    android:gravity="center" />
