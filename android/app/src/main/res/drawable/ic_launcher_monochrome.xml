@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Themed-icon variant (Android 13+). Single white channel; the launcher
-  tints to the wallpaper-derived theme color. Same geometry as foreground
-  but in pure white.
+  tints to the wallpaper-derived theme color.
+
+  Uses a stylized "E" silhouette as a clean monochrome fallback —
+  the gradient-rich brand mark cannot be reduced to a single colour
+  channel without losing legibility, so the themed icon presents a
+  simplified geometric "E" instead.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -15,24 +19,18 @@
         android:fillColor="#FFFFFF"
         android:pathData="M28,28 m0,5 a5,5 0 0,1 10,0 v42 a5,5 0 0,1 -10,0 z" />
 
-    <!-- E arms -->
+    <!-- Top arm -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M28,28 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
+
+    <!-- Middle arm -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M28,49 m5,0 h25 a5,5 0 0,1 0,10 h-25 a5,5 0 0,1 0,-10 z" />
+
+    <!-- Bottom arm -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M28,70 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
-
-    <!-- Currency cue dots (slightly faded for visual hierarchy) -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.7"
-        android:pathData="M76,33 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.7"
-        android:pathData="M76,75 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
 </vector>
