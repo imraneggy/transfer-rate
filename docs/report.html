@@ -155,6 +155,27 @@
   footer { color: var(--fg-muted); font-size: 0.85rem; padding: 24px 0; border-top: 1px solid var(--border); margin-top: 60px; }
   a { color: var(--accent); }
   a:hover { color: var(--gold); }
+.embedded-doc {
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    padding: 18px 22px;
+    border-radius: 8px;
+    margin: 14px 0 24px;
+  }
+  .embedded-doc h1 { display: none; }
+  .embedded-doc h2 { font-size: 1.05rem; margin-top: 18px; padding-bottom: 0; border: none; font-weight: 700; }
+  .embedded-doc h3 { font-size: 0.95rem; margin-top: 14px; }
+  .embedded-doc p { font-size: 0.92rem; }
+  .embedded-doc ul, .embedded-doc ol { font-size: 0.92rem; padding-left: 20px; }
+  .embedded-doc pre.license-text {
+    font-size: 0.78rem; line-height: 1.5;
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 14px 16px; white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .embedded-doc a { color: var(--accent); text-decoration: none; }
+  .embedded-doc a:hover { color: var(--gold); }
+
   @media (max-width: 600px) {
     nav.toc ol { columns: 1; }
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -192,6 +213,10 @@
     <li><a href="#ceiling">What can &amp; cannot be added</a></li>
     <li><a href="#security">Security &amp; privacy</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#techstack">Complete tech stack</a></li>
+    <li><a href="#setup">Step-by-step implementation</a></li>
+    <li><a href="#documentation">Documentation index</a></li>
+    <li><a href="#legal">Legal &amp; policy documents</a></li>
   </ol>
 </nav>
 
@@ -818,6 +843,477 @@
   <li>Backend / serverless functions — would violate the "no operational
     cost, no PII" constraint.</li>
 </ul>
+
+
+<hr>
+
+<h2 id="techstack">13. Complete tech stack</h2>
+
+<h3>Backend / scraper pipeline</h3>
+<table>
+  <thead><tr><th>Layer</th><th>Choice</th><th>Version</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Language</td><td>Python</td><td>3.12</td><td>First-class match support, modern stdlib, well-maintained on GHA runners</td></tr>
+    <tr><td>HTTP client</td><td><code>httpx</code></td><td>0.27.2</td><td>Modern API, HTTP/2 support, sync + async, sane timeouts</td></tr>
+    <tr><td>HTML parsing</td><td><code>beautifulsoup4</code> + <code>lxml</code></td><td>4.12.3 / 5.3.0</td><td>BS4 for forgiving DOM walks, lxml as fast backend</td></tr>
+    <tr><td>Headless browser (optional)</td><td><code>playwright</code></td><td>1.50.0</td><td>For LuLu fallback experiments; not in active use post v0.13.5</td></tr>
+    <tr><td>Test runner</td><td><code>pytest</code> + <code>pytest-httpx</code></td><td>9.0 / 0.36</td><td>Mock HTTP at the transport layer; fixtures committed under <code>tests/fixtures/</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Android client</h3>
+<table>
+  <thead><tr><th>Layer</th><th>Choice</th><th>Version</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Language</td><td>Kotlin</td><td>2.1.0</td><td>Native Compose support, K2 compiler, modern coroutines</td></tr>
+    <tr><td>Build system</td><td>Android Gradle Plugin</td><td>8.7.3</td><td>Required for Compose 2024.12 BoM</td></tr>
+    <tr><td>Gradle wrapper</td><td>Gradle</td><td>8.11.1</td><td>SHA256-pinned in <code>gradle-wrapper.properties</code> (supply-chain hardening)</td></tr>
+    <tr><td>JVM target</td><td>JDK</td><td>17</td><td>Required by AGP 8.x; CI uses Temurin 17</td></tr>
+    <tr><td>UI framework</td><td>Jetpack Compose</td><td>BoM 2024.12.01</td><td>BoM ensures all Compose libs are version-aligned</td></tr>
+    <tr><td>Material Design</td><td>Material 3</td><td>via BoM</td><td>ColorScheme + Typography + ModalBottomSheet</td></tr>
+    <tr><td>HTTP</td><td>OkHttp</td><td>4.12.0</td><td>Connection pooling, auto retry, interceptor chain</td></tr>
+    <tr><td>JSON</td><td>kotlinx-serialization</td><td>1.7.3</td><td>Compile-time codegen, no reflection at runtime</td></tr>
+    <tr><td>Coroutines</td><td>kotlinx-coroutines</td><td>1.9.0</td><td>StateFlow + structured concurrency in ViewModel</td></tr>
+    <tr><td>Background work</td><td>WorkManager</td><td>2.10.0</td><td>Idempotent prefetch with backoff and constraints</td></tr>
+    <tr><td>Lifecycle</td><td>androidx-lifecycle</td><td>2.8.7</td><td>collectAsStateWithLifecycle, ViewModel</td></tr>
+    <tr><td>Activity Compose</td><td>androidx-activity-compose</td><td>1.9.3</td><td>Edge-to-edge + Compose entrypoint</td></tr>
+  </tbody>
+</table>
+
+<h3>Bundled fonts</h3>
+<table>
+  <thead><tr><th>Family</th><th>Weights</th><th>Bundled size</th><th>License</th></tr></thead>
+  <tbody>
+    <tr><td>Manrope</td><td>Regular, Medium, SemiBold, Bold, ExtraBold</td><td>~180 KB</td><td>SIL OFL 1.1 (attribution in <code>NOTICE-fonts.txt</code>)</td></tr>
+    <tr><td>Space Grotesk</td><td>Regular, Medium, SemiBold, Bold</td><td>~130 KB</td><td>SIL OFL 1.1</td></tr>
+  </tbody>
+</table>
+
+<h3>Infrastructure</h3>
+<table>
+  <thead><tr><th>Service</th><th>Tier</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr><td>GitHub Actions</td><td>Free (public repo)</td><td>Cron scrape, build, test workflows</td></tr>
+    <tr><td>GitHub Pages</td><td>Free</td><td>Static JSON hosting (<code>imraneggy.github.io/transfer-rate/</code>)</td></tr>
+    <tr><td>GitHub Releases</td><td>Free</td><td>APK distribution</td></tr>
+    <tr><td>Self-hosted runner</td><td>Free (your hardware)</td><td>Optional LuLu residential fetch</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="setup">14. Step-by-step implementation guide</h2>
+
+<p>Complete recipe from clone to a running APK on your phone.
+Tested on Windows, macOS, and Ubuntu.</p>
+
+<h3>14.1 Clone the repository</h3>
+<pre>git clone https://github.com/imraneggy/transfer-rate.git
+cd transfer-rate</pre>
+
+<h3>14.2 Set up the Python scraper environment</h3>
+<pre>python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS / Linux:
+source .venv/bin/activate
+
+pip install -r requirements.txt</pre>
+
+<h3>14.3 Run the scrapers locally</h3>
+<pre># Run all 11 sources in parallel and write public/rates.json
+python -m scrapers.run_all --out public/rates.json
+
+# Run pytest to verify nothing has drifted
+python -m pytest tests/test_scrapers.py -v</pre>
+
+<h3>14.4 Set up the Android build environment</h3>
+<p>You need:</p>
+<ul>
+  <li>Android Studio Ladybug (2024.2.1) or newer</li>
+  <li>JDK 17 (bundled with recent Android Studio versions)</li>
+  <li>Android SDK 35 + Build Tools 35.0.0</li>
+</ul>
+<p>Open <code>android/</code> in Android Studio. The Gradle wrapper
+auto-downloads the pinned 8.11.1 distribution (SHA256-verified).</p>
+
+<h3>14.5 Build a debug APK</h3>
+<pre>cd android
+./gradlew assembleDebug
+# APK lands at:
+# app/build/outputs/apk/debug/app-debug.apk</pre>
+
+<h3>14.6 Build a release APK (signed)</h3>
+<h4>A. Local release build</h4>
+<pre># Generate a 25-year keystore once
+keytool -genkey -v -keystore release.jks -keyalg RSA -keysize 4096 \
+  -validity 9125 -alias exchangia
+
+# Create android/keystore.properties (gitignored):
+storeFile=../../release.jks
+storePassword=YOUR_PASSWORD
+keyAlias=exchangia
+keyPassword=YOUR_PASSWORD
+
+# Build:
+./gradlew assembleRelease</pre>
+
+<h4>B. CI release build (free, automated)</h4>
+<pre>git tag -a v0.14.0 -m "v0.14.0 release notes"
+git push origin v0.14.0
+# android-build.yml builds 4 APKs and creates a GitHub Release</pre>
+
+<p>For Play Store-acceptable signing in CI, add 4 repo secrets:
+<code>KEYSTORE_BASE64</code> (base64 of <code>release.jks</code>),
+<code>KEYSTORE_PASSWORD</code>, <code>KEY_ALIAS</code>,
+<code>KEY_PASSWORD</code>. Without these, the workflow falls back
+to debug-signing automatically.</p>
+
+<h3>14.7 Set up the GitHub Pages publish flow</h3>
+<p>One-time:</p>
+<ol>
+  <li>Repo → <strong>Settings</strong> → <strong>Pages</strong></li>
+  <li>Source: <strong>GitHub Actions</strong></li>
+</ol>
+<p>The <code>scrape.yml</code> workflow already deploys
+<code>public/</code> on every successful run.</p>
+
+<h3>14.8 Optional: residential runner for LuLu</h3>
+<p>See <code>infra/lulu-residential/README.md</code> &mdash; 5-step
+guide. Adds LuLu to the rates list.</p>
+
+<h3>14.9 Verify the full pipeline end-to-end</h3>
+<ol>
+  <li>Trigger a scrape:
+    <code>https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml</code>
+    → Run workflow.</li>
+  <li>~90 seconds later, check
+    <code>https://imraneggy.github.io/transfer-rate/rates.json</code>
+    — the <code>completed_at</code> timestamp should be fresh.</li>
+  <li>Open the app, pull-to-refresh.</li>
+</ol>
+
+<hr>
+
+<h2 id="documentation">15. Documentation index</h2>
+
+<p>Where every relevant document lives in the repository:</p>
+
+<table>
+  <thead><tr><th>Document</th><th>Path</th><th>Contents</th></tr></thead>
+  <tbody>
+    <tr><td><strong>README</strong></td><td><code>README.md</code></td><td>Quick-start, project overview, install instructions</td></tr>
+    <tr><td><strong>This report</strong></td><td><code>docs/report.html</code></td><td>Comprehensive technical report</td></tr>
+    <tr><td>License</td><td><code>LICENSE</code></td><td>MIT (project) + bundled SIL OFL 1.1 (fonts) attribution at <code>NOTICE-fonts.txt</code></td></tr>
+    <tr><td>Privacy policy</td><td><code>PRIVACY.md</code></td><td>Data collected, permissions used, retention</td></tr>
+    <tr><td>Disclaimer</td><td><code>DISCLAIMER.md</code></td><td>Indicative-rate, not-financial-advice, trademark notice</td></tr>
+    <tr><td>Security policy</td><td><code>SECURITY.md</code></td><td>Vulnerability disclosure, supported versions</td></tr>
+    <tr><td>Takedown policy</td><td><code>TAKEDOWN.md</code></td><td>How a provider can request removal</td></tr>
+    <tr><td>Code of conduct</td><td><code>CODE_OF_CONDUCT.md</code></td><td>Contributor Covenant 2.1 reference</td></tr>
+    <tr><td>Contributing guide</td><td><code>CONTRIBUTING.md</code></td><td>Adding a scraper, running tests, PR process</td></tr>
+    <tr><td>LuLu residential runner setup</td><td><code>infra/lulu-residential/README.md</code></td><td>5-step guide for residential-IP LuLu fetch</td></tr>
+    <tr><td>Cloudflare Worker template</td><td><code>infra/lulu-proxy/README.md</code></td><td>Documented dead-end (kept for reference)</td></tr>
+    <tr><td>Manual rate override format</td><td><code>data/manual-rates.json</code></td><td>Schema for human-entered rates that override stubs</td></tr>
+    <tr><td>Scrape workflow</td><td><code>.github/workflows/scrape.yml</code></td><td>Cron + commit + Pages deploy</td></tr>
+    <tr><td>Android build workflow</td><td><code>.github/workflows/android-build.yml</code></td><td>Tag-triggered APK build + GitHub Release</td></tr>
+    <tr><td>Test workflow</td><td><code>.github/workflows/test.yml</code></td><td>pytest scrapers</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="legal">16. Legal &amp; policy documents</h2>
+
+<p>The following documents are embedded inline below for ease of reference.
+Each links to its canonical location in the repository &mdash; that file
+remains the source of truth.</p>
+
+<h3 id="legal-license">16.1 License (MIT)</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/LICENSE"><code>LICENSE</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<pre class="license-text">MIT License
+
+Copyright (c) 2026 transfer-rate contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</pre>
+</div>
+
+<h3 id="legal-privacy">16.2 Privacy policy</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/PRIVACY.md"><code>PRIVACY.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Privacy policy</h1>
+<p><strong>Effective date: 2026-05-01</strong></p>
+<h2>Short version</h2>
+<p>This app does not collect, store, transmit, or share any personal information
+about you. It makes one HTTP request per refresh to a public file on
+GitHub Pages and displays the result. That's it.</p>
+<h2>Detail</h2>
+<h3>What we collect</h3>
+<p>Nothing. There is no analytics SDK, no crash reporter, no advertising ID
+read, no device fingerprinting, no account.</p>
+<h3>What is transmitted from your device</h3>
+<p>A single HTTP <code>GET</code> to <code>https://imraneggy.github.io/transfer-rate/rates.json</code>
+each time you open the app or tap refresh. The request includes:</p>
+<ul>
+<li>Your device's IP address (visible to GitHub Pages and any CDN node it
+  passes through, the same as any web request)</li>
+<li>The User-Agent string <code>TransferRateApp/&lt;version&gt; Android</code></li>
+</ul>
+<p>We do not log or process this traffic; GitHub's standard
+<a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">Privacy Statement</a> covers their handling.</p>
+<h3>Permissions</h3>
+<ul>
+<li><code>INTERNET</code> — to fetch the rates JSON. No other permissions are requested.</li>
+</ul>
+<h3>Data shared with third parties</h3>
+<p>None.</p>
+<h3>Children</h3>
+<p>The app is not directed at children under 13.</p>
+<h3>Changes</h3>
+<p>We will update this document and the effective date if the privacy posture
+ever changes.</p>
+<h3>Contact</h3>
+<p>Open an issue or discussion in the GitHub repository.</p>
+</div>
+
+<h3 id="legal-disclaimer">16.3 Disclaimer</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/DISCLAIMER.md"><code>DISCLAIMER.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Disclaimer</h1>
+<p>The rates shown in this app and JSON feed are <strong>indicative</strong>, sourced from
+publicly displayed rate pages of third-party remittance providers. They are
+provided for general information only.</p>
+<ul>
+<li>Rates may differ from what you actually receive at the provider —
+  especially for amounts, channels, or products not matched by our
+  default scrape (AED 1,000, online transfer, bank deposit).</li>
+<li>Rates may be <strong>stale</strong>: they are refreshed every 15 minutes at best, and
+  may be older if a provider's site is unreachable.</li>
+<li>Some rates are <strong>gross</strong> (before fees) and some are <strong>effective</strong> (after
+  fees). The app distinguishes where it can; trust the provider's own
+  quote screen before sending money.</li>
+<li>This is <strong>not financial advice</strong>. Confirm at the provider before
+  initiating a transfer.</li>
+<li>This project is <strong>not affiliated</strong> with, endorsed by, or sponsored by any
+  of the providers listed. Provider names are used for nominative
+  reference only.</li>
+</ul>
+<h2>Liability</h2>
+<p>This software is provided "as is" under the MIT license. The maintainers
+disclaim any liability for losses arising from acting on rate information
+shown by the app. See <a href="LICENSE"><code>LICENSE</code></a> for the legal text.</p>
+</div>
+
+<h3 id="legal-security">16.4 Security policy</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/SECURITY.md"><code>SECURITY.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Security policy</h1>
+<h2>Supported versions</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Supported version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android app</td>
+<td>latest release</td>
+</tr>
+<tr>
+<td>Scraper backend</td>
+<td>always <code>main</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Reporting a vulnerability</h2>
+<p>Please do not open a public GitHub issue for security problems.</p>
+<p>Email the maintainer instead. Include:</p>
+<ul>
+<li>A description of the issue</li>
+<li>Steps to reproduce</li>
+<li>Affected commit / app version</li>
+<li>Your contact info if you'd like a credit</li>
+</ul>
+<p>You can expect:</p>
+<ul>
+<li>Acknowledgement within 72 hours</li>
+<li>Fix or mitigation plan within 14 days for confirmed issues</li>
+<li>Public disclosure coordinated with you</li>
+</ul>
+<h2>What counts as a vulnerability for this project</h2>
+<ul>
+<li>Anything that lets a third party feed a malicious <code>rates.json</code> into the
+  app pipeline (e.g. compromise of the GitHub Actions workflow)</li>
+<li>Code execution paths in the app from untrusted JSON input</li>
+<li>Bypass of the network security allowlist</li>
+<li>Leakage of any user data (note: the app intentionally collects none —
+  if you find it does, that itself is the vulnerability)</li>
+</ul>
+<h2>Hardening choices already in place</h2>
+<ul>
+<li>GitHub Actions workflows pin third-party actions by full commit SHA.</li>
+<li><code>permissions: {}</code> at workflow root denies everything by default; only
+  the commit step receives <code>contents: write</code>.</li>
+<li>Android Network Security Config restricts connections to
+  <code>imraneggy.github.io</code>. No cleartext.</li>
+<li><code>usesCleartextTraffic="false"</code> on the <code>&lt;application&gt;</code> element.</li>
+<li><code>allowBackup="false"</code> and explicit <code>data_extraction_rules.xml</code>.</li>
+<li>App requests only <code>INTERNET</code>.</li>
+<li>JSON parser configured strictly (<code>isLenient=false</code>); document is
+  bound-checked before being rendered.</li>
+<li>R8 full-mode strips debug-level Log calls in release builds.</li>
+</ul>
+<h2>Out of scope</h2>
+<ul>
+<li>Vulnerabilities in third-party provider websites we scrape (report those
+  to the provider directly).</li>
+<li>Network-level attacks against the user's device that are not specific
+  to this app.</li>
+</ul>
+</div>
+
+<h3 id="legal-takedown">16.5 Takedown policy</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/TAKEDOWN.md"><code>TAKEDOWN.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Takedown / removal request</h1>
+<p>If you represent a remittance provider listed in this project and you would
+like your service removed, here is the process. We respect such requests and
+act within 24 hours.</p>
+<h2>How to request</h2>
+<p>Open a GitHub issue titled <code>Takedown request: &lt;provider&gt;</code>, <strong>or</strong> email the
+maintainer directly. Include:</p>
+<ol>
+<li>Your name and role at the provider</li>
+<li>Confirmation that you are authorised to make this request</li>
+<li>The exact provider entry to remove (or modify)</li>
+<li>Any supporting context (e.g. ToS section, brand-protection concern)</li>
+</ol>
+<p>We do not require a formal legal notice. A clear request from a verifiable
+provider contact is enough to start removal.</p>
+<h2>What "removal" means</h2>
+<ul>
+<li>The provider is removed from <code>scrapers/run_all.py</code> so it stops being
+  scraped.</li>
+<li>The provider is removed from <code>public/rates.json</code> on the next run.</li>
+<li>Historical commits remain in git history, but no current build references
+  the provider.</li>
+<li>The Android app, which fetches the live JSON, stops showing the provider
+  as soon as users open the app and the JSON refreshes.</li>
+</ul>
+<h2>Modification, rather than removal</h2>
+<p>If you'd like the listing to <em>exist</em> but display differently — corrected
+name, official deep link to your product, brand styling — open a regular
+issue and we'll happily collaborate.</p>
+<h2>Brand and trademarks</h2>
+<p>Provider names are used nominatively to identify the source of the rate.
+We do not use provider logos, registered marks, or other branded assets in
+the app. If we have inadvertently included any, please flag it and we will
+remove immediately.</p>
+</div>
+
+<h3 id="legal-code_of_conduct">16.6 Code of conduct</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/CODE_OF_CONDUCT.md"><code>CODE_OF_CONDUCT.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Code of Conduct</h1>
+<p>This project follows the
+<a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/">Contributor Covenant v2.1</a>.</p>
+<h2>Summary</h2>
+<ul>
+<li>Be respectful and welcoming.</li>
+<li>Disagreement on technical points is fine; personal attacks are not.</li>
+<li>Harassment of any kind is unacceptable.</li>
+<li>Maintainers may remove comments, commits, code, and contributions that
+  violate this code, and may temporarily or permanently ban contributors
+  for repeated or severe violations.</li>
+</ul>
+<h2>Reporting</h2>
+<p>Open a private GitHub issue or contact the maintainer directly. All
+reports are treated confidentially. We will respond within 7 days.</p>
+</div>
+
+<h3 id="legal-contributing">16.7 Contributing guide</h3>
+<p><a href="https://github.com/imraneggy/transfer-rate/blob/main/CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a> &mdash; canonical source.</p>
+<div class="embedded-doc">
+<h1>Contributing</h1>
+<p>Thanks for considering a contribution. The most common change is adding or
+fixing a provider scraper. This guide walks through that.</p>
+<h2>Ground rules</h2>
+<ol>
+<li><strong>Public data only.</strong> Do not authenticate, do not replay private mobile
+   APIs, do not bypass paywalls or rate limits.</li>
+<li><strong>Conservative parsing.</strong> A scraper that surfaces a wrong number is worse
+   than one that surfaces no number. Prefer raising an error to guessing.</li>
+<li><strong>Polite traffic.</strong> One request per scrape; identify yourself via the
+   shared User-Agent in <code>scrapers/utils.py</code>.</li>
+<li><strong>No new dependencies</strong> in <code>requirements.txt</code> without discussion. Each
+   added dependency is a supply-chain liability.</li>
+<li><strong>All PRs include a brief test note</strong> — paste the local output of
+   <code>python -m scrapers.&lt;your_scraper&gt;</code> on a recent run.</li>
+</ol>
+<h2>Adding a provider scraper</h2>
+<ol>
+<li>Create <code>scrapers/&lt;provider&gt;.py</code>. Use <code>scrapers/wise.py</code> as a template:
+   - <code>id</code> (slug, lowercase) and <code>display_name</code>
+   - <code>fetch_inr(amount_aed)</code> returns a <code>Quote</code></li>
+<li>Import and register it in <code>scrapers/run_all.py</code> (<code>PROVIDERS</code> list).</li>
+<li>Run locally:
+   <code>bash
+   python -m scrapers.run_all
+   cat public/rates.json</code></li>
+<li>Confirm your provider's row has <code>status="ok"</code> and a sane rate.</li>
+<li>Open a PR against <code>main</code>. The CI workflow (<code>scrape.yml</code>) will exercise
+   your scraper on the merge.</li>
+</ol>
+<h3>Allowed sources</h3>
+<ul>
+<li>Public web pages displaying rates (no login needed)</li>
+<li>Public APIs documented for marketing/widget use</li>
+<li>RSS/JSON feeds the provider publishes</li>
+</ul>
+<h3>Disallowed sources</h3>
+<ul>
+<li>Authenticated endpoints (even if you have an account)</li>
+<li>Reverse-engineered mobile APIs that require captured tokens or apk-
+  extracted secrets</li>
+<li>Anything behind an explicit "Terms of Service" prohibiting scraping
+  (read it before adding)</li>
+</ul>
+<h2>Reporting a bug or wrong rate</h2>
+<p>Open a GitHub issue with:
+* Provider name
+* What rate the app shows vs. what the provider's site shows
+* Time observed (UTC)
+* Screenshot of both, if possible</p>
+<p>Wrong-rate issues are P0 — we patch and force a fresh scrape ASAP.</p>
+<h2>Code style</h2>
+<ul>
+<li>Python: 4-space indent, type hints, no print debugging in committed code</li>
+<li>Kotlin: official style (already enforced via <code>kotlin.code.style=official</code>)</li>
+<li>No comments that restate the code; comments explain <em>why</em>.</li>
+</ul>
+<h2>Disclosure</h2>
+<p>Found a security issue? See <a href="SECURITY.md"><code>SECURITY.md</code></a>. Do not file public
+issues for vulnerabilities.</p>
+</div>
 
 <hr>
 
