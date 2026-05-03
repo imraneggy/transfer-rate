@@ -63,6 +63,7 @@ from .al_ansari import AlAnsariProvider
 from .al_dahab import AlDahabProvider
 from .federal_exchange import FederalExchangeProvider
 from .gcc_exchange import GccExchangeProvider
+from .lari import LariProvider
 from .gold import fetch_gold, GoldHistoryPoint
 
 
@@ -102,6 +103,7 @@ def _build_providers() -> List[BaseProvider]:
         FederalExchangeProvider(),
         GccExchangeProvider(),
         IndexExchangeProvider(),
+        LariProvider(),
     ]
 
     proxy_url = (os.environ.get("LULU_PROXY_URL") or "").strip()
