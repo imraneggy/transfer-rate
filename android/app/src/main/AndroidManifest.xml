@@ -2,9 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Single, minimal permission. App fetches one public JSON file; nothing
-         else needs network or any other capability. -->
+    <!-- Network: rates.json fetch, OSM tile fetch, Overpass API queries. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Location: Mosque Finder feature only.  Foreground use only - we
+         never request background location.  App works fully without it
+         (defaults to a city-level view of the largest UAE region). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:label="@string/app_name"

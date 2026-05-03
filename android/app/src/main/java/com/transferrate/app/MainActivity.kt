@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.transferrate.app.data.PrefetchScheduler
 import com.transferrate.app.ui.AboutScreen
+import com.transferrate.app.ui.MosqueScreen
 import com.transferrate.app.ui.RatesScreen
 import com.transferrate.app.ui.RatesUiState
 import com.transferrate.app.ui.RatesViewModel
@@ -83,6 +84,7 @@ private fun AppRoot(
     val state by vm.state.collectAsStateWithLifecycle()
     var splashDone by remember { mutableStateOf(false) }
     var showAbout by rememberSaveable { mutableStateOf(false) }
+    var showMosques by rememberSaveable { mutableStateOf(false) }
 
     // Reset the splash on every foreground transition so users see it
     // each time they (re)open the app, not just on cold start.
@@ -106,14 +108,15 @@ private fun AppRoot(
             )
         } else {
             Surface(modifier = Modifier.fillMaxSize()) {
-                if (showAbout) {
-                    AboutScreen(onBack = { showAbout = false })
-                } else {
-                    RatesScreen(
+                when {
+                    showMosques -> MosqueScreen(onBack = { showMosques = false })
+                    showAbout -> AboutScreen(onBack = { showAbout = false })
+                    else -> RatesScreen(
                         vm = vm,
                         themeMode = themeMode,
                         onCycleThemeMode = onCycleThemeMode,
                         onShowAbout = { showAbout = true },
+                        onShowMosques = { showMosques = true },
                     )
                 }
             }

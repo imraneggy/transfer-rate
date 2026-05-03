@@ -143,4 +143,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.androidx.work.runtime)
+
+    // OpenStreetMap tile rendering for the mosque finder.
+    // Self-hostable tiles, no API key, no Google Play Services dep.
+    implementation(libs.osmdroid.android)
 }
