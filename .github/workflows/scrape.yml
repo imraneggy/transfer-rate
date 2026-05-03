@@ -90,12 +90,19 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           # LuLu strategy (run_all picks the first that's set):
-          #   1. LULU_PROXY_URL (Cloudflare Worker, fastest, see
-          #      infra/lulu-proxy/) — opt-in via repo secret.
-          #   2. LULU_USE_BROWSER (headless-Chromium fallback, +10 s)
-          #      — default ON in CI so LuLu works without external infra.
+          #   1. LULU_PROXY_URL (Cloudflare Worker, see
+          #      infra/lulu-proxy/) — required for CI to reach LuLu.
+          #
+          # The headless-Chromium fallback (LULU_USE_BROWSER) is
+          # intentionally NOT set: although Playwright works
+          # locally, in CI the in-page JS still calls the same
+          # port-9443 endpoint that the GHA datacenter firewall
+          # blocks — so the rate placeholder never updates and
+          # wait_for_function times out. The browser is a UI for
+          # the same blocked HTTP call. Only a real proxy on a
+          # different network path (Cloudflare Worker, residential
+          # proxy) actually fixes this.
           LULU_PROXY_URL: ${{ secrets.LULU_PROXY_URL }}
-          LULU_USE_BROWSER: "1"
 
       - name: Commit if changed
         run: |
