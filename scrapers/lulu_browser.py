@@ -90,6 +90,8 @@ class LuluBrowserProvider(BaseProvider):
                 args=[
                     "--no-sandbox",
                     "--disable-blink-features=AutomationControlled",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
                 ],
             )
             context = browser.new_context(
@@ -100,14 +102,28 @@ class LuluBrowserProvider(BaseProvider):
                 ),
                 viewport={"width": 1280, "height": 800},
                 locale="en-AE",
+                # Hint geo so LuLu's any geo-conditional JS picks UAE
+                timezone_id="Asia/Dubai",
+                extra_http_headers={
+                    "Accept-Language": "en-US,en;q=0.9,ar;q=0.7",
+                },
+            )
+            # Strip the Selenium/Playwright `navigator.webdriver` flag
+            # — LuLu's WAF may key off it to skip rate hydration.
+            context.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', "
+                "{get: () => undefined});"
             )
             page = context.new_page()
             try:
-                page.goto(self.PAGE_URL, wait_until="domcontentloaded", timeout=20_000)
+                # `networkidle` waits until the rate-loading XHR settles.
+                # Falls back to domcontentloaded if a long-poll keeps
+                # the page busy.
+                page.goto(self.PAGE_URL, wait_until="networkidle", timeout=45_000)
 
-                # Wait for the rate to be JS-injected. We poll the DOM
-                # at 250 ms intervals up to 12 s for a believable INR
-                # rate value.
+                # Wait for the rate to be JS-injected. The XHR to
+                # lieservices:9443 takes a moment after page load on
+                # CI runners; bump from 15 s -> 45 s and poll faster.
                 rate = page.wait_for_function(
                     """() => {
                         const els = document.querySelectorAll('.converted-rate-in-value');
@@ -120,7 +136,8 @@ class LuluBrowserProvider(BaseProvider):
                         }
                         return false;
                     }""",
-                    timeout=15_000,
+                    timeout=45_000,
+                    polling=200,
                 ).json_value()
             finally:
                 context.close()
