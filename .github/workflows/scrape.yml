@@ -45,7 +45,10 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    # Bumped from 5 to 8 minutes to accommodate the headless-Chromium
+    # path used for LuLu (~10 s once Chromium is cached, longer the
+    # first time).
+    timeout-minutes: 8
     permissions:
       contents: write   # commit rates.json
       pages: write      # deploy to Pages
@@ -68,15 +71,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Cache the Playwright browser binaries so we only download
+      # Chromium (~150 MB) once across runs. The cache key includes
+      # the Playwright pin so a version bump invalidates correctly.
+      - name: Cache Playwright Chromium
+        id: playwright-cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install chromium --with-deps
+
       - name: Run scrapers
         run: python -m scrapers.run_all --out public/rates.json
         env:
           PYTHONUNBUFFERED: "1"
-          # Optional Cloudflare Worker proxy URL for LuLu (port 9443
-          # is firewalled from GHA datacenter outbound). When unset
-          # the LuLu cell will report status=error; that's expected.
-          # Setup: see infra/lulu-proxy/README.md
+          # LuLu strategy (run_all picks the first that's set):
+          #   1. LULU_PROXY_URL (Cloudflare Worker, fastest, see
+          #      infra/lulu-proxy/) — opt-in via repo secret.
+          #   2. LULU_USE_BROWSER (headless-Chromium fallback, +10 s)
+          #      — default ON in CI so LuLu works without external infra.
           LULU_PROXY_URL: ${{ secrets.LULU_PROXY_URL }}
+          LULU_USE_BROWSER: "1"
 
       - name: Commit if changed
         run: |

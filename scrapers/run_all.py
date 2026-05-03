@@ -73,14 +73,22 @@ from .gold import fetch_gold, GoldHistoryPoint
 # placeholders. To re-add a stub, import it from scrapers/<name>.py and
 # include it below.
 def _build_providers() -> List[BaseProvider]:
-    """Construct the provider list, opting LuLu in only when its proxy
-    URL is configured.
+    """Construct the provider list, choosing the right LuLu strategy
+    for the current environment.
 
-    LuLu's rate API runs on TCP port 9443, which GitHub Actions runners
-    block. We ship a Cloudflare Worker template (infra/lulu-proxy/) that
-    proxies it on 443. We include LuLu in the live data only when the
-    LULU_PROXY_URL env var is present — otherwise its cell would show a
-    permanent error state to users, which is worse than not listing it.
+    LuLu's rate API runs on TCP port 9443 which GitHub Actions runners
+    block. We support three strategies, in priority order:
+
+      1. LULU_PROXY_URL set -> use the cheap HTTP scraper via the
+         configured Cloudflare Worker (infra/lulu-proxy/). Best.
+      2. LULU_USE_BROWSER=1 set -> use the headless-Chromium scraper
+         (scrapers/lulu_browser.py). Adds ~10 s per run but works
+         without any external infra.
+      3. Neither set -> omit LuLu entirely so the app doesn't render
+         a permanent error card.
+
+    LuLu always sits at index 5 (right after TransferGo) so the UI
+    order is stable regardless of which strategy is in use.
     """
     providers: List[BaseProvider] = [
         MidMarketProvider(),
@@ -95,10 +103,17 @@ def _build_providers() -> List[BaseProvider]:
         GccExchangeProvider(),
         IndexExchangeProvider(),
     ]
-    if (os.environ.get("LULU_PROXY_URL") or "").strip():
-        # Insert LuLu after TransferGo so the order in the UI is stable
-        # whether or not the proxy is configured.
+
+    proxy_url = (os.environ.get("LULU_PROXY_URL") or "").strip()
+    use_browser = (os.environ.get("LULU_USE_BROWSER") or "").strip().lower() in (
+        "1", "true", "yes",
+    )
+    if proxy_url:
         providers.insert(5, LuluProvider())
+    elif use_browser:
+        # Lazy import — Playwright is a heavy optional dep.
+        from .lulu_browser import LuluBrowserProvider
+        providers.insert(5, LuluBrowserProvider())
     return providers
 
 
