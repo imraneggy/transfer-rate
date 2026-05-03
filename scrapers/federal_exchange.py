@@ -25,7 +25,7 @@ from __future__ import annotations
 import re
 
 from .base import BaseProvider, Quote
-from .utils import http_client
+from .utils import get_with_retry
 
 
 # Map our 3-letter currency code to the human label Federal uses on their
@@ -69,9 +69,25 @@ class FederalExchangeProvider(BaseProvider):
                 f"Add to _CURRENCY_LABEL in scrapers/federal_exchange.py."
             )
 
-        with http_client() as c:
-            r = c.get(self.PAGE_URL)
-            r.raise_for_status()
+        # Use retry-with-backoff and a browser-style User-Agent.
+        # Their CloudFlare-fronted site occasionally rate-limits or
+        # times out the bot UA from GHA datacenter IPs (manifests as
+        # ConnectTimeout). Retries + browser UA fix both intermittent
+        # connection drops and CDN bot-filter false-positives.
+        r = get_with_retry(
+            self.PAGE_URL,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/126.0.0.0 Safari/537.36"
+                ),
+                "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+            timeout=20.0,
+            max_attempts=3,
+        )
 
         m = _build_pattern(label).search(r.text)
         if not m:
