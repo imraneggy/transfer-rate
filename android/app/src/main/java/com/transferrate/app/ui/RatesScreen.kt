@@ -110,47 +110,49 @@ fun RatesScreen(
         topBar = {
             TopAppBar(
                 title = {
+                    // maxLines=1 + ellipsize defends against the
+                    // (rare) case where the actions row gets so wide
+                    // it pushes the title off-screen on a 360 dp
+                    // phone. Currently 3 chips + ⓘ leaves ~120 dp
+                    // for the title which fits "Exchangia" cleanly.
                     Text(
                         stringResource(R.string.app_name),
                         fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                 },
                 actions = {
-                    // Use crisp local vector drawables for high legibility
-                    // on every density. Previously these were unicode
-                    // glyphs (⚙ ☀ ☾ ⓘ ↻) which rendered poorly on some
-                    // devices and made the toolbar feel cheap. Local
-                    // drawables avoid pulling in androidx.compose
-                    // material-icons-extended (~5MB).
-                    val iconColor = MaterialTheme.colorScheme.onBackground
+                    // Word-labeled toolbar chips per user request.
+                    // Compact size + uppercase labels keeps all three
+                    // visible alongside the "Exchangia" title even on
+                    // narrow phones. About stays as a small ⓘ glyph
+                    // (the word "ABOUT" would push past the title on
+                    // 360dp screens; the glyph is still tappable and
+                    // its content description is read aloud).
+                    val themeLabel = when (themeMode) {
+                        ThemeMode.System -> "AUTO"
+                        ThemeMode.Light  -> "LIGHT"
+                        ThemeMode.Dark   -> "DARK"
+                    }
+                    ToolbarChip(
+                        label = themeLabel,
+                        contentDescription = "Theme: ${themeMode.label} (tap to cycle)",
+                        onClick = onCycleThemeMode,
+                    )
+                    ToolbarChip(
+                        label = "REFRESH",
+                        contentDescription = "Refresh rates",
+                        onClick = { vm.refresh() },
+                    )
                     IconButton(onClick = onShowAbout) {
                         androidx.compose.material3.Icon(
                             painter = androidx.compose.ui.res.painterResource(
                                 id = R.drawable.ic_info_outline,
                             ),
                             contentDescription = "About",
-                            tint = iconColor,
-                        )
-                    }
-                    IconButton(onClick = onCycleThemeMode) {
-                        val iconRes = when (themeMode) {
-                            ThemeMode.System -> R.drawable.ic_settings_outline
-                            ThemeMode.Light  -> R.drawable.ic_light_mode
-                            ThemeMode.Dark   -> R.drawable.ic_dark_mode
-                        }
-                        androidx.compose.material3.Icon(
-                            painter = androidx.compose.ui.res.painterResource(id = iconRes),
-                            contentDescription = "Theme: ${themeMode.label}",
-                            tint = iconColor,
-                        )
-                    }
-                    IconButton(onClick = { vm.refresh() }) {
-                        androidx.compose.material3.Icon(
-                            painter = androidx.compose.ui.res.painterResource(
-                                id = R.drawable.ic_refresh,
-                            ),
-                            contentDescription = "Refresh rates",
-                            tint = iconColor,
+                            tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }
                 },
@@ -212,6 +214,51 @@ private fun relativeTime(iso: String): String {
 @Composable
 private fun stringResource(id: Int): String =
     androidx.compose.ui.res.stringResource(id)
+
+/**
+ * Compact text chip used in the top app bar for the theme toggle and
+ * the refresh action. Matches the height of an IconButton so the bar
+ * stays a uniform 56 dp; tight horizontal padding keeps three chips
+ * + the "Exchangia" title visible on a 360 dp screen.
+ *
+ * Uses an outlined surface treatment so the chips read as tappable
+ * controls without being as visually heavy as filled buttons (which
+ * would compete with the BEST badge for the user's eye).
+ */
+@Composable
+private fun ToolbarChip(
+    label: String,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    val border = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 4.dp, vertical = 8.dp)
+            .heightIn(min = 32.dp)
+            .border(
+                width = 1.dp,
+                color = border,
+                shape = RoundedCornerShape(8.dp),
+            )
+            .clickable(
+                onClick = onClick,
+                onClickLabel = contentDescription,
+            )
+            .padding(horizontal = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.6.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
+}
 
 @Composable
 private fun CenteredSpinner() {
