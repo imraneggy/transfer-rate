@@ -123,27 +123,6 @@ fun AboutScreen(onBack: () -> Unit) {
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionCard(title = "Where the data comes from") {
-                Text(
-                    "Rates are scraped from each provider's public website " +
-                    "or API every ~hour by an automated pipeline running on " +
-                    "GitHub Actions. The app fetches a single JSON file from " +
-                    "github.io and renders it.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "Currently 10 verified providers: Wise, Aspora, Remitly, " +
-                    "TransferGo, Ahalia, Al Ansari, Al Dahab, Federal Exchange, " +
-                    "GCC Exchange, Index Exchange, plus the mid-market " +
-                    "reference benchmark.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-
             SectionCard(title = "Privacy") {
                 Text(
                     "This app collects nothing. No analytics, no telemetry, " +
