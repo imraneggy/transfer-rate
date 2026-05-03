@@ -1,87 +1,82 @@
 # LuLu Exchange rate-proxy Cloudflare Worker
 
-A tiny Cloudflare Worker that proxies the LuLu Exchange live-rate
-endpoint (`https://lieservices.luluone.com:9443/liveccyrates`) over
-standard port 443 so GitHub Actions runners — which firewall outbound
-traffic to non-standard ports — can reach it.
+Deploys in 60 seconds. Free forever (Cloudflare's free tier covers
+~720 calls/month against a 100 000/day limit).
 
-Deploys in under five minutes on Cloudflare's free tier.
+## Why this is needed
 
-## What this enables
+LuLu Exchange's rate API runs on TCP port 9443
+(`https://lieservices.luluone.com:9443/liveccyrates`). GitHub
+Actions' datacenter runners block all outbound traffic to non-
+standard ports, so every direct call from CI times out — even
+through a headless browser, because the in-page JavaScript still
+hits the same blocked endpoint.
 
-LuLu Exchange has been the only consistently-blocked provider in the
-Exchangia rate aggregator. Their rate API runs on TCP port 9443 and the
-GitHub Actions runner network blocks egress to non-standard ports. The
-scraper works fine on residential IPs but cannot run unattended.
-
-This Worker accepts the same query-string payload the LuLu scraper
-already builds, forwards it (only when it matches the documented
-single-corridor signature), and returns LuLu's JSON unchanged. Your
+This Worker accepts the documented LuLu payload, forwards it to
+upstream:9443 from Cloudflare's network (which has no such block),
+and returns the JSON response unchanged. Your `LuluProvider`
 scraper then points at the Worker URL instead of the upstream.
 
-## What this is not
+## 60-second deploy
 
-- It is **not an open proxy.** Only the documented payload shape is
-  forwarded; everything else returns 403.
-- It does **not store, log, or modify** any of the rate data.
-- It does **not require sensitive credentials.** The Gravitee API key
-  used upstream is also embedded in LuLu's public homepage JavaScript;
-  every browser visitor sends it.
+1. **Sign in to Cloudflare**: https://dash.cloudflare.com/sign-up
+   (free account, no credit card required).
 
-## Deploy in five steps
+2. **Open Workers & Pages** in the left sidebar →
+   **Create** → **Create Worker** → name it anything (e.g.
+   `lulu-proxy`) → **Deploy**.
 
-1. **Create a Cloudflare account** if you don't have one — free tier
-   is more than sufficient (100 000 requests/day; this Worker uses
-   ~720/month for the hourly cron).
+3. **Edit code** → paste the entire contents of
+   [`worker.js`](./worker.js) → **Save and Deploy**.
 
-2. **Open the Workers dashboard:**
-   `https://dash.cloudflare.com/?to=/:account/workers-and-pages`
+4. **Copy the worker URL** from the top of the page —
+   it looks like `https://lulu-proxy.<your-subdomain>.workers.dev`.
 
-3. **Create → Worker → Hello World** template, then click *Edit code*.
-   Replace the entire contents with [`worker.js`](./worker.js) from
-   this directory.
+5. **Add it as a repository secret** in GitHub:
+   - Repo → **Settings** → **Secrets and variables** → **Actions**
+   - **New repository secret**:
+     - Name: `LULU_PROXY_URL`
+     - Value: the URL from step 4 (no trailing slash)
 
-4. **Click *Deploy*** and copy the assigned URL — it will look like
-   `https://lulu-proxy.<your-subdomain>.workers.dev`.
+6. **Trigger a fresh scrape** to confirm:
+   - Repo → **Actions** → **scrape** → **Run workflow**
+   - Within ~90 s, LuLu appears in
+     https://imraneggy.github.io/transfer-rate/rates.json
 
-5. **Add the URL as a repository secret:** Settings → Secrets and
-   variables → Actions → New repository secret →
-   - Name: `LULU_PROXY_URL`
-   - Value: the full URL from step 4 (no trailing slash)
-
-The next scheduled scrape (or one triggered manually) will pick up the
-secret and start including LuLu in the rates list.
-
-## Verifying it works
-
-After deploying, hit the worker URL with the LuLu payload to verify
-end-to-end:
+## Verify it works (optional)
 
 ```bash
 curl 'https://lulu-proxy.<subdomain>.workers.dev/?payload=%7B%22activityType%22%3A%22rates.get%22%2C%22aglcid%22%3A784278%2C%22instype%22%3A%22LR%22%7D'
 ```
 
-You should get back the same JSON shape as `lieservices.luluone.com:9443/liveccyrates`:
+Expected: a JSON envelope with the AED rate set:
 
 ```json
-{"code":...,"message":...,"payload":{"rates":[
+{"code":..., "payload":{"rates":[
   {"frmccy":"AED","toccy":"INR","rate":25.7300,"sellrate":...,"buyrate":...},
   ...
 ]}}
 ```
 
-## Rolling back
+## Security stance
 
-If you ever want to stop using the worker:
+This is intentionally **not** an open proxy. The Worker only
+forwards requests matching the documented LuLu payload signature
+(`activityType: "rates.get"`, fixed UAE `aglcid`, allowed
+`instype` values). Anything else returns 403.
 
-1. Delete the `LULU_PROXY_URL` repository secret.
-2. The scraper falls back to its original direct-port-9443 path
-   (which will fail in CI, returning `status: error` for LuLu — same
-   state we had before).
-3. Optional: delete the Worker in the Cloudflare dashboard.
+The Gravitee API key embedded in the Worker is the same key sent
+by every browser visitor of luluexchange.com — it's public by
+design. No private credentials are stored.
+
+## Removing the proxy later
+
+1. Delete the `LULU_PROXY_URL` repo secret.
+2. The next scrape automatically omits LuLu from the rates list
+   (no error card shown) — same state as before deploy.
+3. Optional: delete the Worker from the Cloudflare dashboard.
 
 ## Cost
 
-Free tier. Cloudflare Workers free plan: 100 000 requests/day.
-Exchangia hits the proxy at most once per scheduled scrape (currently
-every ~hour, ≈720/month). You will not pay anything.
+Zero. Cloudflare Workers free tier: 100 000 requests/day. The
+hourly cron uses ~720/month. You will not see a bill.
