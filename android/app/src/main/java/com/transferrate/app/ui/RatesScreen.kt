@@ -361,6 +361,10 @@ private fun ReadyView(
             // module's content is taller. When the gold module is
             // unavailable the FX header takes full width.
             val gold = state.doc.gold
+            val midMarketQuote = state.midMarketQuote
+            val onMidMarketClick: (() -> Unit)? = midMarketQuote?.let { q ->
+                { sheetForProvider = q }
+            }
             if (gold != null) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -373,6 +377,7 @@ private fun ReadyView(
                         midMarket = midMarket,
                         completedAt = state.doc.completedAt,
                         modifier = Modifier.weight(1f).fillMaxHeight(),
+                        onClick = onMidMarketClick,
                     )
                     GoldHeader(
                         gold = gold,
@@ -385,6 +390,7 @@ private fun ReadyView(
                     info = info,
                     midMarket = midMarket,
                     completedAt = state.doc.completedAt,
+                    onClick = onMidMarketClick,
                 )
             }
         }
@@ -524,13 +530,20 @@ private fun MidMarketHeader(
     midMarket: Double?,
     completedAt: String,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     // Compact version designed to sit at half-width next to GoldHeader.
     // Fixed height + tight padding so both modules visually align.
+    // When onClick is provided (mid-market history is available), the
+    // entire card becomes tappable to open the 30-day history sheet.
+    val baseMod = modifier
+        .fillMaxWidth()
+        .heightIn(min = 156.dp)
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 156.dp),
+        modifier = if (onClick != null) baseMod.clickable(
+            onClick = onClick,
+            onClickLabel = "Show mid-market 30-day history",
+        ) else baseMod,
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,

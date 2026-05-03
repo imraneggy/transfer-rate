@@ -103,19 +103,24 @@ val ExchangiaTypography: Typography = Typography(
         letterSpacing = 0.sp,
     ),
 
+    // Title levels - tabular figures baked in so numeric values in
+    // titles (rates, prices) align across table columns without callers
+    // having to remember to pass fontFeatureSettings = "tnum".
     titleLarge = TextStyle(
         fontFamily = Manrope,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
+        fontFeatureSettings = "tnum",
     ),
     titleMedium = TextStyle(
         fontFamily = Manrope,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
+        lineHeight = 22.sp,
         letterSpacing = 0.1.sp,
+        fontFeatureSettings = "tnum",
     ),
     titleSmall = TextStyle(
         fontFamily = Manrope,
@@ -123,49 +128,56 @@ val ExchangiaTypography: Typography = Typography(
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp,
+        fontFeatureSettings = "tnum",
     ),
 
+    // Body levels - lineHeight bumped slightly for better paragraph
+    // breathing on small phones; letterSpacing tightened for cleaner
+    // multi-word labels at body sizes.
     bodyLarge = TextStyle(
         fontFamily = Manrope,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.15.sp,
+        letterSpacing = 0.1.sp,
     ),
     bodyMedium = TextStyle(
         fontFamily = Manrope,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.15.sp,
+        lineHeight = 21.sp,
+        letterSpacing = 0.1.sp,
     ),
     bodySmall = TextStyle(
         fontFamily = Manrope,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.2.sp,
+        lineHeight = 17.sp,
+        letterSpacing = 0.15.sp,
     ),
 
+    // Label levels - bumped to Bold + tighter tracking for sharper
+    // table-header look. labelSmall is the highest-frequency size in
+    // history sheets, so legibility wins over decoration.
     labelLarge = TextStyle(
         fontFamily = Manrope,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 0.4.sp,
     ),
     labelMedium = TextStyle(
         fontFamily = Manrope,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 0.4.sp,
     ),
     labelSmall = TextStyle(
         fontFamily = Manrope,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
+        lineHeight = 15.sp,
+        letterSpacing = 0.3.sp,
     ),
 )

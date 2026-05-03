@@ -235,33 +235,6 @@ fun ProviderHistorySheet(
 }
 
 @Composable
-private fun StatPill(label: String, value: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant,
-                RoundedCornerShape(10.dp),
-            )
-            .padding(horizontal = 18.dp, vertical = 8.dp),
-    ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.outline,
-        )
-        Text(
-            value,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleSmall.copy(
-                fontFeatureSettings = "tnum",
-            ),
-        )
-    }
-}
-
-@Composable
 private fun HistoryRow(
     point: HistoryPoint,
     previous: HistoryPoint?,

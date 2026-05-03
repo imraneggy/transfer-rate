@@ -26,9 +26,14 @@ sealed interface RatesUiState {
          *  it is genuinely an objective external benchmark.
          *  Wise itself stays in the provider comparison list. */
         val midMarketRate: Double?
+            get() = midMarketQuote?.rate
+
+        /** Full mid-market ProviderQuote — used to open the history sheet
+         *  when the user taps the MidMarketHeader. Returns null when the
+         *  mid-market provider is missing or in an error state. */
+        val midMarketQuote: ProviderQuote?
             get() = doc.corridors[selectedCurrency]
                 ?.firstOrNull { it.providerId == "mid_market" && it.status == "ok" }
-                ?.rate
 
         /** Quotes for the selected corridor, EXCLUDING only the mid-market
          *  benchmark (which is promoted to the header). Wise and all other
