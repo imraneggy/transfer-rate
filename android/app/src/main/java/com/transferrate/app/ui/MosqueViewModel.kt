@@ -63,9 +63,19 @@ class MosqueViewModel(
     /** Mark that we need permission - usually called before the
      *  permission request flow opens. */
     fun markLocationNeeded() {
-        if (_state.value is MosqueUiState.Idle) {
-            _state.value = MosqueUiState.LocationNeeded
-        }
+        _state.value = MosqueUiState.LocationNeeded
+    }
+
+    /** Mark that we tried to get a location but failed (services off,
+     *  no providers, timed out, etc.).  UI shows the message + retry +
+     *  "show Dubai sample" actions. */
+    fun markLocationFailed(message: String) {
+        _state.value = MosqueUiState.Failed(message)
+    }
+
+    /** Spinner state, used while we wait on the OS for a fresh fix. */
+    fun markLoading() {
+        _state.value = MosqueUiState.Loading
     }
 
     /** Search for mosques near a known coordinate (called once we

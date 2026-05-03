@@ -80,6 +80,36 @@ fun MosqueScreen(
     val state by vm.state.collectAsState()
     val scope = rememberCoroutineScope()
 
+    // Translate a LocationResult into the right ViewModel transition.
+    // We do NOT silently fall back to Dubai on failure - that hides the
+    // real cause from the user and makes the app feel broken ("why is
+    // it showing me Dubai mosques when I'm in Mumbai?").  Each failure
+    // mode gets its own state so the UI can prompt the right action.
+    fun handleLocationResult(result: LocationResult) {
+        when (result) {
+            is LocationResult.Ok ->
+                vm.searchAt(result.location.latitude, result.location.longitude)
+            LocationResult.NoPermission -> vm.markLocationNeeded()
+            LocationResult.ServicesDisabled ->
+                vm.markLocationFailed(
+                    "Location services are off. Turn on Location in your phone's " +
+                    "Settings, then tap Retry."
+                )
+            LocationResult.NoProvidersEnabled ->
+                vm.markLocationFailed(
+                    "No GPS or network location available. Try moving outdoors, " +
+                    "or check that GPS is enabled in your phone's Settings."
+                )
+            LocationResult.Timeout ->
+                vm.markLocationFailed(
+                    "Couldn't get your location in time. Try again outdoors, or " +
+                    "view the Dubai sample area instead."
+                )
+            is LocationResult.Error ->
+                vm.markLocationFailed("Location error: ${result.message}")
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { granted ->
@@ -87,9 +117,7 @@ fun MosqueScreen(
             || granted[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (ok) {
             scope.launch {
-                val loc = LocationProvider.currentLocation(ctx)
-                if (loc != null) vm.searchAt(loc.latitude, loc.longitude)
-                else vm.searchAt(DEFAULT_LAT, DEFAULT_LON)  // fall back to Dubai
+                handleLocationResult(LocationProvider.currentLocation(ctx))
             }
         } else {
             vm.markLocationNeeded()
@@ -99,9 +127,8 @@ fun MosqueScreen(
     fun requestLocation() {
         if (LocationProvider.hasPermission(ctx)) {
             scope.launch {
-                val loc = LocationProvider.currentLocation(ctx)
-                if (loc != null) vm.searchAt(loc.latitude, loc.longitude)
-                else vm.searchAt(DEFAULT_LAT, DEFAULT_LON)
+                vm.markLoading()
+                handleLocationResult(LocationProvider.currentLocation(ctx))
             }
         } else {
             permissionLauncher.launch(arrayOf(
@@ -222,8 +249,10 @@ fun MosqueScreen(
                     is MosqueUiState.Failed -> EmptyPanel(
                         title = "Couldn't load mosques",
                         subtitle = s.message,
-                        ctaLabel = "Retry",
+                        ctaLabel = "Try again",
                         onCta = { requestLocation() },
+                        secondaryLabel = "Show Dubai sample",
+                        onSecondary = { vm.searchAt(DEFAULT_LAT, DEFAULT_LON) },
                     )
                     is MosqueUiState.Ready -> MosqueList(
                         state = s,
