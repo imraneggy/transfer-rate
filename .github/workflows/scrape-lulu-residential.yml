@@ -1,0 +1,83 @@
+# Inject LuLu Exchange's rate into public/rates.json from a self-hosted
+# runner with residential-IP egress.
+#
+# Why a separate workflow:
+#   * LuLu's API runs on TCP port 9443. Both GitHub-hosted runners and
+#     Cloudflare Workers block non-standard ports outbound, so the rate
+#     can only be fetched from a residential IP (your home machine, an
+#     ISP-hosted VPS, etc).
+#   * Running just LuLu on the self-hosted runner avoids re-running the
+#     other 10 providers (which are happy on GitHub-hosted runners).
+#
+# Setup (one-time):
+#   See infra/lulu-residential/README.md for the 5-step runner install.
+#
+# Schedule:
+#   Every 30 minutes — keeps LuLu's rate within ~30 min of fresh while
+#   minimising load on a residential connection.
+#
+# Race with scrape.yml:
+#   Both schedules write public/rates.json concurrently. We retry on
+#   push conflict (pull --rebase + push) so whichever finishes last
+#   wins; LuLu insertion is idempotent so re-running is safe.
+
+name: scrape-lulu-residential
+
+on:
+  schedule:
+    - cron: "10,40 * * * *"   # every 30 min, offset from scrape.yml
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-lulu-residential
+  cancel-in-progress: true
+
+jobs:
+  inject-lulu:
+    # Pinned to a specific runner label so this job ONLY runs on
+    # machines you've registered with that label. If the runner is
+    # offline the job queues; nothing breaks elsewhere.
+    runs-on: [self-hosted, lulu-residential]
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Fetch LuLu and inject into rates.json
+        run: python -m scrapers.lulu_inject --rates-path public/rates.json
+
+      - name: Commit + push if changed
+        run: |
+          set -euo pipefail
+          git config user.name  "transfer-rate-lulu-bot"
+          git config user.email "transfer-rate-lulu-bot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain public/rates.json)" ]; then
+            for attempt in 1 2 3; do
+              git add public/rates.json
+              git commit -m "rates: lulu update (residential)" || true
+              if git pull --rebase -X ours origin main && git push; then
+                echo "pushed on attempt ${attempt}"
+                exit 0
+              fi
+              echo "push failed on attempt ${attempt}, will retry"
+              sleep $((attempt * 5))
+            done
+            echo "could not push after 3 attempts"
+            exit 1
+          else
+            echo "no changes"
+          fi
