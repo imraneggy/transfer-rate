@@ -3,120 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>transfer-rate — technical report</title>
+<title>Exchangia — technical report</title>
 <style>
   :root {
-    --fg: #1a1a1a;
-    --fg-muted: #555;
-    --bg: #fdfdfb;
-    --bg-alt: #f5f4f0;
-    --accent: #006c45;
-    --accent-soft: #e6f2ec;
+    --fg: #0E1F3A;
+    --fg-muted: #5a6477;
+    --bg: #F4F4F0;
+    --bg-alt: #ECECE6;
+    --accent: #06B59C;
+    --accent-soft: #d6f3eb;
+    --gold: #FFB020;
+    --gold-soft: #fff4d6;
     --border: #d8d6d0;
-    --code-bg: #f0eee8;
+    --code-bg: #ebebe5;
     --warn: #b15a00;
     --error: #b00020;
-    --ok: #2e7d32;
+    --ok: #06B59C;
+    --navy: #0E1F3A;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --fg: #e6e3dc;
-      --fg-muted: #a09c93;
-      --bg: #14140f;
-      --bg-alt: #1d1c17;
-      --accent: #6fdba0;
-      --accent-soft: #1a2e22;
-      --border: #2c2a25;
-      --code-bg: #1a1a14;
+      --fg: #e6e8f0;
+      --fg-muted: #94a0b6;
+      --bg: #0A1424;
+      --bg-alt: #101D33;
+      --accent: #5BD8C0;
+      --accent-soft: #1a3a32;
+      --border: #2a3550;
+      --code-bg: #1a2438;
+      --gold-soft: #2e2410;
+      --ok: #5BD8C0;
     }
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0; padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--fg); background: var(--bg);
-    line-height: 1.55;
+    line-height: 1.6;
   }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 48px 24px; }
   header.hero {
     border-bottom: 1px solid var(--border);
-    padding-bottom: 32px; margin-bottom: 40px;
+    padding-bottom: 36px; margin-bottom: 40px;
   }
-  header.hero h1 { font-size: 2.6rem; margin: 0 0 8px; letter-spacing: -0.02em; }
-  header.hero .sub { color: var(--fg-muted); font-size: 1.1rem; margin: 0; }
-  header.hero .meta { color: var(--fg-muted); font-size: 0.9rem; margin-top: 16px; }
-  header.hero .meta span { margin-right: 18px; }
+  header.hero h1 {
+    font-size: 3rem; margin: 0 0 8px;
+    letter-spacing: -0.03em; font-weight: 800;
+    color: var(--navy);
+  }
+  @media (prefers-color-scheme: dark) {
+    header.hero h1 { color: var(--accent); }
+  }
+  header.hero .sub { color: var(--fg-muted); font-size: 1.15rem; margin: 0; font-weight: 500; }
+  header.hero .meta {
+    color: var(--fg-muted); font-size: 0.85rem;
+    margin-top: 18px;
+    display: flex; flex-wrap: wrap; gap: 16px;
+  }
+  header.hero .meta span::before { content: "› "; color: var(--accent); }
   nav.toc {
-    background: var(--bg-alt); padding: 16px 20px;
-    border: 1px solid var(--border); border-radius: 8px;
-    margin-bottom: 40px;
+    background: var(--bg-alt); padding: 18px 22px;
+    border: 1px solid var(--border); border-radius: 10px;
+    margin-bottom: 44px;
   }
-  nav.toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; color: var(--fg-muted); }
-  nav.toc ol { margin: 0; padding-left: 20px; }
-  nav.toc li { padding: 2px 0; }
+  nav.toc h2 {
+    font-size: 0.78rem; text-transform: uppercase;
+    letter-spacing: 0.1em; margin: 0 0 10px;
+    color: var(--fg-muted); font-weight: 700;
+  }
+  nav.toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 24px; }
+  nav.toc li { padding: 3px 0; break-inside: avoid; }
   nav.toc a { color: var(--fg); text-decoration: none; }
   nav.toc a:hover { color: var(--accent); }
-  h2 { font-size: 1.7rem; margin-top: 48px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-  h3 { font-size: 1.2rem; margin-top: 32px; }
-  h4 { font-size: 1rem; margin-top: 24px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  h2 {
+    font-size: 1.85rem; margin-top: 56px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--border);
+    letter-spacing: -0.01em; font-weight: 700;
+  }
+  h3 { font-size: 1.3rem; margin-top: 36px; font-weight: 700; }
+  h4 {
+    font-size: 0.85rem; margin-top: 26px;
+    color: var(--fg-muted); text-transform: uppercase;
+    letter-spacing: 0.06em; font-weight: 700;
+  }
   p { margin: 12px 0; }
-  code, pre { font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.92em; }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.92em;
+  }
   code { background: var(--code-bg); padding: 1px 6px; border-radius: 3px; }
   pre {
     background: var(--code-bg); border: 1px solid var(--border);
-    border-radius: 6px; padding: 14px 16px; overflow-x: auto;
+    border-radius: 8px; padding: 16px 18px; overflow-x: auto;
     font-size: 0.85rem; line-height: 1.45;
   }
   pre code { background: none; padding: 0; }
   table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
-  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  th { background: var(--bg-alt); font-weight: 600; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-alt); font-weight: 700; font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.04em; }
   blockquote {
-    margin: 16px 0; padding: 12px 16px;
+    margin: 18px 0; padding: 14px 18px;
     background: var(--accent-soft);
-    border-left: 3px solid var(--accent);
-    border-radius: 4px;
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
   }
   blockquote p { margin: 6px 0; }
-  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-  .pill.ok { background: #e7f5e9; color: var(--ok); }
+  blockquote.gold {
+    background: var(--gold-soft);
+    border-left-color: var(--gold);
+  }
+  .pill {
+    display: inline-block;
+    padding: 3px 11px; border-radius: 999px;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .pill.ok { background: var(--accent-soft); color: var(--ok); }
   .pill.warn { background: #fff2dd; color: var(--warn); }
   .pill.err { background: #fde7ea; color: var(--error); }
   .pill.muted { background: var(--bg-alt); color: var(--fg-muted); }
   @media (prefers-color-scheme: dark) {
-    .pill.ok { background: #103a1c; color: #79c98c; }
     .pill.warn { background: #3a2710; color: #e6a060; }
     .pill.err { background: #3a1018; color: #e88; }
   }
-  .ascii-diagram {
-    background: var(--code-bg);
-    padding: 20px; border-radius: 6px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.78rem; line-height: 1.4;
-    overflow-x: auto;
-    border: 1px solid var(--border);
-  }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .card {
-    border: 1px solid var(--border); border-radius: 6px;
-    padding: 16px; background: var(--bg-alt);
+    background: var(--bg-alt); padding: 18px;
+    border: 1px solid var(--border); border-radius: 10px;
   }
   .card h4 { margin-top: 0; }
-  footer {
-    margin-top: 80px; padding-top: 24px;
-    border-top: 1px solid var(--border);
-    color: var(--fg-muted); font-size: 0.9rem;
+  .stat {
+    background: var(--bg-alt); padding: 16px 18px;
+    border-radius: 10px; border: 1px solid var(--border);
+  }
+  .stat .v { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin: 0; }
+  .stat .l { font-size: 0.78rem; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 4px 0 0; }
+  .ascii-diagram {
+    background: var(--code-bg);
+    padding: 22px; border-radius: 8px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem; line-height: 1.45;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    margin: 18px 0;
+    white-space: pre;
   }
   hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
-  details { margin: 12px 0; }
-  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
-  @media print {
-    body { background: white; color: black; }
-    .wrap { max-width: none; padding: 16px; }
-    nav.toc, footer { page-break-inside: avoid; }
-    h2 { page-break-before: auto; }
+  footer { color: var(--fg-muted); font-size: 0.85rem; padding: 24px 0; border-top: 1px solid var(--border); margin-top: 60px; }
+  a { color: var(--accent); }
+  a:hover { color: var(--gold); }
+  @media (max-width: 600px) {
+    nav.toc ol { columns: 1; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    header.hero h1 { font-size: 2.2rem; }
   }
 </style>
 </head>
@@ -124,690 +166,668 @@
 <div class="wrap">
 
 <header class="hero">
-  <h1>transfer-rate</h1>
-  <p class="sub">An open-source AED → INR remittance rate aggregator for the UAE — technical report</p>
-  <p class="meta">
-    <span><strong>Version:</strong> 0.1.0</span>
-    <span><strong>Date:</strong> 2026-05-01</span>
-    <span><strong>License:</strong> MIT</span>
-    <span><strong>Status:</strong> <span class="pill ok">Phase 1 complete</span></span>
-  </p>
+  <h1>Exchangia</h1>
+  <p class="sub">Compare INR Rates Across UAE — technical report</p>
+  <div class="meta">
+    <span>Version 0.13.6</span>
+    <span>11 working sources</span>
+    <span>Android 14+ (minSdk 34)</span>
+    <span>~3 MB APK</span>
+    <span>MIT license</span>
+  </div>
 </header>
 
 <nav class="toc">
   <h2>Contents</h2>
   <ol>
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#stack">Tech stack</a></li>
-    <li><a href="#architecture">Architecture</a></li>
-    <li><a href="#schema">JSON schema (the contract)</a></li>
-    <li><a href="#scrapers">Scraper layer</a></li>
-    <li><a href="#orchestrator">Orchestrator</a></li>
-    <li><a href="#workflow">GitHub Actions workflow</a></li>
-    <li><a href="#android">Android app</a></li>
-    <li><a href="#security">Security posture</a></li>
-    <li><a href="#legal">Legal posture</a></li>
-    <li><a href="#step-by-step">Step-by-step build narrative</a></li>
-    <li><a href="#publishing">Publishing checklist</a></li>
-    <li><a href="#operations">Operations &amp; runbook</a></li>
-    <li><a href="#extending">Extending the project</a></li>
+    <li><a href="#summary">Executive summary</a></li>
+    <li><a href="#product">The product</a></li>
+    <li><a href="#architecture">System architecture</a></li>
+    <li><a href="#providers">Provider pipeline</a></li>
+    <li><a href="#gold">Gold rate module</a></li>
+    <li><a href="#android">Android client</a></li>
+    <li><a href="#brand">Brand &amp; design system</a></li>
+    <li><a href="#cicd">CI/CD &amp; release</a></li>
+    <li><a href="#lulu">The LuLu story</a></li>
+    <li><a href="#ceiling">What can &amp; cannot be added</a></li>
+    <li><a href="#security">Security &amp; privacy</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
   </ol>
 </nav>
 
-<h2 id="overview">1. Overview</h2>
+<h2 id="summary">1. Executive summary</h2>
+
 <p>
-  <strong>transfer-rate</strong> is an Android 14+ app that displays the
-  current 1 AED → INR exchange rate offered by major UAE remittance services
-  (Wise, Remitly, LuLu Money, Aspora, Careem Pay) and tracks app-only services
-  (e&amp; Money, Botim Pay, Comera) for future inclusion. Rates refresh every
-  15 minutes.
+  <strong>Exchangia</strong> is an open-source Android 14+ app that compares
+  AED&nbsp;→&nbsp;INR remittance rates across ten verified UAE providers in
+  near real time, alongside a mid-market reference benchmark and a UAE-vs-India
+  gold rate module. The data pipeline runs as a free unattended GitHub Actions
+  cron, publishes a single static JSON to GitHub Pages, and the app fetches
+  that file directly &mdash; no backend, no analytics, no account, no
+  cloud sync.
 </p>
+
+<div class="grid-3">
+  <div class="stat"><p class="v">11</p><p class="l">Live rate sources</p></div>
+  <div class="stat"><p class="v">22 / 22</p><p class="l">pytest scrapers passing</p></div>
+  <div class="stat"><p class="v">~hourly</p><p class="l">GHA cron cadence</p></div>
+  <div class="stat"><p class="v">3.07 MB</p><p class="l">arm64 APK size</p></div>
+  <div class="stat"><p class="v">$0 / mo</p><p class="l">Operating cost</p></div>
+  <div class="stat"><p class="v">1</p><p class="l">Android permission (INTERNET)</p></div>
+</div>
+
+<h4>Working sources today</h4>
 <p>
-  The project's defining constraint is <strong>zero ongoing cost</strong>.
-  No servers, no databases, no paid APIs. The data plane runs on GitHub
-  Actions free tier; the publishing plane uses GitHub Pages; the app
-  fetches a single JSON file over HTTPS.
+  <span class="pill ok">Mid-market</span>
+  <span class="pill ok">Wise</span>
+  <span class="pill ok">Aspora</span>
+  <span class="pill ok">Remitly</span>
+  <span class="pill ok">TransferGo</span>
+  <span class="pill ok">Al Ansari</span>
+  <span class="pill ok">Al Dahab</span>
+  <span class="pill ok">Ahalia</span>
+  <span class="pill ok">Federal Exchange</span>
+  <span class="pill ok">GCC Exchange</span>
+  <span class="pill ok">Index Exchange</span>
+  <span class="pill muted">LuLu (residential runner only)</span>
+</p>
+
+<h4>Gold module</h4>
+<p>
+  Khaleej Times (UAE) + BankBazaar (India) — 24K and 22K per gram in AED and
+  INR with 30-day history series.
+</p>
+
+<hr>
+
+<h2 id="product">2. The product</h2>
+
+<h3>What it does</h3>
+<p>
+  A single screen shows the current AED&nbsp;→&nbsp;INR mid-market rate, the
+  live UAE-vs-India gold rate, and a sortable list of providers with how much
+  each pays out per AED. The largest payer gets a <strong>BEST</strong> badge.
+  Tap a provider card &rarr; a 10-day rate-history sheet opens in-app
+  (no browser redirect). Tap the gold module &rarr; a 30-day gold history
+  sheet with 1g and 8g, 24K and 22K, side by side.
+</p>
+
+<h3>What it explicitly is not</h3>
+<ul>
+  <li><strong>Not</strong> a remittance broker — we don't transfer money or
+    take a cut.</li>
+  <li><strong>Not</strong> a social or notification app — there are zero
+    background pings.</li>
+  <li><strong>Not</strong> a financial advisor — the disclaimer in About is
+    real; rates shown are indicative only.</li>
+  <li><strong>Not</strong> affiliated with any of the listed providers.
+    Provider names and logos are trademarks of their respective owners,
+    used for nominative identification in a comparison context.</li>
+</ul>
+
+<hr>
+
+<h2 id="architecture">3. System architecture</h2>
+
+<div class="ascii-diagram">
+
+   ┌──────────────────────────────┐
+   │  GitHub Actions (free tier)  │
+   │  cron every ~hour            │
+   └──────────────┬───────────────┘
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  scrapers/run_all.py         │ ── fetches 11 sources in parallel
+   │  (Python 3.12 + httpx)       │    with hard timeouts, retries,
+   └──────────────┬───────────────┘    stale-tolerance fallback
+                  │
+                  ▼
+   ┌──────────────────────────────┐
+   │  public/rates.json           │ ── atomic write, schema v2
+   │  public/history.json         │ ── rolling 10-day per-provider
+   │  public/gold_history.json    │
+   └──────────────┬───────────────┘
+                  │ git commit + push
+                  ▼
+   ┌──────────────────────────────┐    optional residential runner
+   │  GitHub Pages                │ ◄──── injects LuLu via
+   │  imraneggy.github.io/        │      scrapers/lulu_inject.py
+   │  transfer-rate/rates.json    │
+   └──────────────┬───────────────┘
+                  │ HTTPS GET (network-security-config locked to host)
+                  ▼
+   ┌──────────────────────────────┐
+   │  Android app (Compose)       │ ── stale-while-revalidate cache,
+   │  com.transferrate.app        │    pull-to-refresh, dark/light/auto
+   └──────────────────────────────┘
+
+</div>
+
+<h3>Why this shape</h3>
+<ul>
+  <li><strong>No backend</strong> &rarr; nothing to operate, monitor, or
+    pay for; no PII storage liability; no scaling work.</li>
+  <li><strong>Static JSON on Pages</strong> &rarr; the app reads a single
+    URL hosted on a domain it explicitly trusts via Network Security
+    Config. CDN caching is free and global.</li>
+  <li><strong>Scraping in CI not in-app</strong> &rarr; the app makes one
+    network call per refresh. No third-party domain pings, no analytics
+    SDKs, no certificate-pinning fragility.</li>
+</ul>
+
+<hr>
+
+<h2 id="providers">4. Provider pipeline</h2>
+
+<h3>The eleven sources</h3>
+
+<table>
+  <thead>
+    <tr><th>Provider</th><th>Strategy</th><th>Endpoint shape</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Mid-Market</strong></td>
+      <td>Reference rate</td>
+      <td>Google Finance HTML &rarr; open.er-api.com fallback</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Wise</strong></td>
+      <td>Public REST</td>
+      <td><code>/rates/live</code></td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Aspora</strong></td>
+      <td>Public REST</td>
+      <td><code>/forex/rates</code> (rotates a-z hosts)</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Remitly</strong></td>
+      <td>Inline JSON</td>
+      <td><code>merchandisingFacts</code> on landing page</td>
+      <td><span class="pill ok">live + promo rate</span></td>
+    </tr>
+    <tr>
+      <td><strong>TransferGo</strong></td>
+      <td>Public REST</td>
+      <td><code>my.transfergo.com/api/fx-rates</code></td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Al Ansari Exchange</strong></td>
+      <td>WP-Ajax + nonce</td>
+      <td>Two-step <code>admin-ajax.php</code> with nonce harvest</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Al Dahab Exchange</strong></td>
+      <td>HTML marquee</td>
+      <td><code>AED/INR = 25.74</code> in scrolling banner</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Ahalia Exchange</strong></td>
+      <td>Inline JS object</td>
+      <td><code>var cc_data = {"inr":"25.67",...}</code></td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Federal Exchange</strong></td>
+      <td>HTML cards + retry</td>
+      <td>Server-rendered currency cards; UA-spoofed retry on CDN block</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>GCC Exchange</strong></td>
+      <td>Public JSON + invert</td>
+      <td>AED-per-target rate, scraper inverts to INR-per-AED</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Index Exchange</strong></td>
+      <td>HTML extract</td>
+      <td>Daily rate from homepage</td>
+      <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>LuLu Money</strong></td>
+      <td>Self-hosted runner only</td>
+      <td>Port 9443 (firewalled by GHA &amp; CF Workers)</td>
+      <td><span class="pill warn">conditional</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Per-call hardening</h3>
+<ul>
+  <li><strong>Hard per-call timeout</strong>: 25 seconds.</li>
+  <li><strong>Polite User-Agent</strong> (<code>transfer-rate-bot/1.0</code>)
+    with maintainer contact, plus browser-style UA fallback for
+    CDN-protected sites (Federal Exchange).</li>
+  <li><strong>Retry-with-backoff</strong> for transient failures
+    (<code>get_with_retry</code>): 3 attempts at 0.5s/1s gaps.</li>
+  <li><strong>Stale tolerance</strong>: when a fresh fetch errors, the
+    orchestrator preserves the last good quote and marks it
+    <code>status=stale</code> so the app never shows an empty cell for
+    a previously-known-good provider.</li>
+  <li><strong>Validation guard rails</strong>: rates outside
+    <code>[0.0001, 10000]</code> are rejected as parse bugs, not
+    forwarded.</li>
+</ul>
+
+<hr>
+
+<h2 id="gold">5. Gold rate module</h2>
+
+<p>
+  Sits 50/50 with the mid-market header on the home screen. Two
+  independent sources fetched in parallel:
+</p>
+
+<table>
+  <thead><tr><th>Side</th><th>Source</th><th>Pattern</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>UAE</strong></td>
+      <td>Khaleej Times</td>
+      <td>HTML table cells: <code>&lt;td&gt;24K&lt;/td&gt;&lt;td&gt;556.00&lt;/td&gt;</code></td>
+    </tr>
+    <tr>
+      <td><strong>India</strong></td>
+      <td>BankBazaar</td>
+      <td>Inline JSON: <code>{"date":"...","prices":{"22K_1G":13935,"24K_1G":14632}}</code> &mdash; full 30-day series</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  India history comes for free from BankBazaar's inline series (30+ days).
+  UAE history is accumulated locally into <code>data/uae_gold_history.json</code>
+  &mdash; Khaleej Times only publishes today's reading, so the orchestrator
+  appends each scrape's rate and prunes to the most recent 30 days.
+</p>
+
+<p>
+  Tap the gold module &rarr; sheet shows snapshot grid (1g + 8g for both
+  carats for both countries), 24K trend sparklines side by side, and a
+  unified daily history table.
+</p>
+
+<hr>
+
+<h2 id="android">6. Android client</h2>
+
+<h3>Stack</h3>
+<table>
+  <tbody>
+    <tr><td>Min / Target SDK</td><td>34 / 34 (Android 14+ only)</td></tr>
+    <tr><td>Compile SDK</td><td>35 (Android 15)</td></tr>
+    <tr><td>Language</td><td>Kotlin 2.1</td></tr>
+    <tr><td>UI</td><td>Jetpack Compose + Material 3</td></tr>
+    <tr><td>HTTP</td><td>OkHttp 4.12 with Network Security Config domain allowlist</td></tr>
+    <tr><td>Persistence</td><td>SharedPreferences (tiny: dismissed-hint flag)</td></tr>
+    <tr><td>Background work</td><td>WorkManager (idempotent prefetch scheduler)</td></tr>
+    <tr><td>Architecture</td><td>MVVM with kotlinx.coroutines + StateFlow</td></tr>
+    <tr><td>R8 + per-arch APK splits</td><td>Yes (universal also bundled for sideload)</td></tr>
+  </tbody>
+</table>
+
+<h3>UI surfaces</h3>
+<ul>
+  <li><strong>Splash</strong> &rarr; soft-gray backdrop, hero Exchangia logo
+    PNG (extracted from brand sheet), Manrope/Space Grotesk wordmark, brand
+    emerald spinner. Shows on every launch (lifecycle-observer-driven, not
+    just cold start).</li>
+  <li><strong>Rates list</strong> &rarr; 50/50 mid-market + gold module top
+    row, then amount panel with quick-pick chips, then provider cards
+    sorted with BEST badge highlight, sparklines, and tap-for-history.</li>
+  <li><strong>Provider history sheet</strong> &rarr; 10-day daily series
+    with date+time, rate, delta vs previous, plus high/low/avg pills and
+    a sparkline. Replaces the old browser-redirect.</li>
+  <li><strong>Gold history sheet</strong> &rarr; 30-day comparison table
+    with 1g + 8g, 24K + 22K, side-by-side sparklines.</li>
+  <li><strong>Top-app-bar chips</strong> &rarr; <code>AUTO/LIGHT/DARK</code>
+    text chip cycles theme; <code>REFRESH</code> chip refreshes; <code>ⓘ</code>
+    glyph opens About.</li>
+  <li><strong>About</strong> &rarr; mid-market explainer, BEST badge meaning,
+    privacy stance, MIT license attribution. No external links (per
+    user request).</li>
+</ul>
+
+<hr>
+
+<h2 id="brand">7. Brand &amp; design system</h2>
+
+<h3>Identity</h3>
+<table>
+  <tbody>
+    <tr><td><strong>Name</strong></td><td>Exchangia</td></tr>
+    <tr><td><strong>Tagline</strong></td><td>Compare INR Rates Across UAE</td></tr>
+    <tr><td><strong>Logo</strong></td><td>Stylised "E" with INR (₹) cue at top-right and UAE crescent + star at bottom-right</td></tr>
+    <tr><td><strong>Reference brief</strong></td><td><code>Media (2).jpg</code> at repository root</td></tr>
+  </tbody>
+</table>
+
+<h3>Colour palette</h3>
+<table>
+  <thead><tr><th>Role</th><th>Hex</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr><td>Deep navy</td><td><code>#0E1F3A</code> / <code>#0A1424</code></td><td>Primary text on light, dark-mode background</td></tr>
+    <tr><td>Brand emerald</td><td><code>#06B59C</code></td><td>Active controls, primary accents</td></tr>
+    <tr><td>Aqua</td><td><code>#00C2D4</code></td><td>Highlights, hover states</td></tr>
+    <tr><td>Saffron gold</td><td><code>#FFB020</code></td><td>BEST badge, gold module accents</td></tr>
+    <tr><td>Light cyan</td><td><code>#9DEAD0</code></td><td>Light primaryContainer</td></tr>
+    <tr><td>Soft gray</td><td><code>#F1F4F8</code></td><td>Splash backdrop, light-mode background</td></tr>
+  </tbody>
+</table>
+
+<h3>Typography</h3>
+<table>
+  <thead><tr><th>Family</th><th>License</th><th>Use</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Space Grotesk</strong> (4 weights)</td>
+      <td>SIL OFL 1.1</td>
+      <td>Display + headline levels — distinctive geometric character</td>
+    </tr>
+    <tr>
+      <td><strong>Manrope</strong> (5 weights)</td>
+      <td>SIL OFL 1.1</td>
+      <td>Titles, body, labels — high x-height, tabular figures via <code>fontFeatureSettings = "tnum"</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  Full Material 3 Typography overridden in <code>ui/theme/Type.kt</code>.
+  Display tracking tightened to <code>-0.5sp</code> on geometric sans
+  serifs reads cleaner at large sizes. OFL attribution bundled at
+  repo root in <code>NOTICE-fonts.txt</code>.
+</p>
+
+<hr>
+
+<h2 id="cicd">8. CI/CD &amp; release</h2>
+
+<h3>Workflows</h3>
+
+<table>
+  <thead><tr><th>Workflow</th><th>Trigger</th><th>Runs on</th><th>Job</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>scrape.yml</code></td>
+      <td>Cron 0,15,30,45 * * * * + dispatch + push to scrapers/</td>
+      <td><code>ubuntu-24.04</code></td>
+      <td>Run all scrapers, commit JSON, deploy to Pages</td>
+    </tr>
+    <tr>
+      <td><code>scrape-lulu-residential.yml</code></td>
+      <td>Cron 10,40 * * * * + dispatch</td>
+      <td><code>self-hosted, lulu-residential</code></td>
+      <td>Inject LuLu rate from residential IP</td>
+    </tr>
+    <tr>
+      <td><code>android-build.yml</code></td>
+      <td>Tag push <code>v*</code> + dispatch</td>
+      <td><code>ubuntu-24.04</code></td>
+      <td>JDK 17 + Gradle 8.11.1 → release APK + GitHub Release</td>
+    </tr>
+    <tr>
+      <td><code>test.yml</code></td>
+      <td>Push + PR touching scrapers/tests</td>
+      <td><code>ubuntu-24.04</code></td>
+      <td>pytest scrapers</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Hardening</h3>
+<ul>
+  <li>Top-level <code>permissions: {}</code> denies everything by default;
+    job-scoped grants only <code>contents: write</code> /
+    <code>pages: write</code> / <code>id-token: write</code> as needed.</li>
+  <li>Third-party actions pinned by full commit SHA, not tag.</li>
+  <li><code>concurrency.cancel-in-progress: true</code> prevents racing runs.</li>
+  <li>Optional release-signing keystore via repo secrets
+    (<code>KEYSTORE_BASE64</code>, <code>KEYSTORE_PASSWORD</code>,
+    <code>KEY_ALIAS</code>, <code>KEY_PASSWORD</code>); falls back to
+    debug signing for sideload-only builds.</li>
+</ul>
+
+<hr>
+
+<h2 id="lulu">9. The LuLu story</h2>
+
+<p>
+  LuLu Exchange has been the only consistently-blocked provider. The journey,
+  in chronological order, illustrates why "just write a scraper" turned out
+  to be 4 different attempts:
+</p>
+
+<h4>Attempt 1 — Direct port-9443 fetch</h4>
+<p>
+  LuLu's rate API runs on <code>https://lieservices.luluone.com:9443/liveccyrates</code>
+  with a Gravitee key embedded in their public homepage JS. Works perfectly
+  on residential IPs. Fails in CI: GitHub Actions runners block all
+  outbound traffic to non-standard ports.
+  <span class="pill err">CI: blocked</span>
+</p>
+
+<h4>Attempt 2 — Cloudflare Worker proxy</h4>
+<p>
+  Wrote a 100-line Worker to forward port-9443 calls. Discovered
+  <strong>Cloudflare Workers also restrict <code>fetch()</code> to ports
+  80/443</strong> — same wall, different name.
+  <span class="pill err">Worker: 502 immediately</span>
+</p>
+
+<h4>Attempt 3 — Cloudflare Worker via LuLu's port-443 fallback</h4>
+<p>
+  Found a second LuLu API at <code>orville.luluone.com</code> (port 443)
+  that powers their rate-history graph. Public OAuth-style credentials
+  embedded in homepage JS. Auth call works from CF; rate-history POST
+  is WAF-blocked from Cloudflare's IP ranges (520 errors).
+  <span class="pill err">Worker: 520 from upstream</span>
+</p>
+
+<h4>Attempt 4 — Headless Chromium in CI (Playwright)</h4>
+<p>
+  Loaded LuLu's homepage in a real browser inside CI. The page rendered,
+  but its in-page JS made the same blocked port-9443 call — the rate
+  placeholder never updated and <code>wait_for_function</code> timed out.
+  <strong>The browser was just a UI for the same blocked HTTP call.</strong>
+  <span class="pill err">Playwright: timeout</span>
+</p>
+
+<h4>Attempt 5 — Self-hosted runner on residential IP <span class="pill ok">working</span></h4>
+<p>
+  The only path that actually works. Pipeline shipped in v0.13.6:
+</p>
+<ul>
+  <li><code>scrapers/lulu_inject.py</code> — fetches LuLu via the working
+    direct API and injects into <code>public/rates.json</code> at index 5
+    (idempotent; re-runs are safe).</li>
+  <li><code>.github/workflows/scrape-lulu-residential.yml</code> &mdash;
+    cron every 30 min, <code>runs-on: [self-hosted, lulu-residential]</code>.
+    Push-retry loop handles concurrent commits from <code>scrape.yml</code>.</li>
+  <li><code>infra/lulu-residential/README.md</code> &mdash; 5-step setup
+    guide for installing the runner on home box, Pi, or residential VPS.</li>
+</ul>
+<p>
+  Until the user installs the residential runner, <code>_build_providers</code>
+  omits LuLu so the app shows no error card. The moment the runner comes
+  online, the next 30-min tick injects LuLu cleanly.
 </p>
 
 <blockquote>
-  <p><strong>Design thesis:</strong> a remittance comparison app does not
-  need real-time tick data — providers reprice on the order of minutes to
-  hours. A 15-minute scrape cadence on free infrastructure is operationally
-  cheaper than a paid real-time pipeline and produces a result that is
-  indistinguishable to the end user.</p>
+  <p>
+    <strong>Lesson:</strong> when the bottleneck is L3/L4 firewall, you
+    need a different <em>network path</em>, not a different <em>user
+    agent</em>. Useful litmus test: would <code>curl --resolve</code> or
+    <code>socks5://</code> flags help? If yes, the browser is overkill;
+    if no, the browser won't either.
+  </p>
 </blockquote>
 
-<h2 id="stack">2. Tech stack</h2>
+<hr>
 
-<div class="grid-2">
-  <div class="card">
-    <h4>Data plane (Python)</h4>
-    <ul>
-      <li><strong>Python 3.12</strong> — language</li>
-      <li><strong>httpx 0.27.2</strong> — HTTP client (HTTP/2, sync &amp; async)</li>
-      <li><strong>beautifulsoup4 + lxml</strong> — HTML parsing where needed</li>
-      <li><strong>concurrent.futures</strong> — parallel scraping (stdlib)</li>
-      <li><strong>dataclasses</strong> — wire schema (stdlib)</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h4>Presentation plane (Android)</h4>
-    <ul>
-      <li><strong>Kotlin 2.1.0</strong></li>
-      <li><strong>Jetpack Compose</strong> (BOM 2024.12)</li>
-      <li><strong>Material 3</strong> with Material You dynamic colour</li>
-      <li><strong>Lifecycle ViewModel</strong> + StateFlow</li>
-      <li><strong>OkHttp 4.12</strong> — network</li>
-      <li><strong>kotlinx.serialization 1.7.3</strong> — strict JSON</li>
-      <li><strong>kotlinx.coroutines 1.9</strong> — concurrency</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h4>Build &amp; CI</h4>
-    <ul>
-      <li><strong>Gradle 8.11.1</strong> with version catalog</li>
-      <li><strong>Android Gradle Plugin 8.7.3</strong></li>
-      <li><strong>R8 full mode</strong> for release shrinking</li>
-      <li><strong>GitHub Actions</strong> with SHA-pinned action references</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h4>Hosting &amp; distribution</h4>
-    <ul>
-      <li><strong>GitHub repo</strong> — code &amp; data history</li>
-      <li><strong>GitHub Actions</strong> — cron + deploy workers</li>
-      <li><strong>GitHub Pages</strong> — JSON CDN</li>
-      <li><strong>GitHub Releases</strong> or F-Droid for APK distribution</li>
-    </ul>
-  </div>
-</div>
+<h2 id="ceiling">10. What can &amp; cannot be added</h2>
 
 <p>
-  <strong>What is intentionally absent:</strong> no server-side runtime,
-  no database, no analytics SDK, no crash reporter, no DI framework
-  (Hilt/Koin), no Retrofit (overkill for one endpoint), no image loading
-  library (no provider logos shown), no firebase/play services dependency.
-  Every absent thing is a smaller attack surface.
+  Across this and earlier sessions, <strong>50+ UAE remittance providers
+  + 20 banks have been probed</strong>. Below is the definitive enumeration
+  of the practical ceiling:
 </p>
 
-<h2 id="architecture">3. Architecture</h2>
-
-<pre class="ascii-diagram">
-                  scrape plane                       presentation plane
-   ┌────────────────────────────────────┐         ┌──────────────────────────┐
-   │ GitHub Actions cron */15 minutes   │         │ Android app              │
-   │  ├─ scrapers/run_all.py            │         │  ├─ MainActivity         │
-   │  │   └─ ThreadPoolExecutor (8)     │         │  ├─ RatesViewModel       │
-   │  ├─ scrapers/wise.py (API)         │         │  ├─ RatesRepository      │
-   │  ├─ scrapers/remitly.py (API)      │         │  └─ Compose UI           │
-   │  ├─ scrapers/lulu.py (HTML)        │         │                          │
-   │  ├─ scrapers/aspora.py (HTML)      │         │                          │
-   │  ├─ scrapers/careem.py (HTML)      │         │                          │
-   │  └─ scrapers/{eand,botim,comera}   │         │                          │
-   │     (stubs: status='investigating')│         │                          │
-   └────────────┬───────────────────────┘         └────────────┬─────────────┘
-                │                                               │
-                ▼                                               ▼
-   commit public/rates.json                     HTTPS GET (allowlisted)
-                │                                               │
-                └──────► public/rates.json on GitHub Pages ◄────┘
-                          (Fastly CDN, HTTPS, no cache)
-</pre>
-
-<p>
-  The two planes are entirely decoupled. The contract between them is a
-  single JSON file. Either side can be modified, redeployed, or swapped
-  without affecting the other, as long as the schema version is honoured.
-</p>
-
-<h2 id="schema">4. JSON schema (the contract)</h2>
-
-<p>
-  The shape of <code>public/rates.json</code> is the most important
-  artifact in the repository. Both Python (<code>scrapers/base.py</code>)
-  and Kotlin (<code>app/data/Rates.kt</code>) define it. Version is
-  declared as <code>schema_version: 1</code>; consumers must validate.
-</p>
-
-<pre><code>{
-  "schema_version": 1,
-  "base": "AED",
-  "quote": "INR",
-  "amount_base": 1000.0,
-  "started_at":   "2026-05-01T08:00:00Z",
-  "completed_at": "2026-05-01T08:00:18Z",
-  "providers": [
-    {
-      "provider_id": "wise",
-      "provider_name": "Wise",
-      "base": "AED", "quote": "INR",
-      "amount_base": 1000.0,
-      "rate": 22.8543,
-      "fee_base": 8.50,
-      "received_quote": 22812.3,
-      "effective_rate": 22.8123,
-      "delivery_estimate": "within minutes",
-      "url": "https://wise.com/...",
-      "status": "ok",
-      "note": null,
-      "fetched_at": "2026-05-01T08:00:14Z"
-    },
-    {
-      "provider_id": "comera",
-      "provider_name": "Comera",
-      "status": "investigating",
-      "note": "App-only service (e&amp; International), no public rate endpoint yet.",
-      "...": "remaining fields null"
-    }
-  ]
-}
-</code></pre>
-
-<h4>Status values</h4>
-<table>
-  <tr><th>Status</th><th>Meaning</th><th>How the app renders it</th></tr>
-  <tr><td><span class="pill ok">ok</span></td><td>Fresh successful scrape</td><td>Green dot, rate shown bold</td></tr>
-  <tr><td><span class="pill warn">stale</span></td><td>This run failed but a previous successful value exists</td><td>Orange dot, rate shown muted with "Last good rate"</td></tr>
-  <tr><td><span class="pill muted">investigating</span></td><td>No public source identified yet</td><td>Grey dot, "Coming soon"</td></tr>
-  <tr><td><span class="pill err">error</span></td><td>Failed and no historical fallback</td><td>Red dot, "Unavailable"</td></tr>
-</table>
-
-<h2 id="scrapers">5. Scraper layer</h2>
-
-<p>
-  Each provider is one Python file in <code>scrapers/</code>. They share a
-  base class and produce <code>Quote</code> objects. The simplest is
-  <code>wise.py</code> (uses a public JSON API); the most fragile are HTML
-  scrapers that depend on a specific selector.
-</p>
-
-<h4>Provider table</h4>
-<table>
-  <tr>
-    <th>Provider</th><th>Status</th><th>Source type</th><th>Why this approach</th>
-  </tr>
-  <tr><td>Wise</td><td><span class="pill ok">ok</span></td><td>Public comparisons API</td>
-      <td>Wise documents this for their marketing widget. Stable JSON.</td></tr>
-  <tr><td>Remitly</td><td><span class="pill ok">ok</span></td><td>Public calculator JSON</td>
-      <td>Used by Remitly's web calculator; anonymous quotes work.</td></tr>
-  <tr><td>LuLu Money</td><td><span class="pill ok">ok</span></td><td>HTML (embedded JSON)</td>
-      <td>Page embeds rate data in a script tag we extract by regex.</td></tr>
-  <tr><td>Aspora</td><td><span class="pill ok">ok</span></td><td>HTML (data attribute)</td>
-      <td>Landing page surfaces the AE→IN rate prominently.</td></tr>
-  <tr><td>Careem Pay</td><td><span class="pill ok">ok</span></td><td>HTML (embedded data)</td>
-      <td>Marketing page renders rates client-side from injected JSON.</td></tr>
-  <tr><td>e&amp; Money</td><td><span class="pill muted">investigating</span></td><td>—</td>
-      <td>App-only. Stubbed pending stable public source.</td></tr>
-  <tr><td>Botim Pay</td><td><span class="pill muted">investigating</span></td><td>—</td>
-      <td>App-only. Reverse-engineering mobile API is fragile and ToS-sensitive.</td></tr>
-  <tr><td>Comera</td><td><span class="pill muted">investigating</span></td><td>—</td>
-      <td>App-only. Same issue as Botim.</td></tr>
-</table>
-
-<h4>Anatomy of a scraper</h4>
-<p>
-  Every concrete scraper subclasses <code>BaseProvider</code> and implements
-  one method:
-</p>
-<pre><code>class WiseProvider(BaseProvider):
-    id = "wise"
-    display_name = "Wise"
-    API_URL = "https://api.wise.com/v3/comparisons/"
-
-    def fetch_inr(self, amount_aed: float = 1000.0) -> Quote:
-        with http_client() as c:
-            r = c.get(self.API_URL, params={...})
-            r.raise_for_status()
-            data = r.json()
-        # ... defensive extraction ...
-        return Quote(provider_id=self.id, ..., status="ok",
-                     fetched_at=self._now_iso())
-</code></pre>
-
-<p>
-  The shared <code>http_client()</code> sets the User-Agent
-  <code>transfer-rate-bot/1.0 (+https://github.com/...)</code>, a 15-second
-  timeout, and follow-redirects. Scrapers focus only on <em>what to extract
-  from the response</em>; everything else is centralised.
-</p>
-
-<h2 id="orchestrator">6. Orchestrator</h2>
-
-<p>
-  <code>scrapers/run_all.py</code> is the entry point of the data plane.
-  Responsibilities:
-</p>
-<ol>
-  <li>Run all 8 scrapers concurrently in a <code>ThreadPoolExecutor</code>.</li>
-  <li>Catch every exception so one provider's failure cannot abort the run.</li>
-  <li>Apply a 25-second hard per-provider timeout.</li>
-  <li>If a provider failed this run but had a previous successful quote in
-      <code>rates.json</code>, preserve the old value as
-      <code>status="stale"</code> rather than show an error. This is the
-      single most user-facing reliability behaviour.</li>
-  <li>Sort results by the canonical <code>PROVIDERS</code> order so the
-      JSON is deterministic.</li>
-  <li>Write the output atomically: <code>rates.json.tmp</code> then
-      <code>os.replace()</code>. Readers never see a half-written file.</li>
-</ol>
-
-<h2 id="workflow">7. GitHub Actions workflow</h2>
-
-<p>Two workflows, both security-hardened:</p>
-
-<h4><code>.github/workflows/scrape.yml</code></h4>
-<table>
-<tr><th>Setting</th><th>Why</th></tr>
-<tr><td><code>permissions: {}</code> at root</td>
-    <td>Deny everything by default; grant <code>contents: write</code>
-        only on the job that needs to commit.</td></tr>
-<tr><td>Third-party actions pinned by full commit SHA</td>
-    <td>Tags are mutable — an attacker who compromises an action's repo
-        can re-point a tag to their malicious code. SHAs are immutable.</td></tr>
-<tr><td><code>concurrency.cancel-in-progress: true</code></td>
-    <td>If two cron triggers race, the older one is cancelled — no double-commits.</td></tr>
-<tr><td><code>timeout-minutes: 5</code></td>
-    <td>Hard cap. A scraper that hangs cannot consume free-tier minutes.</td></tr>
-<tr><td>No <code>secrets:</code> referenced</td>
-    <td>Public data only. There is nothing to leak.</td></tr>
-</table>
-
-<h4><code>.github/workflows/pages.yml</code></h4>
-<p>
-  Triggers on changes to <code>public/</code> and republishes via the
-  official Pages deploy action. Uses OIDC token (<code>id-token: write</code>)
-  rather than a stored token.
-</p>
-
-<h2 id="android">8. Android app</h2>
-
-<h4>Module layout</h4>
-<pre><code>android/
-├── settings.gradle.kts
-├── build.gradle.kts
-├── gradle.properties
-├── gradle/
-│   ├── libs.versions.toml          # version catalog
-│   └── wrapper/gradle-wrapper.properties
-└── app/
-    ├── build.gradle.kts
-    ├── proguard-rules.pro
-    └── src/main/
-        ├── AndroidManifest.xml
-        ├── res/xml/
-        │   ├── network_security_config.xml
-        │   ├── backup_rules.xml
-        │   └── data_extraction_rules.xml
-        ├── res/values/{strings,themes}.xml
-        ├── res/values-night/themes.xml
-        └── java/com/transferrate/app/
-            ├── MainActivity.kt
-            ├── data/Rates.kt
-            ├── data/RatesRepository.kt
-            ├── ui/RatesViewModel.kt
-            ├── ui/RatesScreen.kt
-            └── ui/theme/Theme.kt
-</code></pre>
-
-<h4>Notable choices</h4>
-<table>
-<tr><th>Choice</th><th>Why</th></tr>
-<tr><td><code>minSdk = 34</code></td>
-    <td>Project requirement: Android 14+ only. Smaller install base, but
-        full access to the modern security model.</td></tr>
-<tr><td>No Hilt / Koin</td>
-    <td>One repository, one viewmodel — manual instantiation is simpler
-        and removes a dependency.</td></tr>
-<tr><td>OkHttp directly, no Retrofit</td>
-    <td>One endpoint, one method. Retrofit would add a code-gen step for
-        no benefit.</td></tr>
-<tr><td>kotlinx.serialization, not Gson/Moshi</td>
-    <td>Compile-time codegen; no reflection at runtime; better R8 fit.</td></tr>
-<tr><td>Validate parsed JSON with bounds</td>
-    <td>If the published JSON ever contains a bogus value, we refuse it
-        before rendering. Defense-in-depth.</td></tr>
-<tr><td>No Material You logos / icons libs</td>
-    <td>Plain-text provider names + a coloured status dot keeps APK size
-        tiny and avoids trademark issues.</td></tr>
-</table>
-
-<h2 id="security">9. Security posture</h2>
-
-<h4>Network</h4>
-<ul>
-  <li><code>android:usesCleartextTraffic="false"</code> on the
-      <code>&lt;application&gt;</code>.</li>
-  <li>Network Security Config restricts allowed domains to
-      <code>imraneggy.github.io</code> only.</li>
-  <li>Strict TLS via OkHttp defaults; no custom trust manager.</li>
-  <li>No certificate pinning — GitHub Pages rotates certs frequently and a
-      hard-pin would brick the app on rotation. Domain-allowlist is the
-      stronger control here.</li>
-  <li>HTTP client refuses bodies &gt; 1 MB.</li>
-</ul>
-
-<h4>App attack surface</h4>
-<ul>
-  <li>Exactly one declared permission: <code>INTERNET</code>.</li>
-  <li><code>allowBackup="false"</code>; explicit empty
-      <code>backup_rules.xml</code> and <code>data_extraction_rules.xml</code>.</li>
-  <li>Single Activity with <code>android:exported="true"</code> only because
-      Android requires this for <code>LAUNCHER</code> activities; no other
-      exported components.</li>
-  <li>No content provider, no broadcast receiver, no service.</li>
-  <li>No custom URL schemes, no app links, no deep linking — nothing for
-      another app to invoke.</li>
-  <li>R8 full-mode shrinks bytecode; <code>android.util.Log.{v,d}</code>
-      calls are stripped in release.</li>
-</ul>
-
-<h4>Data parsing</h4>
-<ul>
-  <li><code>Json { isLenient = false }</code> — strict mode rejects
-      malformed documents.</li>
-  <li><code>validate()</code> caps amount, rate, fee to plausible ranges
-      before showing them.</li>
-  <li><code>schema_version</code> check refuses unknown future schemas.</li>
-</ul>
-
-<h4>Build pipeline</h4>
-<ul>
-  <li>GitHub Actions: top-level <code>permissions: {}</code> denies
-      everything; jobs grant what they need.</li>
-  <li>Third-party actions pinned by commit SHA.</li>
-  <li>Gradle wrapper distribution URL pinned with sha256.</li>
-  <li>Library versions pinned exactly in <code>libs.versions.toml</code>.</li>
-  <li>No keystore in the repo; signing config reads from environment.</li>
-</ul>
-
-<h2 id="legal">10. Legal posture</h2>
-
-<h4>Scraping</h4>
-<p>
-  Scraping public marketing pages is generally permissible in major
-  jurisdictions when done politely and against published material. We
-  reinforce that with explicit choices:
-</p>
-<ul>
-  <li>Polite User-Agent identifying the bot, with a contact link.</li>
-  <li>One request per provider per scrape, every 15 minutes — well
-      below any reasonable rate limit.</li>
-  <li>Only public marketing/rate pages are touched. We do not authenticate,
-      replay private mobile APIs, or bypass paywalls.</li>
-  <li><code>TAKEDOWN.md</code> documents a 24-hour removal process for any
-      provider who requests it. This is what separates a responsible
-      aggregator from a scraper-of-last-resort.</li>
-</ul>
-
-<h4>Trademark</h4>
-<ul>
-  <li>Provider names used nominatively (i.e. to identify the source of
-      the rate). No logos, no claims of affiliation.</li>
-  <li>Disclaimer in the app footer and in <code>DISCLAIMER.md</code>:
-      "indicative rates, not financial advice, not affiliated."</li>
-</ul>
-
-<h4>Licensing</h4>
-<ul>
-  <li>Code under MIT — maximum permissiveness, includes a no-warranty
-      clause.</li>
-  <li>All dependencies are MIT/Apache-2.0/BSD compatible. No GPL.</li>
-</ul>
-
-<h4>Privacy</h4>
-<ul>
-  <li>App collects nothing — see <code>PRIVACY.md</code>.</li>
-  <li>Play Store Data Safety form: declare "no data collected" truthfully.</li>
-  <li>Privacy policy URL = the rendered <code>PRIVACY.md</code> on GitHub.</li>
-</ul>
-
-<h2 id="step-by-step">11. Step-by-step build narrative</h2>
-
-<p>
-  This is what was actually done, in order, when this scaffold was built.
-  Use it as a reference if you want to rebuild from scratch or audit how
-  pieces fit.
-</p>
-
-<details open>
-<summary>Step 1 — Repository skeleton</summary>
-<ol>
-  <li>Created the project directory, ran <code>git init -b main</code>.</li>
-  <li>Wrote <code>.gitignore</code> with Python, Android, IDE, and OS exclusions.</li>
-  <li>Wrote <code>LICENSE</code> (MIT) and <code>requirements.txt</code> with
-      pinned versions of httpx, beautifulsoup4, lxml.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 2 — Scraper framework</summary>
-<ol>
-  <li>Created <code>scrapers/base.py</code> with the <code>Quote</code>
-      dataclass and the <code>BaseProvider</code> abstract class.
-      Decided every nullable field is genuinely <code>Optional</code> so
-      partial data is acceptable.</li>
-  <li>Created <code>scrapers/utils.py</code> with the shared
-      <code>http_client()</code> factory carrying the polite
-      User-Agent and timeout.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 3 — Wise reference scraper</summary>
-<ol>
-  <li>Implemented <code>scrapers/wise.py</code> against
-      <code>api.wise.com/v3/comparisons</code>. This is the
-      structural template all other scrapers follow.</li>
-  <li>Defensive parsing: every field extraction is guarded; schema mismatch
-      raises a <code>RuntimeError</code> with a descriptive message.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 4 — Other working scrapers</summary>
-<ol>
-  <li>Implemented Remitly (calculator JSON), LuLu (HTML embedded JSON),
-      Aspora (HTML data attribute), Careem (HTML embedded data).</li>
-  <li>For each, added a clearly-marked <code>TODO</code>/regex that may
-      need tightening when run against real pages.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 5 — Stub providers (Botim, Comera, e&amp;)</summary>
-<ol>
-  <li>Used <code>BaseProvider._stub()</code> to emit
-      <code>status="investigating"</code> records with notes explaining
-      why no scraper exists yet. Keeps these providers visible in the app
-      so they're not forgotten.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 6 — Orchestrator</summary>
-<ol>
-  <li>Wrote <code>scrapers/run_all.py</code> running all scrapers
-      concurrently with hard timeouts.</li>
-  <li>Added the stale-tolerance behaviour (preserves last good rate when a
-      run errors).</li>
-  <li>Atomic write via temp-then-rename.</li>
-  <li>Bootstrap <code>public/rates.json</code> committed so Pages can
-      serve immediately even before the first scrape.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 7 — GitHub Actions workflows</summary>
-<ol>
-  <li><code>scrape.yml</code>: cron <code>*/15 * * * *</code>, runs
-      <code>python -m scrapers.run_all</code>, commits if changed.</li>
-  <li><code>pages.yml</code>: deploys <code>public/</code> on every change
-      via the official Pages deploy action.</li>
-  <li>Pinned all third-party actions by commit SHA.
-      Top-level <code>permissions: {}</code>.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 8 — Android scaffold</summary>
-<ol>
-  <li>Set up Gradle: <code>settings.gradle.kts</code>,
-      <code>build.gradle.kts</code> (root + app),
-      <code>gradle.properties</code>, version catalog at
-      <code>gradle/libs.versions.toml</code>, wrapper config with pinned
-      sha256.</li>
-  <li><code>AndroidManifest.xml</code>: only INTERNET permission,
-      cleartext disallowed, backup disabled, network security config wired.</li>
-  <li><code>res/xml/network_security_config.xml</code>: domain allowlist
-      restricting connections to GitHub Pages.</li>
-  <li><code>data/Rates.kt</code>: serialisable data classes mirroring the
-      JSON schema, with <code>validate()</code> applying bounds.</li>
-  <li><code>data/RatesRepository.kt</code>: OkHttp client with strict
-      timeouts, body size cap, no-cache request.</li>
-  <li><code>ui/RatesViewModel.kt</code>: sealed
-      <code>RatesUiState</code> (Loading / Ready / Failed); sort by
-      effective rate within status group.</li>
-  <li><code>ui/RatesScreen.kt</code>: Compose Scaffold + LazyColumn;
-      tap a card to open the provider URL in a browser intent.</li>
-  <li><code>ui/theme/Theme.kt</code>: Material 3 with Material You
-      dynamic colour on Android 12+.</li>
-</ol>
-</details>
-
-<details>
-<summary>Step 9 — Documentation</summary>
-<ol>
-  <li><code>README.md</code>, <code>CONTRIBUTING.md</code>,
-      <code>SECURITY.md</code>, <code>PRIVACY.md</code>,
-      <code>DISCLAIMER.md</code>, <code>TAKEDOWN.md</code>,
-      <code>CODE_OF_CONDUCT.md</code>.</li>
-  <li><code>docs/ARCHITECTURE.md</code>, <code>docs/RUNBOOK.md</code>,
-      <code>docs/PUBLISHING.md</code>, this <code>docs/report.html</code>.</li>
-</ol>
-</details>
-
-<h2 id="publishing">12. Publishing checklist</h2>
-
-<h4>Repository</h4>
-<ol>
-  <li>Create the public GitHub repo.</li>
-  <li><code>git remote add origin … &amp;&amp; git push -u origin main</code>.</li>
-  <li>Settings → Pages → Source: GitHub Actions.</li>
-  <li>Add branch protection on <code>main</code> (require PR, require checks).</li>
-</ol>
-
-<h4>First successful scrape</h4>
-<ol>
-  <li>Trigger <code>scrape</code> workflow manually from the Actions tab.</li>
-  <li>Verify
-      <code>https://&lt;you&gt;.github.io/transfer-rate/rates.json</code>
-      returns valid JSON with at least one <code>status="ok"</code> entry.</li>
-  <li>Update <code>RatesRepository.kt</code> +
-      <code>network_security_config.xml</code> if your username differs
-      from the placeholder.</li>
-</ol>
-
-<h4>Android release</h4>
-<ol>
-  <li>Generate a 4096-bit RSA keystore. Back up to two locations.</li>
-  <li>Set <code>KEYSTORE_PASSWORD</code>, <code>KEY_ALIAS</code>,
-      <code>KEY_PASSWORD</code> in your build environment.</li>
-  <li><code>./gradlew :app:assembleRelease</code> (or
-      <code>:app:bundleRelease</code> for Play Store).</li>
-  <li>Verify <code>aapt dump badging app-release.apk</code> reports
-      <code>sdkVersion:'34' targetSdkVersion:'34'</code>.</li>
-</ol>
-
-<h4>Distribution</h4>
-<ol>
-  <li><strong>GitHub Releases (free):</strong> tag a version,
-      attach the signed APK.</li>
-  <li><strong>F-Droid (free):</strong> submit metadata YAML; F-Droid
-      builds from source.</li>
-  <li><strong>Google Play ($25 one-time):</strong> bundle AAB, fill in
-      Data Safety (declare "no data collected"), provide privacy
-      policy URL.</li>
-</ol>
-
-<h2 id="operations">13. Operations &amp; runbook</h2>
-
-<p>The full runbook is in <code>docs/RUNBOOK.md</code>. Highlights:</p>
+<h3>Cannot be added at any reasonable cost</h3>
 
 <table>
-<tr><th>Symptom</th><th>First check</th><th>Likely fix</th></tr>
-<tr>
-  <td>Cron not running</td>
-  <td>GitHub Actions tab — last run timestamp</td>
-  <td>Push any commit to wake stale schedules; re-enable workflow.</td>
-</tr>
-<tr>
-  <td>One provider stuck on <code>error</code></td>
-  <td><code>note</code> field in <code>rates.json</code></td>
-  <td>Update parser regex; if site changed structure, push fix; if
-      blocked, downgrade to <code>investigating</code>.</td>
-</tr>
-<tr>
-  <td>App shows "Couldn't load rates"</td>
-  <td><code>curl</code> the JSON URL</td>
-  <td>If 5xx → Pages incident; if malformed JSON → revert latest scraper change.</td>
-</tr>
-<tr>
-  <td>Provider asks for removal</td>
-  <td>Verify the requester</td>
-  <td>Remove from <code>PROVIDERS</code> in <code>run_all.py</code>; push.
-      Target: under 24 hours.</td>
-</tr>
+  <thead><tr><th>Category</th><th>Reason</th><th>Examples</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>All UAE banks</strong></td>
+      <td>Live remit rates gated behind authenticated app/portal — banks treat treasury spreads as commercially sensitive per-customer data, not posted retail prices</td>
+      <td>ENBD, FAB, ADCB, Mashreq, RAKBANK, DIB, ADIB, HSBC, StanChart, ICICI, AXIS, SBI, HDFC, BoB, Emirates Islamic, Sharjah Islamic, CBI, Noor, Commercial Bank</td>
+    </tr>
+    <tr>
+      <td><strong>International remitters with login wall</strong></td>
+      <td>Require account creation before quote API access</td>
+      <td>Western Union, MoneyGram, Skrill, Xoom, WorldRemit, Ria, Instarem, Sendwave</td>
+    </tr>
+    <tr>
+      <td><strong>UAE digital wallets</strong></td>
+      <td>App-only, OAuth-gated APIs</td>
+      <td>Botim, e&amp;, Comera, Careem Pay, Pyypl, Tabby Cash</td>
+    </tr>
+    <tr>
+      <td><strong>Anti-bot / dead DNS</strong></td>
+      <td>Sucuri/Akamai blocks or domain not resolving</td>
+      <td>Al Fardan, Habib, Al Razouki, Wall Street, Lari, City Exchange, Pak Star, Modern, Joyalukkas, Sharaf (anti-bot &mdash; conceivably scrapeable with paid residential proxy)</td>
+    </tr>
+  </tbody>
 </table>
 
-<h2 id="extending">14. Extending the project</h2>
+<h3>Could be added with paid infrastructure</h3>
 
-<h4>Add a new provider</h4>
-<ol>
-  <li>Copy <code>scrapers/wise.py</code> to
-      <code>scrapers/&lt;new&gt;.py</code>.</li>
-  <li>Implement <code>fetch_inr()</code> for the new source.</li>
-  <li>Add the class to <code>PROVIDERS</code> in
-      <code>run_all.py</code>.</li>
-  <li>Run locally:
-      <code>python -m scrapers.run_all &amp;&amp; jq . public/rates.json</code>.</li>
-  <li>Confirm new entry has <code>status="ok"</code> and a sane rate.</li>
-  <li>Open a PR; CI exercises it on merge.</li>
-</ol>
+<table>
+  <thead><tr><th>Path</th><th>Adds</th><th>Cost</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Self-hosted residential runner</strong> (already shipped, ready to install)</td>
+      <td>LuLu (1 provider)</td>
+      <td>$0 (your hardware) to ~$5/mo (residential VPS)</td>
+    </tr>
+    <tr>
+      <td><strong>Paid headless-browser proxy</strong> (Browserless, ScrapingBee, Apify)</td>
+      <td>Joyalukkas, Sharaf, Wall Street, Modern, BFC, Al Mulla, Orient (5–7 more)</td>
+      <td>~$10–30/mo + ~3 hours of Playwright code per provider</td>
+    </tr>
+  </tbody>
+</table>
 
-<h4>Add a new currency corridor</h4>
+<blockquote class="gold">
+  <p>
+    <strong>Yield curve:</strong> the first 10 providers were findable in
+    minutes each (public APIs, WP plugins exposing rates inline, marquee
+    tags). Provider 11 onwards costs 10–100× more per add because the easy
+    patterns are exhausted &mdash; you start needing session cookies,
+    headless browsers, residential proxies, or proxy infrastructure. The
+    S-curve flattens hard around the 10–15 mark for any scraping project;
+    this is normal.
+  </p>
+</blockquote>
+
+<hr>
+
+<h2 id="security">11. Security &amp; privacy</h2>
+
+<h3>App-side</h3>
+<ul>
+  <li><strong>One permission</strong>: <code>android.permission.INTERNET</code>.
+    Nothing else &mdash; no location, no contacts, no storage beyond app-private
+    SharedPreferences.</li>
+  <li><strong>Network Security Config</strong> restricts cleartext to
+    nothing and HTTPS to a single host
+    (<code>imraneggy.github.io</code>).</li>
+  <li><strong>No analytics, no telemetry, no advertising, no account, no
+    cloud sync.</strong></li>
+  <li><strong>R8 minification + resource shrinking</strong> on release
+    builds; <code>isDebuggable = false</code>.</li>
+  <li><strong>Backup rules</strong> exclude any per-user state from
+    Google Auto-Backup.</li>
+</ul>
+
+<h3>Pipeline-side</h3>
+<ul>
+  <li>No secrets stored in CI for the FX scrape; data is public.</li>
+  <li>Scrape commits are signed by a dedicated bot identity
+    (<code>transfer-rate-bot</code>) so commit history shows a clean
+    separation between human and machine commits.</li>
+  <li>Polite scraping: identifying User-Agent, single concurrent connection
+    per provider host, hard timeout, no aggressive retry storms.</li>
+  <li><code>git.txt</code> (the maintainer PAT) is in
+    <code>.gitignore</code> and never reaches CI.</li>
+</ul>
+
+<h3>Disclosed in the app</h3>
 <p>
-  Currently AED → INR. Adding AED → PHP, AED → PKR, etc. is mostly schema
-  work: add <code>quote</code> to the JSON top level (already there),
-  let scrapers accept a <code>quote</code> parameter, and parameterise the
-  Android UI. The architecture supports it; the implementation hasn't
-  been built yet because Phase 1 is INR-only.
+  The About screen carries the trademark/nominative-use disclaimer plus
+  the standard "indicative rates, confirm at provider, not financial
+  advice" block. <code>DISCLAIMER.md</code>, <code>PRIVACY.md</code>,
+  and <code>SECURITY.md</code> are all at repo root.
 </p>
 
-<h4>Add fee transparency</h4>
-<p>
-  The schema already includes <code>fee_base</code> and
-  <code>effective_rate</code>. Some scrapers (Wise, Remitly) populate them;
-  others leave fee as null. To extend: hit each provider's quote endpoint
-  with the user's input amount, return the per-amount-tier fee. The app
-  already displays effective rate when present.
-</p>
+<hr>
 
-<h4>Add historical charts</h4>
-<p>
-  Each scrape commits a new <code>rates.json</code> to git. So git is the
-  database. To build a chart: a sibling workflow can read the last N
-  commits' JSONs and write a <code>history.json</code> for the app. No
-  database needed.
-</p>
+<h2 id="roadmap">12. Roadmap</h2>
+
+<h4>Concrete next adds (already-built, pending user action)</h4>
+<ul>
+  <li>Install the residential runner per
+    <code>infra/lulu-residential/README.md</code> &rarr; LuLu re-appears
+    in the rates list within 30 min.</li>
+</ul>
+
+<h4>Possible expansions</h4>
+<ul>
+  <li>Multi-currency corridors (PKR, PHP, BDT, EGP, NPR, LKR) &mdash;
+    scrapers and schema already accept these; only INR is enabled in
+    <code>SUPPORTED_TARGETS</code> today. Re-enabling per corridor is
+    a one-line change once each provider's per-corridor parser is
+    written.</li>
+  <li>Promotional / first-transfer rate surfacing across more providers
+    &mdash; only Remitly currently exposes a structured promo rate;
+    other providers would require per-provider scraper extensions.</li>
+  <li>Notification on rate threshold (<em>"alert me when AED→INR &gt;
+    25.85"</em>) &mdash; would require either device-local scheduling
+    (FREE, slightly stale) or a backend (unwanted).</li>
+  <li>F-Droid submission once a release-signing keystore is configured
+    &mdash; fastlane metadata is already in place at
+    <code>fastlane/metadata/android/en-US/</code>.</li>
+</ul>
+
+<h4>Explicitly out of scope</h4>
+<ul>
+  <li>iOS port — Android-only is intentional given the maintainer's
+    constraints.</li>
+  <li>Account-required providers — would compromise the privacy stance.</li>
+  <li>Backend / serverless functions — would violate the "no operational
+    cost, no PII" constraint.</li>
+</ul>
+
+<hr>
 
 <footer>
   <p>
-    <strong>transfer-rate</strong> · open source under MIT ·
-    <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a>
-  </p>
-  <p>
-    Generated 2026-05-01. The authoritative documentation is the markdown
-    in this repository; this HTML report is a curated summary.
+    Generated for repository
+    <code>github.com/imraneggy/transfer-rate</code> at version
+    <strong>v0.13.6</strong> (versionCode 22). MIT-licensed source;
+    bundled fonts under SIL OFL 1.1. Provider names and logos are
+    trademarks of their respective owners.
   </p>
 </footer>
 
