@@ -144,7 +144,10 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.androidx.work.runtime)
 
-    // OpenStreetMap tile rendering for the mosque finder.
-    // Self-hostable tiles, no API key, no Google Play Services dep.
-    implementation(libs.osmdroid.android)
+    // MapLibre Native - vector-capable map renderer for the mosque finder.
+    // We render OSM raster tiles via inline style JSON (no API key, no
+    // paid tier, no Google Play Services dep).  Annotation plugin
+    // provides SymbolManager for adding/removing markers cleanly.
+    implementation(libs.maplibre.android.sdk)
+    implementation(libs.maplibre.android.annotation)
 }
