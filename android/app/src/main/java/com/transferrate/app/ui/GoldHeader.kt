@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,23 +20,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.transferrate.app.data.GoldDocument
 
 /**
- * UAE vs India gold rate module — sits next to MidMarketHeader at 50/50
- * width. Tap opens GoldHistorySheet showing the last 30 days.
+ * UAE vs India gold rate module — sits at half-width next to
+ * MidMarketHeader. Tap opens the 30-day GoldHistorySheet.
  *
- * Composition:
- *   - Brand-gold gradient backdrop with the Exchangia colour story
- *   - Two compact rate rows: 24K and 22K
- *   - Each row shows AED/g (UAE) and INR/g (India) side by side
- *
- * The 8-gram aggregate is computed in the history sheet (less screen
- * pressure on the home screen, more space on the detail sheet).
+ * Design (v0.13.3): matches MidMarketHeader's vertical rhythm exactly
+ * — same eyebrow row, same heightIn(min=156dp), same padding so the
+ * two cards align perfectly when placed in a 50/50 Row.
  */
 @Composable
 fun GoldHeader(
@@ -46,45 +42,46 @@ fun GoldHeader(
     val ok = gold.uae.status == "ok" && gold.india.status == "ok"
 
     Card(
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 156.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            // Brand gold container; warm-leaning for visual contrast
-            // with the cool-teal MidMarket header beside it.
+            // Brand-gold container — warm contrast next to MidMarket's
+            // teal primaryContainer.
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            // Eyebrow — full-opacity bold, mirrors MidMarket
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "GOLD",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.65f),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 1,
                     softWrap = false,
                 )
                 Spacer(Modifier.width(6.dp))
-                Text(
-                    "🪙",
-                    fontSize = 13.sp,
-                    maxLines = 1,
-                )
+                Text("🪙", fontSize = 13.sp, maxLines = 1)
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
 
             if (!ok) {
                 Text(
-                    text = "Gold rates unavailable",
-                    style = MaterialTheme.typography.bodySmall,
+                    text = "Rates unavailable",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     maxLines = 2,
                 )
                 return@Column
             }
 
-            // 24K row
+            // 24K row (emphasized)
             CaratRow(
                 label = "24K",
                 aed = gold.uae.perG24k,
@@ -101,11 +98,13 @@ fun GoldHeader(
                 emphasis = false,
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.weight(1f))
+
             Text(
                 text = "per gram · tap for 30-day chart",
                 fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.55f),
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.65f),
                 maxLines = 1,
                 softWrap = false,
             )
@@ -120,20 +119,17 @@ private fun CaratRow(
     inr: Double?,
     emphasis: Boolean,
 ) {
-    val labelColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(
-        alpha = if (emphasis) 0.92f else 0.72f,
-    )
     val valueColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Carat label pill
+        // Carat pill — bold for high contrast
         Box(
             modifier = Modifier
                 .background(
-                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.18f),
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.22f),
                     RoundedCornerShape(4.dp),
                 )
                 .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -142,8 +138,8 @@ private fun CaratRow(
                 text = label,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp,
-                color = labelColor,
+                letterSpacing = 0.6.sp,
+                color = valueColor,
                 maxLines = 1,
                 softWrap = false,
             )
@@ -153,8 +149,8 @@ private fun CaratRow(
         Column(Modifier.weight(1f)) {
             Text(
                 text = if (aed != null) "AED %.0f".format(aed) else "—",
-                fontWeight = if (emphasis) FontWeight.SemiBold else FontWeight.Medium,
-                fontSize = if (emphasis) 14.sp else 13.sp,
+                fontWeight = if (emphasis) FontWeight.Bold else FontWeight.SemiBold,
+                fontSize = if (emphasis) 16.sp else 13.sp,
                 color = valueColor,
                 maxLines = 1,
                 softWrap = false,
@@ -165,7 +161,8 @@ private fun CaratRow(
             Text(
                 text = if (inr != null) "₹ %,.0f".format(inr) else "—",
                 fontSize = 11.sp,
-                color = valueColor.copy(alpha = 0.72f),
+                fontWeight = FontWeight.Medium,
+                color = valueColor.copy(alpha = 0.78f),
                 maxLines = 1,
                 softWrap = false,
                 style = MaterialTheme.typography.bodySmall.copy(

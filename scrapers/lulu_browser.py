@@ -116,10 +116,11 @@ class LuluBrowserProvider(BaseProvider):
             )
             page = context.new_page()
             try:
-                # `networkidle` waits until the rate-loading XHR settles.
-                # Falls back to domcontentloaded if a long-poll keeps
-                # the page busy.
-                page.goto(self.PAGE_URL, wait_until="networkidle", timeout=45_000)
+                # domcontentloaded — LuLu's page has long-running
+                # connections (chat widget, analytics) that prevent
+                # `networkidle` from ever firing. We rely on
+                # wait_for_function below to detect the rate.
+                page.goto(self.PAGE_URL, wait_until="domcontentloaded", timeout=30_000)
 
                 # Wait for the rate to be JS-injected. The XHR to
                 # lieservices:9443 takes a moment after page load on

@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -306,28 +309,29 @@ private fun ReadyView(
         }
         item {
             // 50/50 row: mid-market FX rate (left) + gold rate module (right).
-            // When the gold module is unavailable the FX header stretches
-            // back to full width.
+            // IntrinsicSize.Min on the parent + fillMaxHeight on each child
+            // forces both cards to the same height — matches whichever
+            // module's content is taller. When the gold module is
+            // unavailable the FX header takes full width.
             val gold = state.doc.gold
             if (gold != null) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        MidMarketHeader(
-                            info = info,
-                            midMarket = midMarket,
-                            completedAt = state.doc.completedAt,
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        GoldHeader(
-                            gold = gold,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { goldSheetOpen = true },
-                        )
-                    }
+                    MidMarketHeader(
+                        info = info,
+                        midMarket = midMarket,
+                        completedAt = state.doc.completedAt,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                    GoldHeader(
+                        gold = gold,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        onClick = { goldSheetOpen = true },
+                    )
                 }
             } else {
                 MidMarketHeader(
@@ -472,67 +476,81 @@ private fun MidMarketHeader(
     info: CurrencyInfo?,
     midMarket: Double?,
     completedAt: String,
+    modifier: Modifier = Modifier,
 ) {
+    // Compact version designed to sit at half-width next to GoldHeader.
+    // Fixed height + tight padding so both modules visually align.
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 156.dp),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
     ) {
-        Column(Modifier.padding(horizontal = 18.dp, vertical = 16.dp)) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            // Eyebrow label — bold, full opacity for legibility
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "1 AED",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.65f),
-                    letterSpacing = 0.6.sp,
+                    "MID-MARKET",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.0.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 1,
+                    softWrap = false,
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
                 if (info != null) {
-                    Text(text = info.flag, fontSize = 18.sp)
+                    Text(text = info.flag, fontSize = 13.sp, maxLines = 1)
                 }
             }
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(10.dp))
+
+            // Hero rate — large, bold, full opacity
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = "=",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(
                     text = if (midMarket != null) "%.4f".format(midMarket) else "—",
-                    fontSize = 36.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontFeatureSettings = "tnum",
                     ),
+                    maxLines = 1,
+                    softWrap = false,
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
                 if (info != null) {
                     Text(
                         text = info.symbol,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                        maxLines = 1,
                     )
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
             Text(
-                text = if (info != null) "${info.name} · Mid-market rate" else "Mid-market rate",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f),
+                text = if (info != null) "1 AED → ${info.code}" else "1 AED → ${'$'}rate",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                maxLines = 1,
+                softWrap = false,
             )
-            Spacer(Modifier.height(2.dp))
+
+            Spacer(Modifier.weight(1f))
+
             Text(
-                text = "Updated ${relativeTime(completedAt)} · Google Finance",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.55f),
+                text = "Updated ${relativeTime(completedAt)}",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.65f),
+                maxLines = 1,
+                softWrap = false,
             )
         }
     }
