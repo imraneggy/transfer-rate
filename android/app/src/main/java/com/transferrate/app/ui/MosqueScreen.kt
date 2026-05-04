@@ -226,7 +226,9 @@ fun MosqueScreen(
                         centerLat = ready.userLat,
                         centerLon = ready.userLon,
                         zoom = 14.5,
-                        mosques = ready.mosques.map { it.mosque },
+                        mosques = ready.mosques,
+                        userLat = ready.userLat,
+                        userLon = ready.userLon,
                         onMarkerTap = { /* future: scroll list to this mosque */ },
                         modifier = Modifier.fillMaxSize(),
                     )
