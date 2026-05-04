@@ -66,9 +66,11 @@ import kotlinx.coroutines.launch
  *   Ready             - map populated, list scrollable
  *   Failed            - error message + retry
  *
- * Default centre when no fix available: Dubai (25.2048N, 55.2708E) -
- * the largest UAE remittance corridor we serve, so most users see
- * something familiar even before granting permission.
+ * No "default centre" fallback: when there is no real device location,
+ * the screen shows the prompt panel only and hides the map entirely.
+ * Showing a generic Dubai view to a user in (say) Mumbai would
+ * imply the app is broken.  A refresh icon in the top app bar lets
+ * the user re-fetch after toggling location services on/off.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,8 +104,8 @@ fun MosqueScreen(
                 )
             LocationResult.Timeout ->
                 vm.markLocationFailed(
-                    "Couldn't get your location in time. Try again outdoors, or " +
-                    "view the Dubai sample area instead."
+                    "Couldn't get your location in time.  Try again - move outdoors " +
+                    "for a faster GPS fix, then tap the refresh icon above."
                 )
             is LocationResult.Error ->
                 vm.markLocationFailed("Location error: ${result.message}")
@@ -175,6 +177,28 @@ fun MosqueScreen(
                         )
                     }
                 },
+                actions = {
+                    // Refresh: re-runs the location flow.  Visible in every
+                    // state so a user who turned location off + on can pull
+                    // a fresh fix without leaving the screen.  Disabled
+                    // visually when already loading to avoid stacking
+                    // requests.
+                    val isLoading = state is MosqueUiState.Loading
+                    IconButton(
+                        onClick = { if (!isLoading) requestLocation() },
+                        enabled = !isLoading,
+                    ) {
+                        Text(
+                            "↻",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isLoading)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                            else
+                                MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
@@ -185,52 +209,59 @@ fun MosqueScreen(
             .fillMaxSize()
             .padding(padding)
         ) {
-            // Map - takes ~55% of the screen below the app bar.
-            val (centerLat, centerLon, mosques) = when (val s = state) {
-                is MosqueUiState.Ready -> Triple(s.userLat, s.userLon, s.mosques.map { it.mosque })
-                else -> Triple(DEFAULT_LAT, DEFAULT_LON, emptyList())
+            // Map shown ONLY when we have a real location for the user.
+            // No "default Dubai centre" - we never want a user in (say)
+            // Mumbai to see Dubai mosques and assume the app is broken.
+            // When state is anything other than Ready, the bottom panel
+            // takes the full screen with the action they need.
+            if (state is MosqueUiState.Ready) {
+                val ready = state as MosqueUiState.Ready
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 240.dp)
+                        .weight(0.55f),
+                ) {
+                    OsmMapView(
+                        centerLat = ready.userLat,
+                        centerLon = ready.userLon,
+                        zoom = 14.5,
+                        mosques = ready.mosques.map { it.mosque },
+                        onMarkerTap = { /* future: scroll list to this mosque */ },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+
+                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             }
+
+            // Bottom panel - status / list.  Takes full screen when no map.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 240.dp)
-                    .weight(0.55f),
-            ) {
-                OsmMapView(
-                    centerLat = centerLat,
-                    centerLon = centerLon,
-                    zoom = if (state is MosqueUiState.Ready) 14.5 else 11.0,
-                    mosques = mosques,
-                    onMarkerTap = { /* future: scroll list to this mosque */ },
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-
-            // Bottom panel - status / list.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.45f)
+                    .then(
+                        if (state is MosqueUiState.Ready)
+                            Modifier.weight(0.45f)
+                        else
+                            Modifier.weight(1f)
+                    )
                     .background(MaterialTheme.colorScheme.surface),
             ) {
                 when (val s = state) {
                     MosqueUiState.Idle -> EmptyPanel(
                         title = "Find mosques near you",
                         subtitle = "We'll search OpenStreetMap for the closest mosques " +
-                                   "within a ${vm.radiusMeters / 1000} km radius.",
+                                   "within a ${vm.radiusMeters / 1000} km radius of your location.",
                         ctaLabel = "Use my location",
                         onCta = { requestLocation() },
                     )
                     MosqueUiState.LocationNeeded -> EmptyPanel(
                         title = "Location permission needed",
-                        subtitle = "Grant location access to find mosques near you, " +
-                                   "or skip and view a sample area (Dubai Marina).",
-                        ctaLabel = "Try again",
+                        subtitle = "Grant location access so we can find mosques near " +
+                                   "you.  Tap the refresh icon above after granting if " +
+                                   "the prompt is dismissed.",
+                        ctaLabel = "Grant permission",
                         onCta = { requestLocation() },
-                        secondaryLabel = "Show Dubai sample",
-                        onSecondary = { vm.searchAt(DEFAULT_LAT, DEFAULT_LON) },
                     )
                     MosqueUiState.Loading -> Box(
                         modifier = Modifier.fillMaxSize(),
@@ -240,19 +271,17 @@ fun MosqueScreen(
                             CircularProgressIndicator()
                             Spacer(Modifier.height(12.dp))
                             Text(
-                                "Querying OpenStreetMap...",
+                                "Getting your location...",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
                     is MosqueUiState.Failed -> EmptyPanel(
-                        title = "Couldn't load mosques",
+                        title = "Couldn't get your location",
                         subtitle = s.message,
                         ctaLabel = "Try again",
                         onCta = { requestLocation() },
-                        secondaryLabel = "Show Dubai sample",
-                        onSecondary = { vm.searchAt(DEFAULT_LAT, DEFAULT_LON) },
                     )
                     is MosqueUiState.Ready -> MosqueList(
                         state = s,
@@ -400,9 +429,3 @@ private fun MosqueList(
     }
 }
 
-// Default map centre when no location available - Dubai Marina.
-// Picked because (1) largest concentration of UAE remittance users
-// who'd land on this app, (2) dense mosque coverage in OSM, (3)
-// instantly recognisable to most of our user base.
-private const val DEFAULT_LAT = 25.0772
-private const val DEFAULT_LON = 55.1390
