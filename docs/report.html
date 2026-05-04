@@ -190,10 +190,10 @@
   <h1>Exchangia</h1>
   <p class="sub">Compare INR Rates Across UAE — technical report</p>
   <div class="meta">
-    <span>Version 0.13.6</span>
-    <span>11 working sources</span>
+    <span>Version 0.16.3</span>
+    <span>12 working sources</span>
     <span>Android 14+ (minSdk 34)</span>
-    <span>~3 MB APK</span>
+    <span>~15 MB APK (per-arch)</span>
     <span>MIT license</span>
   </div>
 </header>
@@ -224,21 +224,21 @@
 
 <p>
   <strong>Exchangia</strong> is an open-source Android 14+ app that compares
-  AED&nbsp;→&nbsp;INR remittance rates across ten verified UAE providers in
-  near real time, alongside a mid-market reference benchmark and a UAE-vs-India
-  gold rate module. The data pipeline runs as a free unattended GitHub Actions
-  cron, publishes a single static JSON to GitHub Pages, and the app fetches
-  that file directly &mdash; no backend, no analytics, no account, no
-  cloud sync.
+  AED&nbsp;→&nbsp;INR remittance rates across eleven verified UAE providers in
+  near real time, alongside a mid-market reference benchmark, a UAE-vs-India
+  gold rate module, and a Mosque Finder using OpenStreetMap data. The
+  data pipeline runs as a free unattended GitHub Actions cron, publishes a
+  single static JSON to GitHub Pages, and the app fetches that file
+  directly &mdash; no backend, no analytics, no account, no cloud sync.
 </p>
 
 <div class="grid-3">
-  <div class="stat"><p class="v">11</p><p class="l">Live rate sources</p></div>
+  <div class="stat"><p class="v">12</p><p class="l">Live rate sources</p></div>
   <div class="stat"><p class="v">22 / 22</p><p class="l">pytest scrapers passing</p></div>
   <div class="stat"><p class="v">~hourly</p><p class="l">GHA cron cadence</p></div>
-  <div class="stat"><p class="v">3.07 MB</p><p class="l">arm64 APK size</p></div>
+  <div class="stat"><p class="v">14.94 MB</p><p class="l">arm64 APK size (v0.16.3)</p></div>
   <div class="stat"><p class="v">$0 / mo</p><p class="l">Operating cost</p></div>
-  <div class="stat"><p class="v">1</p><p class="l">Android permission (INTERNET)</p></div>
+  <div class="stat"><p class="v">3</p><p class="l">Android permissions (INTERNET, FINE/COARSE_LOCATION)</p></div>
 </div>
 
 <h4>Working sources today</h4>
@@ -254,13 +254,25 @@
   <span class="pill ok">Federal Exchange</span>
   <span class="pill ok">GCC Exchange</span>
   <span class="pill ok">Index Exchange</span>
+  <span class="pill ok">Lari Exchange</span>
   <span class="pill muted">LuLu (residential runner only)</span>
 </p>
 
 <h4>Gold module</h4>
 <p>
   Khaleej Times (UAE) + BankBazaar (India) — 24K and 22K per gram in AED and
-  INR with 30-day history series.
+  INR with 30-day history series. v0.14.0 added a 22K trend sparkline and
+  per-region 30-day High/Low/Avg pills with a 24K↔22K carat selector.
+</p>
+
+<h4>Mosque Finder (added v0.15.0)</h4>
+<p>
+  In-app map (MapLibre Native vector renderer over OSM raster tiles) showing
+  mosques near the user's device location. Data via the public
+  <strong>Overpass API</strong> on the live OSM dataset. Sorted by walking
+  distance with a "you-are-here" marker and the distance baked into each
+  mosque pin. No Google Maps / Google Play Services dependency &mdash;
+  works on F-Droid / GrapheneOS / Huawei.
 </p>
 
 <hr>
@@ -345,7 +357,7 @@
 
 <h2 id="providers">4. Provider pipeline</h2>
 
-<h3>The eleven sources</h3>
+<h3>The twelve sources</h3>
 
 <table>
   <thead>
@@ -417,6 +429,12 @@
       <td>HTML extract</td>
       <td>Daily rate from homepage</td>
       <td><span class="pill ok">live</span></td>
+    </tr>
+    <tr>
+      <td><strong>Lari Exchange</strong></td>
+      <td>Static HTML table</td>
+      <td>ASP.NET WebForms - rate appears 32&times; in homepage HTML; regex extracts the first <code>&lt;td&gt;INR&lt;/td&gt;&lt;td&gt;25.75&lt;/td&gt;</code> match</td>
+      <td><span class="pill ok">live (added v0.15.0)</span></td>
     </tr>
     <tr>
       <td><strong>LuLu Money</strong></td>
@@ -494,10 +512,13 @@
     <tr><td>Language</td><td>Kotlin 2.1</td></tr>
     <tr><td>UI</td><td>Jetpack Compose + Material 3</td></tr>
     <tr><td>HTTP</td><td>OkHttp 4.12 with Network Security Config domain allowlist</td></tr>
+    <tr><td>Map renderer</td><td>MapLibre Native 11.11 (BSD-2 fork of mapbox-gl-native; vector capable, OSM raster style today)</td></tr>
+    <tr><td>Location</td><td>Android <code>LocationManager.getCurrentLocation</code> (no Google Play Services dep)</td></tr>
     <tr><td>Persistence</td><td>SharedPreferences (tiny: dismissed-hint flag)</td></tr>
     <tr><td>Background work</td><td>WorkManager (idempotent prefetch scheduler)</td></tr>
     <tr><td>Architecture</td><td>MVVM with kotlinx.coroutines + StateFlow</td></tr>
     <tr><td>R8 + per-arch APK splits</td><td>Yes (universal also bundled for sideload)</td></tr>
+    <tr><td>Permissions</td><td>INTERNET, ACCESS_NETWORK_STATE, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION (location used only by Mosque Finder; foreground only)</td></tr>
   </tbody>
 </table>
 
@@ -513,11 +534,28 @@
   <li><strong>Provider history sheet</strong> &rarr; 10-day daily series
     with date+time, rate, delta vs previous, plus high/low/avg pills and
     a sparkline. Replaces the old browser-redirect.</li>
-  <li><strong>Gold history sheet</strong> &rarr; 30-day comparison table
-    with 1g + 8g, 24K + 22K, side-by-side sparklines.</li>
+  <li><strong>Mid-market history popup</strong> (added v0.14.0) &rarr; tap
+    the mid-market header to open the same sheet for the AED&nbsp;→&nbsp;INR
+    benchmark itself. Reuses the per-provider sheet so design stays
+    consistent.</li>
+  <li><strong>Gold history sheet</strong> &rarr; 30-day comparison with 1g
+    + 8g snapshot grid, separate 24K and 22K trend rows (added v0.14.0),
+    24K&nbsp;|&nbsp;22K carat selector controlling per-region 30-day
+    High/Low/Avg pills (added v0.14.0), and a daily history table.</li>
+  <li><strong>Mosque Finder</strong> (added v0.15.0) &rarr; map (MapLibre
+    Native over OSM raster tiles) + sorted list of mosques near the
+    device location. Each pin shows a teal marker with the walking
+    distance baked into the bitmap (e.g.&nbsp;<code>350 m</code>,
+    <code>1.2 km</code>); a blue "you-are-here" dot marks the user's
+    coordinate. Tap a card or pin to open the user's preferred maps app
+    for directions. Refresh icon (<code>↻</code>) in the top app bar lets
+    the user re-fetch after toggling location services. No silent
+    placeholder fallback &mdash; failure modes (services off, no
+    providers, timeout) each show a specific error message.</li>
   <li><strong>Top-app-bar chips</strong> &rarr; <code>AUTO/LIGHT/DARK</code>
-    text chip cycles theme; <code>REFRESH</code> chip refreshes; <code>ⓘ</code>
-    glyph opens About.</li>
+    text chip cycles theme; <code>REFRESH</code> chip refreshes; the
+    🕌 mosque emoji opens the Mosque Finder; <code>ⓘ</code> glyph opens
+    About.</li>
   <li><strong>About</strong> &rarr; mid-market explainer, BEST badge meaning,
     privacy stance, MIT license attribution. No external links (per
     user request).</li>
@@ -532,7 +570,8 @@
   <tbody>
     <tr><td><strong>Name</strong></td><td>Exchangia</td></tr>
     <tr><td><strong>Tagline</strong></td><td>Compare INR Rates Across UAE</td></tr>
-    <tr><td><strong>Logo</strong></td><td>Stylised "E" with INR (₹) cue at top-right and UAE crescent + star at bottom-right</td></tr>
+    <tr><td><strong>Logo (v0.16.3+)</strong></td><td><strong>Stair-Step E</strong> &mdash; bold white "E" with stair-step proportions (middle arm shorter than top &amp; bottom, hinting at the rate-comparison story) plus a gold accent dot. Foreground rendered at all 5 DPI buckets (mdpi&nbsp;&rarr;&nbsp;xxxhdpi).</td></tr>
+    <tr><td><strong>Adaptive icon</strong></td><td>Background: vertical teal gradient <code>#00B49E&nbsp;&rarr;&nbsp;#008C7A</code>. Foreground: white E + gold dot on transparent. Themed (Android 13+): monochrome E vector.</td></tr>
     <tr><td><strong>Reference brief</strong></td><td><code>Media (2).jpg</code> at repository root</td></tr>
   </tbody>
 </table>
@@ -772,14 +811,36 @@
 
 <h3>App-side</h3>
 <ul>
-  <li><strong>One permission</strong>: <code>android.permission.INTERNET</code>.
-    Nothing else &mdash; no location, no contacts, no storage beyond app-private
-    SharedPreferences.</li>
+  <li><strong>Permissions</strong> (full list, post v0.15.0):
+    <ul>
+      <li><code>android.permission.INTERNET</code> &mdash; rates JSON
+        + OSM tiles + Overpass mosque queries.</li>
+      <li><code>android.permission.ACCESS_NETWORK_STATE</code> &mdash;
+        offline detection.</li>
+      <li><code>android.permission.ACCESS_FINE_LOCATION</code> /
+        <code>ACCESS_COARSE_LOCATION</code> &mdash; <strong>Mosque
+        Finder only, foreground only</strong>. Never requested in
+        background. The coordinate is used to centre the map and to
+        sort mosques by walking distance; it is <strong>never sent
+        off-device</strong> (the Overpass query takes a radius and
+        returns mosques near a point, but uses our <strong>own</strong>
+        lat/lon parameters &mdash; no telemetry endpoint receives the
+        device's position).</li>
+    </ul>
+  </li>
+  <li>Still no contacts, no SMS, no camera, no microphone, no storage
+    beyond app-private SharedPreferences.</li>
   <li><strong>Network Security Config</strong> restricts cleartext to
-    nothing and HTTPS to a single host
-    (<code>imraneggy.github.io</code>).</li>
+    nothing; HTTPS allowed for the rates host
+    (<code>imraneggy.github.io</code>), the OSM tile host
+    (<code>tile.openstreetmap.org</code>), and the Overpass host
+    (<code>overpass-api.de</code>).</li>
   <li><strong>No analytics, no telemetry, no advertising, no account, no
     cloud sync.</strong></li>
+  <li><strong>No Google Play Services</strong> dependency &mdash;
+    location uses Android <code>LocationManager</code> directly;
+    map uses MapLibre Native (open source). App works on F-Droid /
+    GrapheneOS / Huawei.</li>
   <li><strong>R8 minification + resource shrinking</strong> on release
     builds; <code>isDebuggable = false</code>.</li>
   <li><strong>Backup rules</strong> exclude any per-user state from
@@ -810,6 +871,36 @@
 
 <h2 id="roadmap">12. Roadmap</h2>
 
+<h4>Already shipped since v0.13.6</h4>
+<ul>
+  <li><strong>v0.14.0</strong> &mdash; gold popup gained 22K trend
+    sparklines, 30-day High/Low/Avg pills per region, and a 24K&nbsp;|&nbsp;22K
+    carat selector. Mid-market header is now tappable and opens a
+    30-day history sheet. Typography pass: tabular figures baked into
+    title styles; bolder labels; WCAG contrast bumps on outline +
+    onSurfaceVariant.</li>
+  <li><strong>v0.15.0</strong> &mdash; Mosque Finder shipped (OSM tiles
+    via osmdroid, mosque data via Overpass API, distance-sorted list,
+    Android <code>LocationManager</code> for fix). Lari Exchange added
+    as the 12<sup>th</sup> rate provider.</li>
+  <li><strong>v0.16.0</strong> &mdash; map renderer migrated from
+    osmdroid to MapLibre Native 11.11 for smooth pinch-zoom + rotation.
+    Lari Exchange brand logo bundled. Location code modernised to
+    <code>getCurrentLocation</code> (was deprecated <code>requestSingleUpdate</code>);
+    no more silent Dubai fallback &mdash; specific failure modes get
+    specific error messages.</li>
+  <li><strong>v0.16.1</strong> &mdash; UX honesty: removed Dubai sample
+    placeholder, added a refresh icon (<code>↻</code>) in the Mosque
+    Finder top app bar so users can re-fetch after toggling location
+    services on/off.</li>
+  <li><strong>v0.16.2</strong> &mdash; you-are-here marker on the map;
+    walking distance baked into each mosque pin (<code>350 m</code>,
+    <code>1.2 km</code>) so users see distances at a glance.</li>
+  <li><strong>v0.16.3</strong> &mdash; refreshed app launcher icon
+    (Stair-Step E on teal gradient with gold accent dot); foreground
+    PNG now rendered at all 5 DPI buckets.</li>
+</ul>
+
 <h4>Concrete next adds (already-built, pending user action)</h4>
 <ul>
   <li>Install the residential runner per
@@ -819,11 +910,20 @@
 
 <h4>Possible expansions</h4>
 <ul>
+  <li>Vector tiles in the Mosque Finder &mdash; one-string change in
+    <code>MapLibreMapView.kt</code>'s <code>OSM_RASTER_STYLE</code>
+    constant. Free options: <strong>MapTiler</strong> free tier
+    (100K loads/mo, requires API key), <strong>Versatiles</strong>
+    community vector tiles (no key), or self-hosted PMTiles via
+    Cloudflare R2 (ultimate $0).</li>
   <li>Multi-currency corridors (PKR, PHP, BDT, EGP, NPR, LKR) &mdash;
     scrapers and schema already accept these; only INR is enabled in
     <code>SUPPORTED_TARGETS</code> today. Re-enabling per corridor is
     a one-line change once each provider's per-corridor parser is
     written.</li>
+  <li>Aladhan prayer-times overlay in the Mosque Finder &mdash; pairs
+    naturally with mosque markers; Aladhan API is free, returns
+    prayer times for any (lat, lon, date).</li>
   <li>Promotional / first-transfer rate surfacing across more providers
     &mdash; only Remitly currently exposes a structured promo rate;
     other providers would require per-provider scraper extensions.</li>
@@ -871,12 +971,23 @@
     <tr><td>JVM target</td><td>JDK</td><td>17</td><td>Required by AGP 8.x; CI uses Temurin 17</td></tr>
     <tr><td>UI framework</td><td>Jetpack Compose</td><td>BoM 2024.12.01</td><td>BoM ensures all Compose libs are version-aligned</td></tr>
     <tr><td>Material Design</td><td>Material 3</td><td>via BoM</td><td>ColorScheme + Typography + ModalBottomSheet</td></tr>
-    <tr><td>HTTP</td><td>OkHttp</td><td>4.12.0</td><td>Connection pooling, auto retry, interceptor chain</td></tr>
-    <tr><td>JSON</td><td>kotlinx-serialization</td><td>1.7.3</td><td>Compile-time codegen, no reflection at runtime</td></tr>
+    <tr><td>Map renderer</td><td><code>org.maplibre.gl:android-sdk</code></td><td>11.11.0</td><td>BSD-2 fork of mapbox-gl-native; vector capable, OSM raster style today, vector-tile vendor swap is a one-line change</td></tr>
+    <tr><td>Map markers</td><td><code>org.maplibre.gl:android-plugin-annotation-v9</code></td><td>3.0.2</td><td>SymbolManager API for adding/removing markers without writing Source+Layer plumbing per pin</td></tr>
+    <tr><td>HTTP</td><td>OkHttp</td><td>4.12.0</td><td>Connection pooling, auto retry, interceptor chain. Reused by both rates fetcher and Overpass client.</td></tr>
+    <tr><td>JSON</td><td>kotlinx-serialization + org.json</td><td>1.7.3 / stdlib</td><td>kotlinx for the rates schema (typed, codegen); org.json for the Overpass response (loose, query-driven)</td></tr>
     <tr><td>Coroutines</td><td>kotlinx-coroutines</td><td>1.9.0</td><td>StateFlow + structured concurrency in ViewModel</td></tr>
     <tr><td>Background work</td><td>WorkManager</td><td>2.10.0</td><td>Idempotent prefetch with backoff and constraints</td></tr>
     <tr><td>Lifecycle</td><td>androidx-lifecycle</td><td>2.8.7</td><td>collectAsStateWithLifecycle, ViewModel</td></tr>
     <tr><td>Activity Compose</td><td>androidx-activity-compose</td><td>1.9.3</td><td>Edge-to-edge + Compose entrypoint</td></tr>
+  </tbody>
+</table>
+
+<h3>External services consumed (still $0)</h3>
+<table>
+  <thead><tr><th>Service</th><th>Used for</th><th>Cost / key</th></tr></thead>
+  <tbody>
+    <tr><td><code>tile.openstreetmap.org</code></td><td>Map raster tiles for the Mosque Finder</td><td>Free, no key. App identifies via User-Agent per OSMF tile policy.</td></tr>
+    <tr><td><code>overpass-api.de/api/interpreter</code></td><td>Mosque queries (<code>amenity=place_of_worship</code> + <code>religion=muslim</code> within radius)</td><td>Free, community-run. Polite User-Agent + radius capped to 20km.</td></tr>
   </tbody>
 </table>
 
@@ -1321,7 +1432,7 @@ issues for vulnerabilities.</p>
   <p>
     Generated for repository
     <code>github.com/imraneggy/transfer-rate</code> at version
-    <strong>v0.13.6</strong> (versionCode 22). MIT-licensed source;
+    <strong>v0.16.3</strong> (versionCode 28). MIT-licensed source;
     bundled fonts under SIL OFL 1.1. Provider names and logos are
     trademarks of their respective owners.
   </p>
