@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon background — Exchangia brand soft gray (#F1F4F8).
+  Launcher icon background - brand teal gradient.
 
-  Switched from deep navy in v0.13.0 to match the primary "white-bg"
-  icon variant from the brand sheet. The hero logo's dark navy strokes
-  (rupee mark, E outline) need a light backdrop to read; on the navy
-  backdrop they were nearly invisible.
+  v0.16.3: switched from soft-gray solid to vertical teal gradient
+  (#00B49E top -> #008C7A bottom) to match Concept A's adaptive icon
+  design.  The gradient adds subtle depth at icon size that a solid
+  fill lacks; both endpoints are dark enough to keep the white "E"
+  foreground at sufficient contrast.
 
   Adaptive icons receive a 108dp canvas; the outer 18dp gets masked by
-  the launcher.
+  the launcher (circle, squircle, etc.) so the gradient just needs to
+  fill the full canvas - no safe zone to respect for the background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Solid soft-gray fill -->
-    <path
-        android:fillColor="#F1F4F8"
-        android:pathData="M0,0h108v108h-108z" />
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0"
+                android:startY="0"
+                android:endX="0"
+                android:endY="108"
+                android:startColor="#00B49E"
+                android:endColor="#008C7A" />
+        </aapt:attr>
+    </path>
 </vector>
