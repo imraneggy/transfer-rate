@@ -36,6 +36,9 @@ scrapers/debug_*.html
 .cache/
 *.html.dbg
 
+# Cloudflare Worker build cache (lulu-proxy experiments).
+infra/lulu-proxy/.wrangler/
+
 # SECRETS — never commit. git.txt holds a personal access token used only
 # to authenticate `git push` on this developer machine.
 git.txt
