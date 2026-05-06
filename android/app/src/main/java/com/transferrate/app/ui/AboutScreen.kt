@@ -1,13 +1,19 @@
 package com.transferrate.app.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,16 +23,26 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.transferrate.app.BuildConfig
+import com.transferrate.app.data.NotificationCenter
+import com.transferrate.app.data.NotificationPrefs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,14 +142,19 @@ fun AboutScreen(onBack: () -> Unit) {
             SectionCard(title = "Privacy") {
                 Text(
                     "This app collects nothing. No analytics, no telemetry, " +
-                    "no advertising, no account, no cloud sync. The only " +
-                    "permission used is INTERNET, and connections are " +
-                    "restricted to a single static-data host via the " +
-                    "platform's Network Security Config.",
+                    "no advertising, no account, no cloud sync. Connections " +
+                    "are restricted to a single static-data host via the " +
+                    "platform's Network Security Config. Optional features " +
+                    "(location for the mosque finder, notifications for " +
+                    "daily-high alerts) only use their respective Android " +
+                    "permissions if you turn them on.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
+            Spacer(Modifier.height(12.dp))
+
+            DailyHighToggleCard()
             Spacer(Modifier.height(12.dp))
 
             // Privacy is the only outbound link — and even that is a
@@ -160,6 +181,104 @@ fun AboutScreen(onBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(40.dp))
+        }
+    }
+}
+
+/**
+ * Toggle card for the optional daily-high notification.
+ *
+ * Behavior:
+ *   - Switch reads current state from [NotificationPrefs] on first
+ *     composition.
+ *   - Flipping ON: if POST_NOTIFICATIONS is already granted, just save
+ *     the flag. Otherwise launches the runtime permission request and
+ *     saves the flag only on grant.
+ *   - Flipping OFF: saves the flag immediately. We deliberately do NOT
+ *     attempt to revoke the OS permission — that's a system-level
+ *     setting the user controls, not something an app should toggle.
+ *   - If the user denied permission, we surface a one-line hint
+ *     pointing to system settings rather than re-prompting (re-prompts
+ *     trigger Android's "permission permanently denied" path which is
+ *     a worse UX than just telling them where to go).
+ */
+@Composable
+private fun DailyHighToggleCard() {
+    val ctx = LocalContext.current
+    val prefs = remember { NotificationPrefs(ctx) }
+    var enabled by remember { mutableStateOf(prefs.dailyHighEnabled) }
+    var permissionPreviouslyDenied by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            // Make sure the channel exists before the worker tries to
+            // post — registration is idempotent.
+            NotificationCenter.ensureChannel(ctx)
+            prefs.dailyHighEnabled = true
+            enabled = true
+            permissionPreviouslyDenied = false
+        } else {
+            prefs.dailyHighEnabled = false
+            enabled = false
+            permissionPreviouslyDenied = true
+        }
+    }
+
+    SectionCard(title = "Notifications") {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                Text(
+                    "Daily high alert",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    "Status-bar alert when a provider beats today's previous " +
+                        "best AED→INR rate. At most a few notifications per day.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(
+                checked = enabled,
+                onCheckedChange = { wantsOn ->
+                    if (wantsOn) {
+                        val granted = ContextCompat.checkSelfPermission(
+                            ctx, Manifest.permission.POST_NOTIFICATIONS,
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (granted) {
+                            NotificationCenter.ensureChannel(ctx)
+                            prefs.dailyHighEnabled = true
+                            enabled = true
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    } else {
+                        prefs.dailyHighEnabled = false
+                        enabled = false
+                    }
+                },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                ),
+            )
+        }
+        if (permissionPreviouslyDenied) {
+            Spacer(Modifier.height(10.dp))
+            Text(
+                "Permission was declined. To enable, open Android " +
+                    "Settings → Apps → Transfer Rate → Notifications, " +
+                    "allow them, then return here and toggle on.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+            )
         }
     }
 }

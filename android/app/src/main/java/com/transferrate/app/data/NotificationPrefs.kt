@@ -1,0 +1,95 @@
+package com.transferrate.app.data
+
+import android.content.Context
+import java.time.LocalDate
+import java.time.ZoneId
+
+/**
+ * Lightweight wrapper around SharedPreferences for the daily-high
+ * notification feature. Two responsibilities:
+ *
+ *   1. Persist the user's opt-in toggle (default: false).
+ *   2. Track per-local-day dedup state — the highest rate we've already
+ *      notified about today — so the periodic worker doesn't fire ten
+ *      notifications when a single afternoon spike pulls the rate up
+ *      0.01 at a time.
+ *
+ * Storage uses its own SharedPreferences file (`transfer-rate-notifications`)
+ * separate from the existing `transfer-rate` prefs (which holds the
+ * onboarding-hint dismissal flag) so the two domains can be wiped or
+ * inspected independently when debugging.
+ */
+class NotificationPrefs(context: Context) {
+
+    private val prefs = context.applicationContext.getSharedPreferences(
+        FILE_NAME, Context.MODE_PRIVATE,
+    )
+
+    /** User-controlled opt-in. Defaults to false (no notifications until
+     *  the user explicitly enables in the About screen). */
+    var dailyHighEnabled: Boolean
+        get() = prefs.getBoolean(KEY_ENABLED, false)
+        set(value) {
+            prefs.edit().putBoolean(KEY_ENABLED, value).apply()
+        }
+
+    /**
+     * Decide whether to fire a notification for [candidate] (the live
+     * "best now" rate) and, if yes, atomically record the new high so
+     * the same observation can't trigger again.
+     *
+     * Logic:
+     *   - If today's recorded peak is empty (new day, or first-ever
+     *     check) → notify and record.
+     *   - If [candidate] exceeds the recorded peak by more than [EPSILON]
+     *     → notify and record.
+     *   - Otherwise → no notification, no state change.
+     *
+     * EPSILON guards against float jitter (a rate of 25.83 vs. 25.8300001
+     * would otherwise spam users with "new high" alerts on every refresh).
+     */
+    fun shouldNotifyAndRecord(
+        candidate: Double,
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): Boolean {
+        val today = LocalDate.now(zone).toString()
+        val recordedDate = prefs.getString(KEY_LAST_DATE, null)
+        val recordedPeak = if (recordedDate == today) {
+            prefs.getFloat(KEY_LAST_PEAK, 0f).toDouble()
+        } else {
+            // Different day → previous record is irrelevant; treat as 0.
+            0.0
+        }
+
+        val isNewHigh = candidate > recordedPeak + EPSILON
+        if (isNewHigh) {
+            prefs.edit()
+                .putString(KEY_LAST_DATE, today)
+                .putFloat(KEY_LAST_PEAK, candidate.toFloat())
+                .apply()
+        }
+        return isNewHigh
+    }
+
+    /** Test/debug helper: forget today's recorded peak so the next
+     *  worker tick fires a notification regardless. Not exposed in UI. */
+    @Suppress("unused")
+    fun forgetTodaysPeak() {
+        prefs.edit()
+            .remove(KEY_LAST_DATE)
+            .remove(KEY_LAST_PEAK)
+            .apply()
+    }
+
+    companion object {
+        private const val FILE_NAME = "transfer-rate-notifications"
+        private const val KEY_ENABLED = "daily_high_enabled"
+        private const val KEY_LAST_DATE = "last_notified_date"
+        private const val KEY_LAST_PEAK = "last_notified_peak"
+
+        /** 0.005 ≈ half-a-paisa for AED→INR; below this we treat two
+         *  observations as the same rate. Matches the 4-dp rounding the
+         *  schema validates against in [HistoryDocument.validate]. */
+        private const val EPSILON = 0.005
+    }
+}
