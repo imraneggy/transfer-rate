@@ -16,22 +16,26 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Exchangia brand palette (per design brief 2026-05-02).
+ * Transfer Rate brand palette (per design brief 2026-05-06, v0.17 refresh).
  *
  * Brand swatches:
- *   - Primary teal:       #00B49E  (the E logo + active controls)
- *   - Deep navy:          #0E1F3A  (high-contrast text + dark icon variant)
+ *   - Primary teal:       #1FA89C  (top arc of the dual-arrow logo + active controls)
+ *   - Deep navy:          #0A1F44  (TR letterform + body text + dark surfaces)
  *   - Mid blue:           #1E3A5F  (secondary surfaces in dark mode)
- *   - Accent gold:        #F4B940  (BEST badge / promo accents)
+ *   - Accent gold:        #F4B940  (BEST badge / promo accents + ₹ cue)
  *   - Light cyan:         #9DEAD0  (light primaryContainer / soft fills)
  *   - Off-white surface:  #F4F4F0  (warm-leaning background)
+ *   - Splash soft white:  #F1F4F8  (launcher bg + OS splash backdrop)
  *
  * Both schemes are AAA-contrast for body text on background and AA on
- * surfaceVariant, verified with the official WCAG calculator.
+ * surfaceVariant, verified with the official WCAG calculator. Material
+ * 3 token assignment kept identical to the v0.16 (Exchangia) palette
+ * so the Compose tree doesn't need re-tuning — only the underlying
+ * brand swatches and comments are refreshed.
  */
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF00B49E),         // brand teal
+    primary = Color(0xFF1FA89C),         // brand teal (TR logo top arc)
     onPrimary = Color.White,
     primaryContainer = Color(0xFF9DEAD0),
     onPrimaryContainer = Color(0xFF00261F),
@@ -47,9 +51,9 @@ private val LightColors = lightColorScheme(
     onTertiaryContainer = Color(0xFF051A33),
 
     background = Color(0xFFF4F4F0),      // brand off-white
-    onBackground = Color(0xFF0E1F3A),    // brand deep navy as body text
+    onBackground = Color(0xFF0A1F44),    // brand deep navy as body text
     surface = Color(0xFFFAFAF7),
-    onSurface = Color(0xFF0E1F3A),
+    onSurface = Color(0xFF0A1F44),
     surfaceVariant = Color(0xFFEAEAE2),
     onSurfaceVariant = Color(0xFF3A3E50),  // bumped contrast: was 45495A (4.6:1) -> 5.7:1 on surfaceVariant
     outline = Color(0xFF5C6064),           // bumped contrast: was 767870 (3.4:1) -> 5.0:1 on background (AA Large + small text safe)
@@ -120,7 +124,7 @@ fun TransferRateTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = ExchangiaTypography,
+        typography = TransferRateTypography,
         content = content,
     )
 }

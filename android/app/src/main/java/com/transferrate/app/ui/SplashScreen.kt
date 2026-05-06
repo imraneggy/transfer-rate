@@ -33,15 +33,16 @@ import com.transferrate.app.R
 import kotlinx.coroutines.delay
 
 /**
- * Branded Exchangia splash that runs AFTER the OS native splash and
+ * Branded Transfer Rate splash that runs AFTER the OS native splash and
  * BEFORE the rates list. Holds for at least [minDurationMs] so the
  * brand registers, then dismisses when the caller's data is ready.
  *
- * Composition (per brand brief 2026-05-02):
- *   - Deep navy backdrop matching the OS splash (visual continuity)
- *   - The Exchangia "E" logo with INR + AED currency cues
- *   - "Exchangia" wordmark in Manrope ExtraBold
- *   - Tagline: "Compare INR rates across UAE"
+ * Composition (per brand brief 2026-05-06 — v0.17 refresh):
+ *   - Soft-white backdrop matching the OS splash (visual continuity)
+ *   - The Transfer Rate brand mark: navy "TR" with dual circular
+ *     refresh arrows + bar chart + rupee currency cue
+ *   - "Transfer Rate" wordmark in Space Grotesk Bold
+ *   - Tagline: "Compare. Choose. Save more."
  *   - Subtle loading indicator at the bottom
  *   - Whole composition fades in over 400ms for a softer transition
  *     from the OS splash
@@ -68,8 +69,8 @@ fun SplashScreen(
         label = "splash-fade",
     )
 
-    // Brand deep navy on the soft-gray splash backdrop matches the
-    // primary white-bg icon variant from the design brief.
+    // Brand deep navy on the soft-white splash backdrop matches the
+    // primary white-bg icon variant from the v0.17 brand brief.
     val deepNavy = Color(0xFF0A1F44)
 
     Box(
@@ -83,12 +84,12 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(horizontal = 32.dp),
         ) {
-            ExchangiaLogo(size = 128.dp)
+            TransferRateLogo(size = 128.dp)
 
             Spacer(Modifier.height(28.dp))
 
             Text(
-                text = "Exchangia",
+                text = "Transfer Rate",
                 color = deepNavy,
                 style = MaterialTheme.typography.displaySmall.copy(
                     fontSize = 40.sp,
@@ -107,7 +108,7 @@ fun SplashScreen(
 
             CircularProgressIndicator(
                 modifier = Modifier.size(28.dp),
-                color = Color(0xFF06B59C), // brand emerald
+                color = Color(0xFF06B59C), // brand teal
                 strokeWidth = 2.5.dp,
             )
         }
@@ -115,25 +116,34 @@ fun SplashScreen(
 }
 
 /**
- * In-app Exchangia logo. Renders the high-resolution PNG mark
- * (res/drawable-nodpi/exchangia_logo.png) extracted from the brand
- * source — preserves the fused ₹ and crescent details that hand-
- * coded vector paths cannot match.
+ * In-app Transfer Rate logo. Renders the high-resolution PNG mark
+ * (res/drawable-nodpi/transfer_rate_logo.png) extracted from the brand
+ * source — preserves the dual circular refresh arrows, mini bar chart
+ * and ₹ currency cue that hand-coded vector paths cannot match.
  *
  * Reused by SplashScreen and AboutScreen.
  */
 @Composable
-fun ExchangiaLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
+fun TransferRateLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
     Image(
-        painter = painterResource(id = R.drawable.exchangia_logo),
-        contentDescription = "Exchangia",
+        painter = painterResource(id = R.drawable.transfer_rate_logo),
+        contentDescription = "Transfer Rate",
         contentScale = ContentScale.Fit,
         modifier = Modifier.size(size),
     )
 }
 
-/** Backwards-compat alias: BarsLogo() is referenced by older callers. */
+/** Backwards-compat alias for the v0.11/v0.13 names. */
 @Composable
-@Deprecated("Renamed to ExchangiaLogo for the v0.11 brand refresh.",
-    replaceWith = ReplaceWith("ExchangiaLogo(size)"))
-fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) = ExchangiaLogo(size)
+@Deprecated(
+    "Renamed to TransferRateLogo for the v0.17 brand refresh.",
+    replaceWith = ReplaceWith("TransferRateLogo(size)"),
+)
+fun ExchangiaLogo(size: androidx.compose.ui.unit.Dp = 96.dp) = TransferRateLogo(size)
+
+@Composable
+@Deprecated(
+    "Renamed to TransferRateLogo for the v0.17 brand refresh.",
+    replaceWith = ReplaceWith("TransferRateLogo(size)"),
+)
+fun BarsLogo(size: androidx.compose.ui.unit.Dp = 96.dp) = TransferRateLogo(size)

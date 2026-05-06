@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * (a handful of queries per minute is fine; bulk extracts go to Geofabrik).
  *
  * Why Overpass + OSM?
- *   * $0 cost, no API key, matches Exchangia's $0-ops promise
+ *   * $0 cost, no API key, matches Transfer Rate's $0-ops promise
  *   * Mosque coverage in UAE/India/Pakistan/Egypt/Indonesia is excellent
  *     (volunteer-mapped streets dense in Muslim-majority regions)
  *   * Returns rich tags: denomination, opening_hours, addr:*, operator
@@ -131,7 +131,7 @@ class OverpassService(
         // a contact path so admins can reach us if our usage causes a
         // problem.
         private const val USER_AGENT =
-            "Exchangia/1.0 (https://github.com/imraneggy/transfer-rate)"
+            "TransferRate/1.0 (https://github.com/imraneggy/transfer-rate)"
 
         private val FORM_TYPE = "application/x-www-form-urlencoded".toMediaType()
 

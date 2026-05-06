@@ -115,7 +115,7 @@ fun RatesScreen(
                     // (rare) case where the actions row gets so wide
                     // it pushes the title off-screen on a 360 dp
                     // phone. Currently 3 chips + ⓘ leaves ~120 dp
-                    // for the title which fits "Exchangia" cleanly.
+                    // for the title which fits "Transfer Rate" cleanly.
                     Text(
                         stringResource(R.string.app_name),
                         fontWeight = FontWeight.SemiBold,
@@ -127,7 +127,7 @@ fun RatesScreen(
                 actions = {
                     // Word-labeled toolbar chips per user request.
                     // Compact size + uppercase labels keeps all three
-                    // visible alongside the "Exchangia" title even on
+                    // visible alongside the "Transfer Rate" title even on
                     // narrow phones. About stays as a small ⓘ glyph
                     // (the word "ABOUT" would push past the title on
                     // 360dp screens; the glyph is still tappable and
@@ -233,7 +233,7 @@ private fun stringResource(id: Int): String =
  * Compact text chip used in the top app bar for the theme toggle and
  * the refresh action. Matches the height of an IconButton so the bar
  * stays a uniform 56 dp; tight horizontal padding keeps three chips
- * + the "Exchangia" title visible on a 360 dp screen.
+ * + the "Transfer Rate" title visible on a 360 dp screen.
  *
  * Uses an outlined surface treatment so the chips read as tappable
  * controls without being as visually heavy as filled buttons (which

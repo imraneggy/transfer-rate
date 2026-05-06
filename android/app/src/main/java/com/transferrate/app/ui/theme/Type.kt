@@ -56,7 +56,7 @@ val SpaceGrotesk: FontFamily = FontFamily(
  * with negative tracking on large text) and bumped headline weights so
  * the brand feels confident.
  */
-val ExchangiaTypography: Typography = Typography(
+val TransferRateTypography: Typography = Typography(
     // Display levels: Space Grotesk for distinctive brand voice.
     displayLarge = TextStyle(
         fontFamily = SpaceGrotesk,

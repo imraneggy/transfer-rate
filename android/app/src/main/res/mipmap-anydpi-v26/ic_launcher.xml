@@ -2,12 +2,13 @@
 <!--
   Adaptive launcher icon manifest (Android 8.0 / API 26+).
 
-  Background: deep navy vector (drawable/ic_launcher_background.xml).
-  Foreground: high-res PNG of the Exchangia E logo (mipmap-xxxhdpi/
-  ic_launcher_foreground.png) — the design includes the fused INR
-  rupee mark and the UAE crescent which are too detailed to render
-  faithfully in vector path data.
-  Monochrome: simplified vector for Android 13+ themed icons.
+  Background: soft-white vertical gradient (drawable/ic_launcher_background.xml).
+  Foreground: high-res density-bucketed PNG of the Transfer Rate mark
+  (mipmap-{m,h,xh,xxh,xxxh}dpi/ic_launcher_foreground.png) — the design
+  includes the dual circular refresh arrows, mini bar chart and rupee
+  cue which are too detailed to render faithfully in vector path data.
+  Monochrome: simplified "TR" letterform vector for Android 13+ themed
+  icons.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/ic_launcher_background" />

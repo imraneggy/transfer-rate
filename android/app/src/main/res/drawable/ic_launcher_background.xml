@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon background - brand teal gradient.
+  Launcher icon background — Transfer Rate brand soft white.
 
-  v0.16.3: switched from soft-gray solid to vertical teal gradient
-  (#00B49E top -> #008C7A bottom) to match Concept A's adaptive icon
-  design.  The gradient adds subtle depth at icon size that a solid
-  fill lacks; both endpoints are dark enough to keep the white "E"
-  foreground at sufficient contrast.
+  v0.17.0: switched from teal gradient (Exchangia era) to a near-white
+  vertical gradient (#FFFFFF → #ECEFF5) to match the new brand: a navy
+  "TR" mark with teal/navy circular arrows on a clean light field.
+
+  The gradient adds the slightest depth at icon size; both endpoints
+  are bright enough that the launcher's circle/squircle/teardrop mask
+  reveals consistent light bg around the rounded-square badge in the
+  foreground PNG.
 
   Adaptive icons receive a 108dp canvas; the outer 18dp gets masked by
   the launcher (circle, squircle, etc.) so the gradient just needs to
-  fill the full canvas - no safe zone to respect for the background.
+  fill the full canvas — no safe zone to respect for the background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -27,8 +30,8 @@
                 android:startY="0"
                 android:endX="0"
                 android:endY="108"
-                android:startColor="#00B49E"
-                android:endColor="#008C7A" />
+                android:startColor="#FFFFFF"
+                android:endColor="#ECEFF5" />
         </aapt:attr>
     </path>
 </vector>

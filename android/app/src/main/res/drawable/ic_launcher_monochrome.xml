@@ -3,10 +3,14 @@
   Themed-icon variant (Android 13+). Single white channel; the launcher
   tints to the wallpaper-derived theme color.
 
-  Uses a stylized "E" silhouette as a clean monochrome fallback —
-  the gradient-rich brand mark cannot be reduced to a single colour
-  channel without losing legibility, so the themed icon presents a
-  simplified geometric "E" instead.
+  v0.17.0: simplified "TR" letterform pair as the monochrome fallback —
+  the full brand mark (TR + dual circular arrows + bar chart + rupee
+  cue) loses too much detail when reduced to a single channel. The TR
+  monogram stays legible from 24 dp notification badges up to launcher
+  sizes.
+
+  Geometry stays inside the 66dp safe zone of the 108dp adaptive canvas
+  so any mask (circle/squircle/teardrop) won't crop content.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -14,23 +18,29 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- E spine -->
+    <!-- ==========  Letter T  ==========
+         Top crossbar + descender, left half of the monogram.            -->
+    <!-- T crossbar -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M28,28 m0,5 a5,5 0 0,1 10,0 v42 a5,5 0 0,1 -10,0 z" />
+        android:pathData="M28,30 h28 a4,4 0 0,1 0,8 h-28 a4,4 0 0,1 0,-8 z" />
+    <!-- T stem -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,30 h8 v44 a4,4 0 0,1 -8,0 z" />
 
-    <!-- Top arm -->
+    <!-- ==========  Letter R  ==========
+         Spine + bowl + leg, right half of the monogram.                  -->
+    <!-- R spine -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M28,28 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
-
-    <!-- Middle arm -->
+        android:pathData="M58,30 h8 v48 h-8 z" />
+    <!-- R bowl (top loop) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M28,49 m5,0 h25 a5,5 0 0,1 0,10 h-25 a5,5 0 0,1 0,-10 z" />
-
-    <!-- Bottom arm -->
+        android:pathData="M62,30 h12 a14,14 0 0,1 0,28 h-12 v-8 h12 a6,6 0 0,0 0,-12 h-12 z" />
+    <!-- R leg (diagonal stroke) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M28,70 m5,0 h35 a5,5 0 0,1 0,10 h-35 a5,5 0 0,1 0,-10 z" />
+        android:pathData="M66,52 l14,26 h-9 l-13,-22 z" />
 </vector>

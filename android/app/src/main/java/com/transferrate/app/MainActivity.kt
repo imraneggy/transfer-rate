@@ -126,6 +126,6 @@ private fun AppRoot(
 
 // Matches @color/splash_bg in resources so the OS splash and the in-app
 // splash present an identical background; transition between them is
-// invisible to the user. Exchangia brand soft gray for the white-icon
-// variant per the v0.13 design brief.
+// invisible to the user. Transfer Rate brand soft white for the
+// white-icon variant per the v0.17 brand refresh.
 private val SPLASH_BG = Color(0xFFF1F4F8)

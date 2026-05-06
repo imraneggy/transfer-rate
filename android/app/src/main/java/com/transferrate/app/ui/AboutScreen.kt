@@ -55,11 +55,11 @@ fun AboutScreen(onBack: () -> Unit) {
             // Hero block: logo + name + tagline + version
             Spacer(Modifier.height(16.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                ExchangiaLogo(size = 72.dp)
+                TransferRateLogo(size = 72.dp)
             }
             Spacer(Modifier.height(14.dp))
             Text(
-                "Exchangia",
+                "Transfer Rate",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
