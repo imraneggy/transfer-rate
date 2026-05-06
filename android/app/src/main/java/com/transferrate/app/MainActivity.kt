@@ -23,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.transferrate.app.data.NotificationCenter
 import com.transferrate.app.data.PrefetchScheduler
 import com.transferrate.app.ui.AboutScreen
 import com.transferrate.app.ui.MosqueScreen
@@ -42,6 +43,13 @@ class MainActivity : ComponentActivity() {
         // Schedule the periodic prefetch worker. Idempotent — KEEP policy
         // means calling this every launch doesn't reset the schedule clock.
         PrefetchScheduler.schedule(this)
+
+        // Register the daily-high notification channel up-front (idempotent)
+        // so users see it under Android Settings → Apps → Transfer Rate →
+        // Notifications even before any notification has fired. We do NOT
+        // request POST_NOTIFICATIONS here — that prompt only appears when
+        // the user explicitly enables the toggle in About → Notifications.
+        NotificationCenter.ensureChannel(this)
 
         setContent {
             // Theme mode state — System (default), Light, Dark.

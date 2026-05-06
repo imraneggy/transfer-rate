@@ -6,7 +6,9 @@ import androidx.work.WorkerParameters
 
 /**
  * Periodic background work that refreshes the local rates cache so the
- * app shows fresh data instantly on cold start.
+ * app shows fresh data instantly on cold start, AND — when the user has
+ * opted in — fires a status-bar notification when a provider beats the
+ * day's previous best AED→INR rate.
  *
  * Constraints applied at scheduling time (see schedule() below):
  *   - requires network (any kind — Wi-Fi or cellular)
@@ -30,17 +32,57 @@ class RatesPrefetchWorker(
 
     override suspend fun doWork(): Result {
         val repo = RatesRepository(applicationContext)
-        return repo.fetch().fold(
-            onSuccess = {
-                // The repository's fetch() already writes the cache as a
-                // side-effect on success.
-                Result.success()
-            },
-            onFailure = {
-                // Don't fail loudly — the next launch can re-cache.
-                // Returning retry would burn user battery; defer.
-                Result.success()
-            },
-        )
+        val fetched = repo.fetch()
+        if (fetched.isFailure) {
+            // Don't fail loudly — the next launch can re-cache.
+            // Returning retry would burn user battery; defer.
+            return Result.success()
+        }
+
+        // ----- Daily-high notification (opt-in) -----
+        //
+        // Only fires when (a) the user has explicitly enabled the
+        // toggle in the About screen, AND (b) the live "best now" rate
+        // for INR exceeds today's previously-notified peak by more
+        // than a half-paisa epsilon.
+        //
+        // Wrapped in runCatching so any notification path failure
+        // (revoked permission, channel not yet registered, OEM quirks)
+        // never affects the worker's primary cache-refresh job.
+        runCatching {
+            val prefs = NotificationPrefs(applicationContext)
+            if (!prefs.dailyHighEnabled) return@runCatching
+
+            val doc = fetched.getOrNull() ?: return@runCatching
+            val currentBest = pickCurrentBest(doc, corridor = "INR")
+                ?: return@runCatching
+
+            val rate = currentBest.effectiveRate ?: currentBest.rate
+            ?: return@runCatching
+
+            if (prefs.shouldNotifyAndRecord(rate)) {
+                val info = CURRENCIES["INR"]
+                NotificationCenter.postDailyHigh(
+                    context = applicationContext,
+                    providerName = currentBest.providerName,
+                    rate = rate,
+                    currencyCode = "INR",
+                    currencySymbol = info?.symbol ?: "₹",
+                )
+            }
+        }
+
+        return Result.success()
+    }
+
+    /** Same filter as RatesViewModel.bestRate — exclude mid_market and
+     *  any non-OK status, then take the highest effective rate. */
+    private fun pickCurrentBest(doc: RatesDocument, corridor: String): ProviderQuote? {
+        val quotes = doc.corridors[corridor].orEmpty()
+        return quotes.asSequence()
+            .filter { it.providerId != "mid_market" }
+            .filter { it.status == "ok" || it.status == "manual" }
+            .filter { (it.effectiveRate ?: it.rate) != null }
+            .maxByOrNull { it.effectiveRate ?: it.rate ?: 0.0 }
     }
 }
