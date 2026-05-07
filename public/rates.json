@@ -2,8 +2,8 @@
   "schema_version": 2,
   "base": "AED",
   "amount_base": 1000.0,
-  "started_at": "2026-05-07T12:12:32Z",
-  "completed_at": "2026-05-07T12:12:41Z",
+  "started_at": "2026-05-07T14:36:10Z",
+  "completed_at": "2026-05-07T14:36:18Z",
   "corridors": {
     "INR": [
       {
@@ -22,7 +22,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "wise",
@@ -40,7 +40,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "aspora",
@@ -58,7 +58,7 @@
         "note": null,
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "remitly",
@@ -76,7 +76,7 @@
         "note": null,
         "promo_rate": 25.77,
         "promo_note": "First transfer \u2265 AED 10",
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:11Z"
       },
       {
         "provider_id": "transfergo",
@@ -84,17 +84,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.63404,
+        "rate": 25.62081,
         "fee_base": null,
-        "received_quote": 25634.039999999997,
-        "effective_rate": 25.63404,
+        "received_quote": 25620.809999999998,
+        "effective_rate": 25.62081,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:32Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "al_ansari",
@@ -112,7 +112,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:37Z"
+        "fetched_at": "2026-05-07T14:36:15Z"
       },
       {
         "provider_id": "al_dahab",
@@ -130,7 +130,7 @@
         "note": "Daily ticker rate from Al Dahab Exchange homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:11Z"
       },
       {
         "provider_id": "ahalia",
@@ -148,7 +148,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:32Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -156,17 +156,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.6,
+        "rate": 25.61,
         "fee_base": null,
-        "received_quote": 25600.0,
-        "effective_rate": 25.6,
+        "received_quote": 25610.0,
+        "effective_rate": 25.61,
         "delivery_estimate": null,
         "url": "https://www.federalexchange.ae/",
         "status": "ok",
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:34Z"
+        "fetched_at": "2026-05-07T14:36:12Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -184,7 +184,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:33Z"
+        "fetched_at": "2026-05-07T14:36:10Z"
       },
       {
         "provider_id": "index_exchange",
@@ -202,7 +202,7 @@
         "note": "Indicative rate from indexexchange.ae homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:34Z"
+        "fetched_at": "2026-05-07T14:36:11Z"
       },
       {
         "provider_id": "lari",
@@ -220,7 +220,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-05-07T12:12:38Z"
+        "fetched_at": "2026-05-07T14:36:17Z"
       }
     ]
   },
@@ -309,7 +309,7 @@
     },
     "uae_silver": {
       "currency": "AED",
-      "per_g": 9.6,
+      "per_g": 9.68,
       "source": "Spot (gold-api.com \u2192 AED peg)",
       "source_url": "https://api.gold-api.com/price/XAG",
       "status": "ok",
@@ -366,6 +366,6 @@
         }
       ]
     },
-    "fetched_at": "2026-05-07T12:12:41Z"
+    "fetched_at": "2026-05-07T14:36:18Z"
   }
 }
