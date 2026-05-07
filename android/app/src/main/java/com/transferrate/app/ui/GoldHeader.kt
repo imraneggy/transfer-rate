@@ -21,32 +21,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.transferrate.app.data.GoldDocument
+import com.transferrate.app.ui.theme.LocalMetalColors
 
 /**
  * UAE vs India precious-metals rate module — sits at half-width next
  * to MidMarketHeader.  Tap opens the bottom-sheet detail view.
  *
- * Layout (v0.25):
- *   ┌──────────────────────────────────────────────────┐
- *   │ 🪙  GOLD                              SILVER     │  ← eyebrow row
- *   │  24K  AED 570        ·         AED 9.53          │
- *   │       ₹ 15,436                 ₹ 275             │
- *   │  22K  AED 527                                    │
- *   │       ₹ 14,150                                   │
- *   │  per gram · tap for chart                        │
- *   └──────────────────────────────────────────────────┘
+ * v0.26 design:
+ *   - Two-column inner layout (Gold | Silver) so each metal sits
+ *     beside the other for at-a-glance comparison.
+ *   - Each column carries its OWN tonal background (warm gold, cool
+ *     steel) so the metals read as themselves rather than borrowing
+ *     the indigo accent palette.  Backgrounds are subtle gradients
+ *     between the metal's two lightest tonal steps so the card stays
+ *     legible without shouting.
+ *   - When silver data is missing (older rates.json without silver
+ *     fields), the silver column is omitted and the gold column
+ *     takes full width — graceful degradation for forward compat.
  *
- * The two-column inner layout (Gold | Silver) is the v0.25 redesign
- * per user request — silver sits BESIDE gold rather than below it,
- * so users compare the metals at a glance rather than reading silver
- * as a footnote.  When silver data is missing (older rates.json
- * without uae_silver / india_silver fields), the silver column is
- * omitted and the card collapses back to the v0.22 single-column
- * gold-only look.
+ * Uses the v0.26 [LocalMetalColors] composition local rather than
+ * hand-rolled hex literals — palette decisions ladder back to
+ * Theme.kt and tone-map automatically between light and dark mode.
  */
 @Composable
 fun GoldHeader(
@@ -61,185 +62,179 @@ fun GoldHeader(
         && gold.uaeSilver?.perG != null
         && gold.indiaSilver?.perG != null
 
+    val metals = LocalMetalColors.current
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 156.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            // Brand-gold container — warm contrast next to MidMarket's
-            // teal primaryContainer.
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
     ) {
-        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            // Eyebrow row.  When silver is present, we place "GOLD" and
-            // "SILVER" labels side by side so the column header doubles
-            // as a section header for each metal column below.
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("🪙", fontSize = 13.sp, maxLines = 1)
-                Spacer(Modifier.width(6.dp))
+        if (!goldOk) {
+            Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
                 Text(
                     "GOLD",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = metals.goldText,
                     maxLines = 1,
                     softWrap = false,
-                    modifier = Modifier.weight(1f),
                 )
-                if (silverOk) {
-                    Text(
-                        "SILVER",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.0.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        maxLines = 1,
-                        softWrap = false,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-            Spacer(Modifier.height(10.dp))
-
-            if (!goldOk) {
+                Spacer(Modifier.height(10.dp))
                 Text(
                     text = "Rates unavailable",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
                 )
-                return@Column
+            }
+            return@Card
+        }
+
+        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+            // ===== GOLD COLUMN =====
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(metals.goldLightest, metals.goldLight),
+                        ),
+                    )
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("🪙", fontSize = 13.sp, maxLines = 1)
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        "GOLD",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.0.sp,
+                        color = metals.goldText,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                MetalRow(
+                    label = "24K",
+                    aedValue = gold.uae.perG24k,
+                    inrValue = gold.india.perG24k,
+                    accentColor = metals.goldText,
+                    valueColor = metals.goldDeep,
+                    aedDecimals = 0,
+                    emphasis = true,
+                )
+                Spacer(Modifier.height(6.dp))
+                MetalRow(
+                    label = "22K",
+                    aedValue = gold.uae.perG22k,
+                    inrValue = gold.india.perG22k,
+                    accentColor = metals.goldText,
+                    valueColor = metals.goldDeep,
+                    aedDecimals = 0,
+                    emphasis = false,
+                )
             }
 
-            // Two-column body row: gold (24K + 22K stacked) on the left,
-            // silver (single value) on the right.  Silver column omitted
-            // when silver data is missing — gold then takes full width
-            // exactly as in v0.22.
-            Row(modifier = Modifier.fillMaxWidth()) {
-                // Gold column
-                Column(modifier = Modifier.weight(1f)) {
-                    CaratRow(
-                        label = "24K",
-                        aed = gold.uae.perG24k,
-                        inr = gold.india.perG24k,
+            if (silverOk) {
+                // ===== SILVER COLUMN =====
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(metals.silverLightest, metals.silverLight),
+                            ),
+                        )
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("◇", fontSize = 13.sp,
+                             color = metals.silverAccent, maxLines = 1)
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            "SILVER",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.0.sp,
+                            color = metals.silverText,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    MetalRow(
+                        label = "1g",
+                        aedValue = gold.uaeSilver?.perG,
+                        inrValue = gold.indiaSilver?.perG,
+                        accentColor = metals.silverText,
+                        valueColor = metals.silverDeep,
+                        aedDecimals = 2,
                         emphasis = true,
                     )
                     Spacer(Modifier.height(6.dp))
-                    CaratRow(
-                        label = "22K",
-                        aed = gold.uae.perG22k,
-                        inr = gold.india.perG22k,
+                    MetalRow(
+                        label = "1kg",
+                        aedValue = gold.uaeSilver?.perG?.times(1000),
+                        inrValue = gold.indiaSilver?.perG?.times(1000),
+                        accentColor = metals.silverText,
+                        valueColor = metals.silverDeep,
+                        aedDecimals = 0,
                         emphasis = false,
                     )
                 }
-
-                if (silverOk) {
-                    Spacer(Modifier.width(12.dp))
-                    // Silver column.  No carat pill — the SILVER label in
-                    // the eyebrow already heads this column; another pill
-                    // would be redundant.  Top-aligned so silver value
-                    // sits at the same baseline as the 24K gold value.
-                    Column(modifier = Modifier.weight(1f)) {
-                        SilverValuePair(
-                            aed = gold.uaeSilver?.perG,
-                            inr = gold.indiaSilver?.perG,
-                        )
-                    }
-                }
             }
-
-            Spacer(Modifier.weight(1f))
-
-            Text(
-                text = "per gram · tap for 30-day chart",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.65f),
-                maxLines = 1,
-                softWrap = false,
-            )
         }
     }
 }
 
 @Composable
-private fun CaratRow(
+private fun MetalRow(
     label: String,
-    aed: Double?,
-    inr: Double?,
+    aedValue: Double?,
+    inrValue: Double?,
+    accentColor: androidx.compose.ui.graphics.Color,
+    valueColor: androidx.compose.ui.graphics.Color,
+    aedDecimals: Int,
     emphasis: Boolean,
 ) {
-    val valueColor = MaterialTheme.colorScheme.onSecondaryContainer
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Carat pill — bold for high contrast
-        Box(
-            modifier = Modifier
-                .background(
-                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.22f),
-                    RoundedCornerShape(4.dp),
+    val aedFormat = "AED %.${aedDecimals}f"
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        accentColor.copy(alpha = 0.12f),
+                        RoundedCornerShape(4.dp),
+                    )
+                    .padding(horizontal = 5.dp, vertical = 1.dp),
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.4.sp,
+                    color = accentColor,
+                    maxLines = 1,
+                    softWrap = false,
                 )
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-        ) {
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.6.sp,
-                color = valueColor,
-                maxLines = 1,
-                softWrap = false,
-            )
+            }
         }
-        Spacer(Modifier.width(8.dp))
-
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = if (aed != null) "AED %.0f".format(aed) else "—",
-                fontWeight = if (emphasis) FontWeight.Bold else FontWeight.SemiBold,
-                fontSize = if (emphasis) 16.sp else 13.sp,
-                color = valueColor,
-                maxLines = 1,
-                softWrap = false,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-            )
-            Text(
-                text = if (inr != null) "₹ %,.0f".format(inr) else "—",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                color = valueColor.copy(alpha = 0.78f),
-                maxLines = 1,
-                softWrap = false,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-            )
-        }
-    }
-}
-
-/** Compact AED-over-INR pair for the silver column.  No pill prefix — the
- *  SILVER eyebrow above does the labelling.  Slightly smaller font sizes
- *  than the gold 24K row so the gold column visually dominates (gold is
- *  the primary signal; silver is contextual). */
-@Composable
-private fun SilverValuePair(aed: Double?, inr: Double?) {
-    val valueColor = MaterialTheme.colorScheme.onSecondaryContainer
-    Column {
+        Spacer(Modifier.height(2.dp))
         Text(
-            text = if (aed != null) "AED %.2f".format(aed) else "—",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
+            text = if (aedValue != null) aedFormat.format(aedValue) else "—",
+            fontWeight = if (emphasis) FontWeight.Bold else FontWeight.SemiBold,
+            fontSize = if (emphasis) 14.sp else 12.sp,
             color = valueColor,
             maxLines = 1,
             softWrap = false,
@@ -248,10 +243,10 @@ private fun SilverValuePair(aed: Double?, inr: Double?) {
             ),
         )
         Text(
-            text = if (inr != null) "₹ %,.0f".format(inr) else "—",
-            fontSize = 11.sp,
+            text = if (inrValue != null) "₹ %,.0f".format(inrValue) else "—",
+            fontSize = 10.sp,
             fontWeight = FontWeight.Medium,
-            color = valueColor.copy(alpha = 0.78f),
+            color = accentColor.copy(alpha = 0.85f),
             maxLines = 1,
             softWrap = false,
             style = MaterialTheme.typography.bodySmall.copy(

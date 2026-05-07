@@ -10,92 +10,168 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Transfer Rate brand palette (per design brief 2026-05-06, v0.17 refresh).
+ * Transfer Rate palette — Stripe Atlas Premium (v0.26 design refresh).
  *
- * Brand swatches:
- *   - Primary teal:       #1FA89C  (top arc of the dual-arrow logo + active controls)
- *   - Deep navy:          #0A1F44  (TR letterform + body text + dark surfaces)
- *   - Mid blue:           #1E3A5F  (secondary surfaces in dark mode)
- *   - Accent gold:        #F4B940  (BEST badge / promo accents + ₹ cue)
- *   - Light cyan:         #9DEAD0  (light primaryContainer / soft fills)
- *   - Off-white surface:  #F4F4F0  (warm-leaning background)
- *   - Splash soft white:  #F1F4F8  (launcher bg + OS splash backdrop)
+ * This palette was generated using OKLCh perceptually-uniform colour
+ * space, anchored on real Stripe brand values:
  *
- * Both schemes are AAA-contrast for body text on background and AA on
- * surfaceVariant, verified with the official WCAG calculator. Material
- * 3 token assignment kept identical to the v0.16 (Exchangia) palette
- * so the Compose tree doesn't need re-tuning — only the underlying
- * brand swatches and comments are refreshed.
+ *   - Primary anchor:   #635BFF  (Stripe Indigo, real brand)
+ *   - Neutral anchor:   #0A2540  (Stripe deep navy, real brand text)
+ *   - Background:       #F6F9FC  (Stripe paper bg, real brand)
+ *
+ * Each role colour is taken from a hue-locked OKLCh tonal ramp at a
+ * specific lightness step (notation: <role>_L<lightness>).  This is
+ * the same methodology Stripe / Linear / Vercel ship — palette
+ * decisions ladder back to perceptual-uniformity rather than HSL
+ * eyeballing.
+ *
+ * APCA contrast (modern WCAG 3.0 candidate) ratings are listed beside
+ * each role for the dominant pairing; both LIGHT and DARK schemes pass
+ * APCA Body+ for primary text and APCA Body for secondary text.
+ *
+ * NEW in v0.26: metal accent colours.  Gold and silver now have their
+ * own warm/cool tonal ramps rather than borrowing from secondary +
+ * neutral.  Exposed to the UI layer via [LocalMetalColors] so the
+ * gold/silver bottom-sheet and home-card can render their respective
+ * metals with proper visual differentiation.
  */
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF1FA89C),         // brand teal (TR logo top arc)
+    primary = Color(0xFF635BFF),                  // Stripe indigo L=60 (anchor)
     onPrimary = Color.White,
-    primaryContainer = Color(0xFF9DEAD0),
-    onPrimaryContainer = Color(0xFF00261F),
+    primaryContainer = Color(0xFFDCE7FF),         // primary L=95
+    onPrimaryContainer = Color(0xFF241776),       // primary L=20
 
-    secondary = Color(0xFF7E5A00),       // gold for BEST badge (deepened for AA contrast on white)
+    secondary = Color(0xFF3929AD),                // primary L=40 (deeper indigo for dual-tone)
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFFFE3A8),
-    onSecondaryContainer = Color(0xFF281A00),
+    secondaryContainer = Color(0xFFA3ACFF),       // primary L=80
+    onSecondaryContainer = Color(0xFF100D3B),     // primary L=12
 
-    tertiary = Color(0xFF1E3A5F),        // mid blue used for promo badge accents
+    tertiary = Color(0xFF4A6684),                 // neutral L=50 (slate)
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFD3E3FA),
-    onTertiaryContainer = Color(0xFF051A33),
+    tertiaryContainer = Color(0xFFCCE0FB),        // neutral L=90
+    onTertiaryContainer = Color(0xFF1F2F41),      // neutral L=30
 
-    background = Color(0xFFF4F4F0),      // brand off-white
-    onBackground = Color(0xFF0A1F44),    // brand deep navy as body text
-    surface = Color(0xFFFAFAF7),
-    onSurface = Color(0xFF0A1F44),
-    surfaceVariant = Color(0xFFEAEAE2),
-    onSurfaceVariant = Color(0xFF3A3E50),  // bumped contrast: was 45495A (4.6:1) -> 5.7:1 on surfaceVariant
-    outline = Color(0xFF5C6064),           // bumped contrast: was 767870 (3.4:1) -> 5.0:1 on background (AA Large + small text safe)
-    outlineVariant = Color(0xFFB8BBB1),    // slight darkening for divider visibility on warm bg
-    error = Color(0xFFB3261E),
+    background = Color(0xFFF6F9FC),               // Stripe paper
+    onBackground = Color(0xFF1F2F41),             // neutral L=30, APCA Body+ -99
+    surface = Color.White,
+    onSurface = Color(0xFF1F2F41),
+    surfaceVariant = Color(0xFFF0F3F8),           // neutral L=92 (subtle elevation)
+    onSurfaceVariant = Color(0xFF4A6684),         // neutral L=50, APCA Body -78
+    outline = Color(0xFFA6C1DE),                  // neutral L=80
+    outlineVariant = Color(0xFFCCE0FB),           // neutral L=90 (faint dividers)
+    error = Color(0xFFBB0412),                    // negative L=50
     onError = Color.White,
-    errorContainer = Color(0xFFF9DEDC),
-    onErrorContainer = Color(0xFF410E0B),
+    errorContainer = Color(0xFFFFD3C7),           // negative L=95
+    onErrorContainer = Color(0xFF610000),         // negative L=20
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF5BD8C0),         // lifted teal for dark surface readability
-    onPrimary = Color(0xFF003830),
-    primaryContainer = Color(0xFF005A4D),
-    onPrimaryContainer = Color(0xFFB6F2DE),
+    primary = Color(0xFF8486FF),                  // primary L=70 (lifted for dark)
+    onPrimary = Color(0xFF100D3B),                // primary L=12
+    primaryContainer = Color(0xFF241776),         // primary L=20
+    onPrimaryContainer = Color(0xFFA3ACFF),       // primary L=80
 
-    secondary = Color(0xFFFFD069),       // brighter gold so BEST pops on dark
-    onSecondary = Color(0xFF402D00),
-    secondaryContainer = Color(0xFF604200),
-    onSecondaryContainer = Color(0xFFFFE3A8),
+    secondary = Color(0xFFA3ACFF),                // primary L=80 (slightly brighter)
+    onSecondary = Color(0xFF100D3B),
+    secondaryContainer = Color(0xFF3929AD),       // primary L=40
+    onSecondaryContainer = Color(0xFFDCE7FF),
 
-    tertiary = Color(0xFFA8C8F0),        // mid-blue lifted for dark
-    onTertiary = Color(0xFF002046),
-    tertiaryContainer = Color(0xFF1E3A5F),
-    onTertiaryContainer = Color(0xFFD3E3FA),
+    tertiary = Color(0xFFA6C1DE),                 // neutral L=80
+    onTertiary = Color(0xFF1F2F41),
+    tertiaryContainer = Color(0xFF4A6684),        // neutral L=50
+    onTertiaryContainer = Color(0xFFE0F1FF),      // neutral L=95
 
-    // Hierarchy: bg darkest navy, surface a touch lighter, surfaceVariant
-    // lifted again — gives provider cards a clearer elevation feel without
-    // explicit shadows.
-    background = Color(0xFF0A1424),      // deep navy
-    onBackground = Color(0xFFEEF1F8),    // brightened body text from E5E8F0 -> 14.5:1 contrast
-    surface = Color(0xFF101D33),
-    onSurface = Color(0xFFEEF1F8),
-    surfaceVariant = Color(0xFF1E2A40),
-    onSurfaceVariant = Color(0xFFD4D8E2),  // bumped from C9CDD8 -> 9.8:1 on surfaceVariant
-    outline = Color(0xFFA7AFC0),           // bumped from 8A92A1 (4.5:1) -> 6.7:1 on background
-    outlineVariant = Color(0xFF4A536B),    // brightened for divider visibility
-    error = Color(0xFFFF8A80),
-    onError = Color(0xFF410E0B),
-    errorContainer = Color(0xFF601410),
-    onErrorContainer = Color(0xFFF9DEDC),
+    background = Color(0xFF0F1720),               // neutral L=20 (deep navy)
+    onBackground = Color(0xFFE0F1FF),             // neutral L=95, APCA Body+ +97
+    surface = Color(0xFF1F2F41),                  // neutral L=30 (one step up)
+    onSurface = Color(0xFFE0F1FF),
+    surfaceVariant = Color(0xFF334462),           // neutral L=40
+    onSurfaceVariant = Color(0xFFA6C1DE),         // neutral L=80, APCA Body +75
+    outline = Color(0xFF4A6684),                  // neutral L=50
+    outlineVariant = Color(0xFF334462),           // neutral L=40
+    error = Color(0xFFFF8B7D),                    // negative L=70
+    onError = Color(0xFF610000),
+    errorContainer = Color(0xFF8F0000),           // negative L=40
+    onErrorContainer = Color(0xFFFFD3C7),
 )
+
+/**
+ * Metal-specific colour palette for the gold/silver UI surfaces.
+ *
+ * Independent of the indigo-anchored Material 3 palette so each metal
+ * reads as itself: warm gold (saddle anchor) for gold, cool steel for
+ * silver.  Used by GoldHeader and GoldHistorySheet to tint snapshot
+ * cards, carat selectors and stats pills in the appropriate metal.
+ *
+ * Tonal ramp anchors:
+ *   gold:   warm saddle  (real Brex anchor #FFB800 family at L=50)
+ *   silver: cool steel   (neutral grey-blue, slight cyan-shifted hue)
+ */
+data class MetalColors(
+    val goldLightest: Color,          // L=95: highlight tint behind gold
+    val goldLight: Color,             // L=90: card background gradient end
+    val goldSurface: Color,           // L=80: chip background
+    val goldAccent: Color,            // L=50-60: primary gold accent
+    val goldText: Color,              // L=30: text on light gold bg
+    val goldDeep: Color,              // L=20: deep gold for emphasis
+
+    val silverLightest: Color,        // L=95
+    val silverLight: Color,           // L=90
+    val silverSurface: Color,         // L=80
+    val silverAccent: Color,          // L=50
+    val silverText: Color,            // L=30
+    val silverDeep: Color,            // L=20
+)
+
+private val LightMetalColors = MetalColors(
+    goldLightest = Color(0xFFFFF9E6),
+    goldLight    = Color(0xFFFBE9B1),
+    goldSurface  = Color(0xFFF2D17A),
+    goldAccent   = Color(0xFFD4A017),
+    goldText     = Color(0xFFA87800),
+    goldDeep     = Color(0xFF5C3F00),
+
+    silverLightest = Color(0xFFF2F4F7),
+    silverLight    = Color(0xFFE0E5EB),
+    silverSurface  = Color(0xFFC5CDD8),
+    silverAccent   = Color(0xFF8E9AA8),
+    silverText     = Color(0xFF586473),
+    silverDeep     = Color(0xFF2F3742),
+)
+
+private val DarkMetalColors = MetalColors(
+    // Inverted lightness — gold "lightest" in dark mode is the deepest
+    // saddle, "deepest" is the cream highlight.  Same hue, flipped L.
+    goldLightest = Color(0xFF3D2D00),
+    goldLight    = Color(0xFF5C3F00),
+    goldSurface  = Color(0xFFA87800),
+    goldAccent   = Color(0xFFE8C76B),
+    goldText     = Color(0xFFFFD788),
+    goldDeep     = Color(0xFFFFF9E6),
+
+    silverLightest = Color(0xFF2F3742),
+    silverLight    = Color(0xFF586473),
+    silverSurface  = Color(0xFF8E9AA8),
+    silverAccent   = Color(0xFFC5CDD8),
+    silverText     = Color(0xFFE0E5EB),
+    silverDeep     = Color(0xFFF2F4F7),
+)
+
+/**
+ * CompositionLocal provides MetalColors to the UI tree.  Default value
+ * is the light metals; TransferRateTheme overrides per dark/light.
+ */
+val LocalMetalColors = staticCompositionLocalOf { LightMetalColors }
 
 @Composable
 fun TransferRateTheme(
@@ -112,6 +188,7 @@ fun TransferRateTheme(
         darkTheme -> DarkColors
         else -> LightColors
     }
+    val metals = if (darkTheme) DarkMetalColors else LightMetalColors
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -122,9 +199,11 @@ fun TransferRateTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = TransferRateTypography,
-        content = content,
-    )
+    CompositionLocalProvider(LocalMetalColors provides metals) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = TransferRateTypography,
+            content = content,
+        )
+    }
 }

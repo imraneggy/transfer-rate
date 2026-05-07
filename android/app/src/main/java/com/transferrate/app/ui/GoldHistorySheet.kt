@@ -27,12 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Brush
 import com.transferrate.app.data.GoldDocument
+import com.transferrate.app.ui.theme.LocalMetalColors
+import com.transferrate.app.ui.theme.MetalColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -503,31 +507,159 @@ private fun StatRegionRow(
 
 @Composable
 private fun SnapshotGrid(gold: GoldDocument, silverAvailable: Boolean) {
+    val metals = LocalMetalColors.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        SnapshotCard(
+        // Gold card — warm-tinted
+        MetalSnapshotCard(
             modifier = Modifier.weight(1f),
-            country = "UAE",
-            currencySym = "AED",
-            r24 = gold.uae.perG24k,
-            r22 = gold.uae.perG22k,
-            silver = if (silverAvailable) gold.uaeSilver?.perG else null,
+            metals = metals,
+            isGold = true,
+            uae24 = gold.uae.perG24k, uae22 = gold.uae.perG22k,
+            india24 = gold.india.perG24k, india22 = gold.india.perG22k,
+            uaeSilver = null, indiaSilver = null,
         )
-        SnapshotCard(
-            modifier = Modifier.weight(1f),
-            country = "India",
-            currencySym = "₹",
-            r24 = gold.india.perG24k,
-            r22 = gold.india.perG22k,
-            silver = if (silverAvailable) gold.indiaSilver?.perG else null,
+        if (silverAvailable) {
+            MetalSnapshotCard(
+                modifier = Modifier.weight(1f),
+                metals = metals,
+                isGold = false,
+                uae24 = null, uae22 = null,
+                india24 = null, india22 = null,
+                uaeSilver = gold.uaeSilver?.perG,
+                indiaSilver = gold.indiaSilver?.perG,
+            )
+        }
+    }
+}
+
+/**
+ * One metal's snapshot card — gold or silver — with that metal's
+ * own warm/cool tonal palette.  Gold card lists 24K + 22K rates per
+ * region; silver card lists 1g + 1kg per region.
+ */
+@Composable
+private fun MetalSnapshotCard(
+    modifier: Modifier,
+    metals: MetalColors,
+    isGold: Boolean,
+    uae24: Double?, uae22: Double?,
+    india24: Double?, india22: Double?,
+    uaeSilver: Double?, indiaSilver: Double?,
+) {
+    val gradStart = if (isGold) metals.goldLightest else metals.silverLightest
+    val gradEnd   = if (isGold) metals.goldLight    else metals.silverLight
+    val accent    = if (isGold) metals.goldText     else metals.silverText
+    val deep      = if (isGold) metals.goldDeep     else metals.silverDeep
+    val outline   = if (isGold) metals.goldSurface  else metals.silverSurface
+    val title     = if (isGold) "🪙  GOLD"          else "◇  SILVER"
+
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(brush = Brush.verticalGradient(colors = listOf(gradStart, gradEnd)))
+            .padding(12.dp),
+    ) {
+        Text(
+            title,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.8.sp,
+            color = accent,
+            maxLines = 1,
+            softWrap = false,
         )
+        Spacer(Modifier.height(10.dp))
+        if (isGold) {
+            // Gold card content: 24K (UAE + India), 22K (UAE + India)
+            MetalLine(label = "UAE  ·  24K 1g",
+                      value = uae24?.let { "AED %.0f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = true)
+            Spacer(Modifier.height(4.dp))
+            MetalLine(label = "INDIA  ·  24K 1g",
+                      value = india24?.let { "₹ %,.0f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = true)
+            Spacer(Modifier.height(8.dp))
+            MetalDivider(accent.copy(alpha = 0.25f))
+            Spacer(Modifier.height(8.dp))
+            MetalLine(label = "UAE  ·  22K 1g",
+                      value = uae22?.let { "AED %.0f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = false)
+            Spacer(Modifier.height(4.dp))
+            MetalLine(label = "INDIA  ·  22K 1g",
+                      value = india22?.let { "₹ %,.0f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = false)
+        } else {
+            // Silver card content: 1g (UAE + India), 1kg (UAE + India)
+            MetalLine(label = "UAE  ·  1g",
+                      value = uaeSilver?.let { "AED %.2f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = true)
+            Spacer(Modifier.height(4.dp))
+            MetalLine(label = "INDIA  ·  1g",
+                      value = indiaSilver?.let { "₹ %,.0f".format(it) } ?: "—",
+                      accent = accent, deep = deep, emphasis = true)
+            Spacer(Modifier.height(8.dp))
+            MetalDivider(accent.copy(alpha = 0.25f))
+            Spacer(Modifier.height(8.dp))
+            MetalLine(label = "UAE  ·  1kg",
+                      value = uaeSilver?.let { "AED %,.0f".format(it * 1000) } ?: "—",
+                      accent = accent, deep = deep, emphasis = false)
+            Spacer(Modifier.height(4.dp))
+            MetalLine(label = "INDIA  ·  1kg",
+                      value = indiaSilver?.let { "₹ %,.0f".format(it * 1000) } ?: "—",
+                      accent = accent, deep = deep, emphasis = false)
+        }
     }
 }
 
 @Composable
-private fun SnapshotCard(
+private fun MetalLine(
+    label: String,
+    value: String,
+    accent: androidx.compose.ui.graphics.Color,
+    deep: androidx.compose.ui.graphics.Color,
+    emphasis: Boolean,
+) {
+    Text(
+        label,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.4.sp,
+        color = accent,
+        maxLines = 1,
+        softWrap = false,
+    )
+    Text(
+        value,
+        fontSize = if (emphasis) 16.sp else 13.sp,
+        fontWeight = if (emphasis) FontWeight.Bold else FontWeight.SemiBold,
+        color = deep,
+        maxLines = 1,
+        softWrap = false,
+        style = MaterialTheme.typography.bodyMedium.copy(
+            fontFeatureSettings = "tnum",
+        ),
+    )
+}
+
+@Composable
+private fun MetalDivider(color: androidx.compose.ui.graphics.Color) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(color),
+    )
+}
+
+/* The original SnapshotCard is no longer used by the v0.26 design but
+ * kept here for future reuse / fallback if we ever revert.  Renamed
+ * with a leading underscore so we don't accidentally call it. */
+@Composable
+@Suppress("unused")
+private fun _LegacySnapshotCard(
     modifier: Modifier,
     country: String,
     currencySym: String,

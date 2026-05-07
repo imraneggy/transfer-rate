@@ -57,50 +57,62 @@ val SpaceGrotesk: FontFamily = FontFamily(
  * the brand feels confident.
  */
 val TransferRateTypography: Typography = Typography(
-    // Display levels: Space Grotesk for distinctive brand voice.
+    // Display levels — bumped sizes (v0.26) for "hero numeral" treatment
+    // matching premium fintech.  Tighter negative tracking on display
+    // sizes so big numbers feel cohesive rather than spaced-out.
+    //
+    // Sizes ladder:
+    //   displayLarge  72sp  — used for the hero rate ₹25.72 on the home screen
+    //   displayMedium 56sp  — used for header values in bottom sheets
+    //   displaySmall  40sp  — used for splash wordmark + smaller hero values
     displayLarge = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
-        fontSize = 57.sp,
-        lineHeight = 64.sp,
-        letterSpacing = (-0.8).sp,
+        fontSize = 72.sp,
+        lineHeight = 76.sp,
+        letterSpacing = (-1.4).sp,
+        fontFeatureSettings = "tnum",
     ),
     displayMedium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
-        fontSize = 45.sp,
-        lineHeight = 52.sp,
-        letterSpacing = (-0.5).sp,
+        fontSize = 56.sp,
+        lineHeight = 60.sp,
+        letterSpacing = (-1.0).sp,
+        fontFeatureSettings = "tnum",
     ),
     displaySmall = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = (-0.3).sp,
+        fontSize = 40.sp,
+        lineHeight = 46.sp,
+        letterSpacing = (-0.5).sp,
+        fontFeatureSettings = "tnum",
     ),
 
-    // Headline levels: Space Grotesk SemiBold for confident hierarchy.
+    // Headline levels — Space Grotesk SemiBold for confident hierarchy.
+    // Headlines drive section labels and provider names; sizes bumped
+    // slightly so they read "premium" rather than "default-Material."
     headlineLarge = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = (-0.2).sp,
+        fontSize = 34.sp,
+        lineHeight = 42.sp,
+        letterSpacing = (-0.3).sp,
     ),
     headlineMedium = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
         lineHeight = 36.sp,
-        letterSpacing = 0.sp,
+        letterSpacing = (-0.2).sp,
     ),
     headlineSmall = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
-        letterSpacing = 0.sp,
+        letterSpacing = (-0.1).sp,
     ),
 
     // Title levels - tabular figures baked in so numeric values in
