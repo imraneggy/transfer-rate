@@ -37,14 +37,26 @@ data class RatesDocument(
 )
 
 /**
- * Gold rate module — UAE (Khaleej Times) and India (BankBazaar) rates
- * per gram in their local currency, plus a 30-day daily history series.
+ * Precious-metals rate module — UAE and India side-by-side.
+ *
+ * Gold:    UAE (Khaleej Times) + India (LiveChennai, Chennai retail)
+ *          per gram in local currency, plus 10-day daily history.
+ * Silver:  UAE (gold-api.com spot price → AED via UAE peg) +
+ *          India (LiveChennai retail) per gram in local currency,
+ *          plus 10-day daily history (India only — UAE silver is
+ *          spot-quoted and we don't keep history for it).
+ *
+ * Top-level field is still named `gold` in the JSON for backward
+ * compatibility — older app versions ignore the new uae_silver /
+ * india_silver fields and keep working unchanged.
  */
 @Serializable
 data class GoldDocument(
     val uae: GoldSide,
     val india: GoldSide,
-    @SerialName("fetched_at") val fetchedAt: String,
+    @SerialName("uae_silver")   val uaeSilver: SilverSide? = null,
+    @SerialName("india_silver") val indiaSilver: SilverSide? = null,
+    @SerialName("fetched_at")   val fetchedAt: String,
 )
 
 @Serializable
@@ -64,6 +76,23 @@ data class GoldHistoryPoint(
     val date: String,                                  // YYYY-MM-DD
     @SerialName("per_g_24k") val perG24k: Double,
     @SerialName("per_g_22k") val perG22k: Double,
+)
+
+@Serializable
+data class SilverSide(
+    val currency: String,                              // "AED" or "INR"
+    @SerialName("per_g") val perG: Double? = null,
+    val source: String,
+    @SerialName("source_url") val sourceUrl: String,
+    val status: String,                                // "ok" | "error"
+    val note: String? = null,
+    val history: List<SilverHistoryPoint> = emptyList(),
+)
+
+@Serializable
+data class SilverHistoryPoint(
+    val date: String,
+    @SerialName("per_g") val perG: Double,
 )
 
 @Serializable

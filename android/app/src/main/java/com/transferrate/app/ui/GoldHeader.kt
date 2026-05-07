@@ -26,12 +26,20 @@ import androidx.compose.ui.unit.sp
 import com.transferrate.app.data.GoldDocument
 
 /**
- * UAE vs India gold rate module — sits at half-width next to
- * MidMarketHeader. Tap opens the 30-day GoldHistorySheet.
+ * UAE vs India precious-metals rate module — sits at half-width next
+ * to MidMarketHeader. Tap opens the 30-day GoldHistorySheet.
  *
- * Design (v0.13.3): matches MidMarketHeader's vertical rhythm exactly
- * — same eyebrow row, same heightIn(min=156dp), same padding so the
- * two cards align perfectly when placed in a 50/50 Row.
+ * Design:
+ *   - Three rate rows: 24K gold (emphasized), 22K gold, Ag silver.
+ *   - Silver row only renders when uae_silver / india_silver are both
+ *     present and "ok"; older rates.json without silver fields gets
+ *     the original two-row look unchanged.
+ *   - Eyebrow stays "GOLD" because silver is a secondary signal — most
+ *     users open the card for gold, the silver line is a useful
+ *     incidental.
+ *   - Mirrors MidMarketHeader's vertical rhythm so the two cards align
+ *     perfectly in a 50/50 Row.  heightIn min bumped from 156 -> 178
+ *     to fit the third row without squashing.
  */
 @Composable
 fun GoldHeader(
@@ -39,12 +47,19 @@ fun GoldHeader(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
-    val ok = gold.uae.status == "ok" && gold.india.status == "ok"
+    val goldOk = gold.uae.status == "ok" && gold.india.status == "ok"
+
+    val silverOk = gold.uaeSilver?.status == "ok"
+        && gold.indiaSilver?.status == "ok"
+        && gold.uaeSilver?.perG != null
+        && gold.indiaSilver?.perG != null
+
+    val minHeight = if (silverOk) 178.dp else 156.dp
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 156.dp)
+            .heightIn(min = minHeight)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
@@ -70,7 +85,7 @@ fun GoldHeader(
             }
             Spacer(Modifier.height(10.dp))
 
-            if (!ok) {
+            if (!goldOk) {
                 Text(
                     text = "Rates unavailable",
                     fontSize = 14.sp,
@@ -98,6 +113,20 @@ fun GoldHeader(
                 emphasis = false,
             )
 
+            // Silver row — only when both sides have ok data.
+            // AED uses 2 decimals (~9.53/g — single-digit needs precision);
+            // INR uses 0 decimals (275/g — already integer-like).
+            if (silverOk) {
+                Spacer(Modifier.height(6.dp))
+                CaratRow(
+                    label = "Ag",
+                    aed = gold.uaeSilver?.perG,
+                    inr = gold.indiaSilver?.perG,
+                    emphasis = false,
+                    aedDecimals = 2,
+                )
+            }
+
             Spacer(Modifier.weight(1f))
 
             Text(
@@ -118,8 +147,10 @@ private fun CaratRow(
     aed: Double?,
     inr: Double?,
     emphasis: Boolean,
+    aedDecimals: Int = 0,
 ) {
     val valueColor = MaterialTheme.colorScheme.onSecondaryContainer
+    val aedFormat = "AED %.${aedDecimals}f"
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -148,7 +179,7 @@ private fun CaratRow(
 
         Column(Modifier.weight(1f)) {
             Text(
-                text = if (aed != null) "AED %.0f".format(aed) else "—",
+                text = if (aed != null) aedFormat.format(aed) else "—",
                 fontWeight = if (emphasis) FontWeight.Bold else FontWeight.SemiBold,
                 fontSize = if (emphasis) 16.sp else 13.sp,
                 color = valueColor,
