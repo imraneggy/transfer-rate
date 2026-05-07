@@ -70,11 +70,13 @@ class RatesRepository(
     /** Fetch the rolling 7-day history for sparkline rendering. */
     suspend fun fetchHistory(): Result<HistoryDocument> = withContext(Dispatchers.IO) {
         runCatching {
-            val historyUrl = ratesUrl.removeSuffix("rates.json") + "history.json"
+            val historyBase = ratesUrl.removeSuffix("rates.json") + "history.json"
             val req = Request.Builder()
-                .url(historyUrl)
+                .url(bustCache(historyBase))
                 .header("Accept", "application/json")
                 .header("User-Agent", "TransferRateApp/0.8.0 Android")
+                .header("Pragma", "no-cache")
+                .cacheControl(NO_CACHE_NO_STORE)
                 .get()
                 .build()
             http.newCall(req).execute().use { resp ->
@@ -89,10 +91,13 @@ class RatesRepository(
     suspend fun fetch(): Result<RatesDocument> = withContext(Dispatchers.IO) {
         runCatching {
             val req = Request.Builder()
-                .url(ratesUrl)
+                .url(bustCache(ratesUrl))
                 .header("Accept", "application/json")
                 .header("User-Agent", "TransferRateApp/0.1.0 Android")
-                .cacheControl(okhttp3.CacheControl.Builder().noCache().build())
+                // Pragma is the HTTP/1.0 spelling; some legacy proxies
+                // honour it where Cache-Control would be ignored.
+                .header("Pragma", "no-cache")
+                .cacheControl(NO_CACHE_NO_STORE)
                 .get()
                 .build()
 
@@ -113,7 +118,39 @@ class RatesRepository(
         }
     }
 
+    /**
+     * Append a unique-per-request cache-busting query parameter so every
+     * refresh hits origin (or at least gets a fresh cache key).
+     *
+     * GitHub Pages serves rates.json with `Cache-Control: max-age=600`,
+     * which means a Fastly edge node CAN legitimately hold up to a
+     * 10-minute-old copy of the document. Our `Cache-Control: no-cache`
+     * request header is supposed to force revalidation but real-world
+     * CDNs, ISP transparent caches, and corporate proxies inconsistently
+     * honour it — particularly on cellular networks where carrier-grade
+     * caching is common.
+     *
+     * A unique query string forces a distinct cache key per request,
+     * which every well-behaved cache (Fastly, Cloudflare, Squid, default
+     * Apache mod_cache, ISP boxes) treats as a brand-new URL. Pages
+     * still serves the same underlying file on a hit; we just bypass
+     * the intermediate caching layer entirely.
+     *
+     * Origin staleness is a separate problem (the scrape workflow
+     * actually has to run for rates.json itself to update). This helper
+     * only addresses the "between origin and device" caching surface.
+     */
+    private fun bustCache(url: String): String {
+        val sep = if ('?' in url) '&' else '?'
+        return "$url${sep}_t=${System.currentTimeMillis()}"
+    }
+
     companion object {
         private const val CACHE_MAX_AGE_MS = 24L * 60L * 60L * 1000L  // 24 hours
+
+        private val NO_CACHE_NO_STORE = okhttp3.CacheControl.Builder()
+            .noCache()
+            .noStore()
+            .build()
     }
 }
