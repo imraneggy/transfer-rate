@@ -68,7 +68,6 @@ import com.transferrate.app.R
 import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.CurrencyInfo
 import com.transferrate.app.data.ProviderQuote
-import com.transferrate.app.data.computeTodaysBest
 
 /** Theme override modes for the user-facing toggle. */
 enum class ThemeMode {
@@ -369,29 +368,6 @@ private fun ReadyView(
                 )
             }
         }
-
-        // "Today's Best" banner — current best provider + today's high
-        // water mark (when history is available). Sits above the
-        // mid-market/gold row so it's the first signal users see for the
-        // active corridor.
-        if (info != null) {
-            item {
-                val summary = remember(state.doc, state.history, selected) {
-                    computeTodaysBest(
-                        doc = state.doc,
-                        history = state.history,
-                        corridor = selected,
-                    )
-                }
-                if (summary.currentBest != null) {
-                    TodayBestBanner(
-                        summary = summary,
-                        currencyInfo = info,
-                    )
-                }
-            }
-        }
-
         item {
             // 50/50 row: mid-market FX rate (left) + gold rate module (right).
             // IntrinsicSize.Min on the parent + fillMaxHeight on each child
