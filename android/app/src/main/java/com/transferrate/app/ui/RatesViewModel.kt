@@ -7,6 +7,7 @@ import com.transferrate.app.data.HistoryDocument
 import com.transferrate.app.data.ProviderQuote
 import com.transferrate.app.data.RatesDocument
 import com.transferrate.app.data.RatesRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -87,6 +88,23 @@ class RatesViewModel(
         }
     }
 
+    /**
+     * User-initiated refresh — the Refresh button.
+     *
+     * Two-phase flow so the user actually sees freshly-scraped data:
+     *   1. Trigger the upstream scrape via the Cloudflare Worker
+     *      (the Worker proxies workflow_dispatch to GitHub Actions
+     *      with a PAT held in its env).  Returns in <1 sec.
+     *   2. Poll rates.json (cache-busted on every call) until
+     *      `completed_at` advances past what we had before, or until
+     *      we time out at ~50 sec (slightly above the typical 30-35 s
+     *      scrape duration).
+     *
+     * If the upstream trigger fails (no Worker configured, network
+     * blip, Worker returned non-202), we fall through to a single
+     * snappy fetch — same UX as the pre-v0.22 refresh.  Never makes
+     * the refresh button worse than before.
+     */
     fun refresh() {
         val current = _state.value
         if (current is RatesUiState.Ready) {
@@ -94,35 +112,101 @@ class RatesViewModel(
         } else {
             _state.value = RatesUiState.Loading
         }
-        fetchFresh()
+        viewModelScope.launch { performRefresh() }
     }
 
+    private suspend fun performRefresh() {
+        val previousSelected = (_state.value as? RatesUiState.Ready)?.selectedCurrency
+        val previousHistory  = (_state.value as? RatesUiState.Ready)?.history
+        val previousCompleted = (_state.value as? RatesUiState.Ready)?.doc?.completedAt
+
+        // Phase 1: ask the Worker to dispatch a fresh scrape upstream.
+        // Quick POST — should return in well under a second.
+        val triggered = repo.triggerUpstreamRefresh()
+
+        if (!triggered) {
+            // No Worker, or Worker rejected.  Fall back to the simple
+            // single-fetch behaviour the app had before v0.22.
+            performSingleFetch(previousSelected, previousHistory)
+            return
+        }
+
+        // Phase 2: poll rates.json until completed_at advances.  Initial
+        // 6 s headstart absorbs the dispatch + GHA queue latency before
+        // we waste cycles on requests that can only re-fetch the same
+        // stale doc.  Then poll every 4 s up to ~12 attempts (50 s
+        // total budget).
+        delay(6_000)
+        val pollIntervalMs = 4_000L
+        val maxAttempts = 12
+        var settled = false
+        for (attempt in 1..maxAttempts) {
+            val result = repo.fetch()
+            result.fold(
+                onSuccess = { doc ->
+                    val advanced = previousCompleted == null
+                        || doc.completedAt != previousCompleted
+                    if (advanced) {
+                        val selected = pickCurrency(doc, previousSelected)
+                        _state.value = RatesUiState.Ready(
+                            doc = doc,
+                            selectedCurrency = selected,
+                            history = previousHistory,
+                        )
+                        fetchHistory()
+                        settled = true
+                    }
+                },
+                onFailure = { /* ignore intermediate failures during polling */ },
+            )
+            if (settled) return
+            if (attempt < maxAttempts) delay(pollIntervalMs)
+        }
+
+        // Timeout: the scrape likely failed or took longer than 50 s.
+        // Surface whatever the latest fetch produced, even if it's the
+        // same doc we already had — at least the spinner stops.
+        performSingleFetch(previousSelected, previousHistory)
+    }
+
+    /** Single-shot fetch + state update.  Used as the fallback path
+     *  when the upstream-trigger flow can't run, and as the final
+     *  resync after a polling timeout. */
+    private suspend fun performSingleFetch(
+        previousSelected: String?,
+        previousHistory: HistoryDocument?,
+    ) {
+        repo.fetch().fold(
+            onSuccess = { doc ->
+                val selected = pickCurrency(doc, previousSelected)
+                _state.value = RatesUiState.Ready(
+                    doc = doc,
+                    selectedCurrency = selected,
+                    history = previousHistory,
+                )
+                fetchHistory()
+            },
+            onFailure = { e ->
+                val current = _state.value
+                if (current is RatesUiState.Ready) {
+                    _state.value = current.copy(refreshing = false)
+                } else {
+                    _state.value = RatesUiState.Failed(
+                        e.message ?: e::class.simpleName ?: "unknown error"
+                    )
+                }
+            },
+        )
+    }
+
+    /** Cold-start path: no UI affordance, no upstream trigger — just
+     *  load the cache or fetch.  Kept distinct from refresh() so the
+     *  init flow stays snappy. */
     private fun fetchFresh() {
         viewModelScope.launch {
             val previousSelected = (_state.value as? RatesUiState.Ready)?.selectedCurrency
-            val previousHistory = (_state.value as? RatesUiState.Ready)?.history
-            repo.fetch().fold(
-                onSuccess = { doc ->
-                    val selected = pickCurrency(doc, previousSelected)
-                    _state.value = RatesUiState.Ready(
-                        doc = doc,
-                        selectedCurrency = selected,
-                        history = previousHistory,
-                    )
-                    // Fire history fetch in parallel — non-blocking.
-                    fetchHistory()
-                },
-                onFailure = { e ->
-                    val current = _state.value
-                    if (current is RatesUiState.Ready) {
-                        _state.value = current.copy(refreshing = false)
-                    } else {
-                        _state.value = RatesUiState.Failed(
-                            e.message ?: e::class.simpleName ?: "unknown error"
-                        )
-                    }
-                },
-            )
+            val previousHistory  = (_state.value as? RatesUiState.Ready)?.history
+            performSingleFetch(previousSelected, previousHistory)
         }
     }
 

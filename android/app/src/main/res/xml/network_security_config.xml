@@ -14,9 +14,15 @@
         </trust-anchors>
     </base-config>
 
-    <!-- Hard allowlist: only this domain. -->
+    <!-- Hard allowlist: only these domains. -->
     <domain-config cleartextTrafficPermitted="false">
+        <!-- Static rates / history JSON served by GitHub Pages. -->
         <domain includeSubdomains="false">imraneggy.github.io</domain>
+        <!-- Cloudflare Worker that proxies workflow_dispatch to GitHub
+             Actions when the user taps Refresh.  The Worker holds the
+             GitHub PAT in its encrypted env so the app can trigger a
+             fresh scrape without ever touching the token. -->
+        <domain includeSubdomains="false">transfer-rate-refresh.imranbatchait.workers.dev</domain>
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>

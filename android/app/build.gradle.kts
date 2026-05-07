@@ -19,10 +19,32 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 33
-        versionName = "0.21.0"
+        versionCode = 34
+        versionName = "0.22.0"
 
         resourceConfigurations += listOf("en")
+
+        // Cloudflare Worker that proxies a workflow_dispatch to the
+        // scrape workflow.  The Worker holds the GitHub PAT in its
+        // encrypted env; the app only knows the Worker URL and a
+        // shared bearer secret.
+        //
+        // Both values are baked into the APK at build time and exposed
+        // via BuildConfig.  The shared secret is extractable with
+        // apktool — that's an accepted abuse-prevention layer, NOT a
+        // strong security boundary.  The strong boundary is the PAT
+        // staying inside Cloudflare.  If the secret leaks we just
+        // rotate it in the Worker's env + ship a new APK.
+        buildConfigField(
+            "String",
+            "REFRESH_TRIGGER_URL",
+            "\"https://transfer-rate-refresh.imranbatchait.workers.dev\"",
+        )
+        buildConfigField(
+            "String",
+            "REFRESH_TRIGGER_SECRET",
+            "\"tr-refresh-J9k4Lm7QwXz2pYvBn3Hd6Rs8Tg1Ie3\"",
+        )
     }
 
     // Per-architecture APK splits. Each user device only downloads the

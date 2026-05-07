@@ -28,6 +28,14 @@ class RatesRepository(
     // Override in tests. Production uses the GitHub Pages URL.
     private val ratesUrl: String =
         "https://imraneggy.github.io/transfer-rate/rates.json",
+    // Cloudflare Worker that proxies a workflow_dispatch to GitHub
+    // Actions (held PAT lives in the Worker's encrypted env). When
+    // the user taps Refresh, we ping this to force a fresh scrape;
+    // null disables the upstream-trigger phase (useful in tests).
+    private val refreshTriggerUrl: String? =
+        com.transferrate.app.BuildConfig.REFRESH_TRIGGER_URL.takeIf { it.isNotBlank() },
+    private val refreshTriggerSecret: String? =
+        com.transferrate.app.BuildConfig.REFRESH_TRIGGER_SECRET.takeIf { it.isNotBlank() },
 ) {
 
     private val http = OkHttpClient.Builder()
@@ -116,6 +124,40 @@ class RatesRepository(
                 doc
             }
         }
+    }
+
+    /**
+     * Ask the Cloudflare Worker to dispatch a fresh scrape upstream.
+     * The Worker forwards the request to GitHub's workflow_dispatch
+     * endpoint with the PAT held in its encrypted env; we never
+     * touch the PAT from the client.
+     *
+     * Returns true if the Worker accepted the request (HTTP 202),
+     * false otherwise. Callers should NOT block waiting for the
+     * scrape itself to finish — that takes ~25-35 seconds. Pattern:
+     *   1. triggerUpstreamRefresh() returns quickly
+     *   2. Caller polls fetch() until completedAt advances or it
+     *      times out, whichever first.
+     *
+     * Quietly returns false if no Worker is configured, so feature
+     * flags / dev builds without the secret degrade to the previous
+     * behaviour (just refetch existing rates.json).
+     */
+    suspend fun triggerUpstreamRefresh(): Boolean = withContext(Dispatchers.IO) {
+        val url = refreshTriggerUrl ?: return@withContext false
+        runCatching {
+            val builder = Request.Builder()
+                .url("$url/refresh")
+                .header("Accept", "application/json")
+                .header("User-Agent", "TransferRateApp/0.22.0 Android")
+                .post(okhttp3.RequestBody.create(null, ByteArray(0)))
+            refreshTriggerSecret?.let {
+                builder.header("Authorization", "Bearer $it")
+            }
+            http.newCall(builder.build()).execute().use { resp ->
+                resp.code == 202
+            }
+        }.getOrDefault(false)
     }
 
     /**
