@@ -605,12 +605,18 @@ private fun SnapshotCard(
             Spacer(Modifier.height(10.dp))
             Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             Spacer(Modifier.height(8.dp))
-            // Silver — UAE shows 2 decimals (single-digit precision matters);
-            // India is integer-like.
+            // Silver weights: 1g + 1kg.
+            //   Gold uses 1g + 8g because 8g is the common Indian
+            //   jewellery purchase unit (~0.69 tola).
+            //   Silver bullion is bought in much larger quantities, so
+            //   the kg-mark is the meaningful comparison weight.
+            // Per-gram silver: AED uses 2 decimals (single-digit
+            // precision matters), INR is integer-like.  Per-kg: both
+            // currencies switch to thousands-grouped integer output.
             val perGramFmt = if (currencySym == "AED") "%.2f".format(silver)
                              else formatGold(silver)
             Text(
-                "Ag · 1g",
+                "Silver · 1g",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
                 maxLines = 1,
@@ -628,16 +634,16 @@ private fun SnapshotCard(
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                "Ag · 8g",
+                "Silver · 1kg",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
                 maxLines = 1,
                 softWrap = false,
             )
-            val per8gFmt = if (currencySym == "AED") "%.2f".format(silver * 8)
-                           else formatGold(silver * 8)
+            val perKgValue = silver * 1000.0
+            val perKgFmt = formatGold(perKgValue)
             Text(
-                text = "$currencySym $per8gFmt",
+                text = "$currencySym $perKgFmt",
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall.copy(

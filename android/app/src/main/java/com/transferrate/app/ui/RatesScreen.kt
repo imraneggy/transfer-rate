@@ -883,10 +883,13 @@ private fun ProviderCard(
                 Spacer(Modifier.height(10.dp))
                 Sparkline(
                     values = history,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                    // 36 dp gives the v0.25 thicker stroke + fill gradient
+                    // adequate plot height (28 dp clipped the highlight
+                    // halo because the new Sparkline reserves more inset).
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(28.dp),
+                        .height(36.dp),
                 )
             }
             if (p.status == "ok" && p.promoRate != null) {
