@@ -11,8 +11,6 @@ activity-compose = "1.9.3"
 lifecycle = "2.8.7"
 okhttp = "4.12.0"
 work = "2.10.0"
-maplibre = "11.11.0"
-maplibre-annotation = "3.0.2"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
@@ -32,15 +30,6 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 androidx-work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
-
-# MapLibre Native Android - vector-capable map renderer (BSD-2 licensed).
-# Community fork of mapbox-gl-native after Mapbox v2 went paid in 2020.
-# We render OSM raster tiles via an inline style JSON so no API key is
-# needed and the $0-ops promise stays intact.
-maplibre-android-sdk = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
-# Annotation plugin gives us a clean SymbolManager API for adding/
-# removing markers without writing Style+Source+Layer plumbing per pin.
-maplibre-android-annotation = { group = "org.maplibre.gl", name = "android-plugin-annotation-v9", version.ref = "maplibre-annotation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

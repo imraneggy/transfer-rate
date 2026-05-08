@@ -1,6 +1,6 @@
 # Transfer Rate — User Guide
 
-> A short tour of the app for first-time users. Last updated for **v0.28.2**.
+> A short tour of the app for first-time users. Last updated for **v0.29.0**.
 > Screenshots welcome — drop them in `docs/screenshots/` via PR.
 
 ---
@@ -117,18 +117,6 @@ Sources are shown at the bottom of the sheet for transparency.
 
 ---
 
-## Mosque finder
-
-A separate screen surfacing nearby mosques on a map (MapLibre + OSM
-tiles, no API key, no Google Play Services). Useful while travelling
-in either country. Filter chips control display density; pin distance
-shows in metres / km from your location.
-
-Location is requested only while this screen is active and is not
-stored or transmitted anywhere.
-
----
-
 ## Settings & About
 
 ### Notifications (opt-in)
@@ -181,9 +169,7 @@ upstream scrape via the Cloudflare Worker.
 ## Privacy
 
 - The app requests only the **`INTERNET`** permission, plus
-  **`POST_NOTIFICATIONS`** *only if* you opt into daily-high alerts,
-  and **`ACCESS_FINE_LOCATION`** *only while* the mosque finder
-  screen is open.
+  **`POST_NOTIFICATIONS`** *only if* you opt into daily-high alerts.
 - No account, no sign-in, no analytics, no telemetry, no crash
   reporter SDK.
 - Cleartext HTTP is forbidden by `network_security_config.xml`.

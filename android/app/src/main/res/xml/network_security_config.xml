@@ -19,8 +19,8 @@
 
   The actual outbound host allowlist is enforced at the OkHttp layer in
   com.transferrate.app.data.NetworkSecurity (HostAllowlistInterceptor),
-  which BOTH RatesRepository and OverpassService share.  Adding a new
-  outbound host requires an entry in BOTH places — keep them in sync.
+  which RatesRepository uses.  Adding a new outbound host requires an
+  entry in BOTH places — keep them in sync.
 -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
@@ -41,11 +41,6 @@
              The Worker holds the GitHub PAT in its encrypted env so the
              app never touches the token. -->
         <domain includeSubdomains="false">transfer-rate-refresh.imranbatchait.workers.dev</domain>
-        <!-- OpenStreetMap Overpass API mirror (mosque finder). -->
-        <domain includeSubdomains="false">overpass-api.de</domain>
-        <!-- OpenStreetMap raster tile servers (mosque map background).
-             includeSubdomains=true covers a.tile, b.tile, c.tile mirrors. -->
-        <domain includeSubdomains="true">tile.openstreetmap.org</domain>
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>

@@ -22,9 +22,8 @@ import java.io.IOException
  *   outside [ALLOWED_HOSTS], regardless of whether a code path or a
  *   future dependency tried to construct one.
  *
- * Both [com.transferrate.app.data.RatesRepository] and
- * [com.transferrate.app.data.OverpassService] share this interceptor so
- * the policy is single-sourced.  Adding a new outbound host means
+ * Used by [com.transferrate.app.data.RatesRepository] and any future
+ * outbound HTTP path the app gains.  Adding a new outbound host means
  * adding it here AND to the `<domain-config>` block in
  * `res/xml/network_security_config.xml` so the platform-level cleartext
  * + cert-pinning policy stays consistent with the application-level
@@ -35,14 +34,6 @@ internal val ALLOWED_HOSTS: Set<String> = setOf(
     "imraneggy.github.io",
     // Cloudflare Worker proxying workflow_dispatch (refresh button).
     "transfer-rate-refresh.imranbatchait.workers.dev",
-    // OpenStreetMap Overpass mirror (mosque finder).
-    "overpass-api.de",
-    // OpenStreetMap raster tiles (mosque finder map background).
-    "tile.openstreetmap.org",
-    // Common subdomains for OSM tile load-balancing (a.tile, b.tile, c.tile).
-    "a.tile.openstreetmap.org",
-    "b.tile.openstreetmap.org",
-    "c.tile.openstreetmap.org",
 )
 
 /**

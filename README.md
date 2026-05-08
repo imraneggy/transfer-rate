@@ -27,9 +27,6 @@ every 15 minutes:
    (LiveChennai), with 24K + 22K gold (1 g + 8 g) and silver (1 g +
    1 kg), plus 30-day history.
 
-A built-in **mosque finder** uses MapLibre + OpenStreetMap tiles
-(no API key, $0-ops) to surface nearby mosques while travelling.
-
 ## Tech stack
 
 | Layer | Component | Version |
@@ -47,8 +44,6 @@ A built-in **mosque finder** uses MapLibre + OpenStreetMap tiles
 | Android — serialization | kotlinx.serialization JSON | **1.7.3** |
 | Android — concurrency | kotlinx.coroutines (Android) | **1.9.0** |
 | Android — background | WorkManager (`work-runtime-ktx`) | **2.10.0** |
-| Android — maps | MapLibre Native Android SDK | **11.11.0** |
-| Android — maps | MapLibre Annotation Plugin v9 | **3.0.2** |
 | Android — fonts | Manrope, Space Grotesk (OFL 1.1) | bundled |
 | Data pipeline | Python (scrapers + orchestrator) | **3.11+** |
 | Data pipeline | GitHub Actions (cron `*/15`) | hosted |

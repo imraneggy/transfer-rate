@@ -102,7 +102,6 @@ fun RatesScreen(
     themeMode: ThemeMode = ThemeMode.System,
     onCycleThemeMode: () -> Unit = {},
     onShowAbout: () -> Unit = {},
-    onShowMosques: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
 
@@ -159,19 +158,6 @@ fun RatesScreen(
                         contentDescription = "Refresh rates",
                         onClick = { vm.refresh() },
                     )
-                    // Mosque finder entry point.  Single emoji glyph
-                    // (system font) keeps the chip compact - we already
-                    // burn most of the toolbar width on REFRESH/THEME.
-                    IconButton(
-                        onClick = onShowMosques,
-                        modifier = Modifier.width(36.dp),
-                    ) {
-                        Text(
-                            "🕌",   // mosque emoji U+1F54C
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                        )
-                    }
                     IconButton(onClick = onShowAbout) {
                         androidx.compose.material3.Icon(
                             painter = androidx.compose.ui.res.painterResource(

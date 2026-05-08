@@ -17,8 +17,8 @@ Features:
 • Clean, minimalist design
 
 Privacy:
-• Permissions: INTERNET only (plus optional foreground-only location for the mosque finder, and notifications only if you opt in)
-• Outbound connections allowlisted at the application layer to a small set of public data hosts (GitHub Pages for the rates JSON, Cloudflare Worker for refresh, OpenStreetMap servers for the mosque map)
+• Permissions: INTERNET only (plus notifications, only if you opt in to daily-high alerts)
+• Outbound connections allowlisted at the application layer to two public hosts: GitHub Pages (rates JSON) and the Cloudflare Worker (refresh dispatch)
 • No analytics, no telemetry, no advertising, no account
 • Open-source: github.com/imraneggy/transfer-rate
 

@@ -19,8 +19,8 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 42
-        versionName = "0.28.2"
+        versionCode = 43
+        versionName = "0.29.0"
 
         resourceConfigurations += listOf("en")
 
@@ -207,11 +207,4 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.androidx.work.runtime)
-
-    // MapLibre Native - vector-capable map renderer for the mosque finder.
-    // We render OSM raster tiles via inline style JSON (no API key, no
-    // paid tier, no Google Play Services dep).  Annotation plugin
-    // provides SymbolManager for adding/removing markers cleanly.
-    implementation(libs.maplibre.android.sdk)
-    implementation(libs.maplibre.android.annotation)
 }

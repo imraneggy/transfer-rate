@@ -15,6 +15,42 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.0] — 2026-05-08
+
+### Removed
+- **Mosque finder feature removed in its entirety.** The map screen,
+  the Overpass + MapLibre stack, the location-permission requests, and
+  the toolbar entry point are all gone. The app now does one thing —
+  AED→INR remittance + gold/silver rates — and does it more focused.
+  - Six source files deleted (~1.4k LoC):
+    `data/Mosque.kt`, `data/OverpassService.kt`, `ui/LocationProvider.kt`,
+    `ui/MapLibreMapView.kt`, `ui/MosqueScreen.kt`, `ui/MosqueViewModel.kt`.
+  - Two Android permissions removed: `ACCESS_FINE_LOCATION` and
+    `ACCESS_COARSE_LOCATION`. The app now requests only `INTERNET`,
+    `ACCESS_NETWORK_STATE`, and (opt-in) `POST_NOTIFICATIONS`.
+  - Two MapLibre dependencies dropped: `maplibre-android-sdk` (11.11.0)
+    and `maplibre-android-annotation` (3.0.2). **Universal APK shrinks
+    from ~47 MB → ~35 MB** (the native MapLibre `.so` files were the bulk).
+  - Two outbound hosts removed from `ALLOWED_HOSTS` and the
+    `network_security_config.xml` domain block: `overpass-api.de` and
+    `tile.openstreetmap.org`. The app now only ever speaks to GitHub
+    Pages and the Cloudflare Worker.
+- The `RatesScreen` toolbar 🕌 button is gone; `MainActivity` no longer
+  routes to `MosqueScreen`.
+- README "Tech stack" table and `docs/USER_GUIDE.md` had their
+  Mosque-finder / MapLibre rows removed. Play Store description
+  (`fastlane/.../full_description.txt`) updated to reflect the
+  single-permission posture.
+
+### Privacy posture change
+- **No more location permission visible in Play Store / Android
+  Settings.** Existing v0.28.x installs that had granted location will
+  see the permission disappear automatically on update — Android
+  uninstalls a permission whose declaration is removed from the
+  manifest. Nothing the user needs to do.
+
+---
+
 ## [0.28.2] — 2026-05-08
 
 ### Changed
@@ -506,6 +542,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.0
 [0.28.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.2
 [0.28.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.1
 [0.28.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.0

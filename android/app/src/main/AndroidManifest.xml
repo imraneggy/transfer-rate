@@ -2,15 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Network: rates.json fetch, OSM tile fetch, Overpass API queries. -->
+    <!-- Network: rates.json fetch via the GitHub Pages CDN, refresh
+         dispatch via the Cloudflare Worker. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!-- Location: Mosque Finder feature only.  Foreground use only - we
-         never request background location.  App works fully without it
-         (defaults to a city-level view of the largest UAE region). -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- Notifications: optional, opt-in via the About screen toggle.  Used
          only by the periodic RatesPrefetchWorker to alert users when a

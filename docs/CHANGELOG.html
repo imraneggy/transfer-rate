@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.28.2 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.29.0 · 2026-05-08</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-29-0">v0.29.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-2">v0.28.2</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-1">v0.28.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-0">v0.28.0</a><span class="date">2026-05-08</span></li>
@@ -353,8 +354,60 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-28-2">
-  <h2><span class="ver">v0.28.2</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-29-0">
+  <h2><span class="ver">v0.29.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="removed">Removed</h3>
+  <ul>
+    <li><strong>Mosque finder feature removed in its entirety.</strong>
+      The map screen, the Overpass + MapLibre stack, the
+      location-permission requests, and the toolbar entry point are all
+      gone. The app now does one thing — AED→INR remittance + gold/silver
+      rates — and does it more focused.
+      <ul>
+        <li>Six source files deleted (~1.4k LoC):
+          <code>data/Mosque.kt</code>, <code>data/OverpassService.kt</code>,
+          <code>ui/LocationProvider.kt</code>,
+          <code>ui/MapLibreMapView.kt</code>,
+          <code>ui/MosqueScreen.kt</code>,
+          <code>ui/MosqueViewModel.kt</code>.</li>
+        <li>Two Android permissions removed:
+          <code>ACCESS_FINE_LOCATION</code> and
+          <code>ACCESS_COARSE_LOCATION</code>. The app now requests only
+          <code>INTERNET</code>, <code>ACCESS_NETWORK_STATE</code>, and
+          (opt-in) <code>POST_NOTIFICATIONS</code>.</li>
+        <li>Two MapLibre dependencies dropped:
+          <code>maplibre-android-sdk</code> (11.11.0) and
+          <code>maplibre-android-annotation</code> (3.0.2). <strong>Universal
+          APK shrinks from ~47 MB → ~35 MB</strong> (the native MapLibre
+          <code>.so</code> files were the bulk).</li>
+        <li>Two outbound hosts removed from <code>ALLOWED_HOSTS</code> and
+          the <code>network_security_config.xml</code> domain block:
+          <code>overpass-api.de</code> and
+          <code>tile.openstreetmap.org</code>. The app now only ever
+          speaks to GitHub Pages and the Cloudflare Worker.</li>
+      </ul>
+    </li>
+    <li>The <code>RatesScreen</code> toolbar 🕌 button is gone;
+      <code>MainActivity</code> no longer routes to <code>MosqueScreen</code>.</li>
+    <li>README "Tech stack" table and <code>docs/USER_GUIDE.md</code> had
+      their Mosque-finder / MapLibre rows removed. Play Store description
+      updated to reflect the single-permission posture.</li>
+  </ul>
+
+  <h3 class="changed">Privacy posture change</h3>
+  <ul>
+    <li><strong>No more location permission visible in Play Store /
+      Android Settings.</strong> Existing v0.28.x installs that had
+      granted location will see the permission disappear automatically on
+      update — Android uninstalls a permission whose declaration is
+      removed from the manifest. Nothing the user needs to do.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-28-2">
+  <h2><span class="ver">v0.28.2</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="changed">Changed</h3>
