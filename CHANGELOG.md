@@ -15,6 +15,36 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.1] — 2026-05-08
+
+### Fixed
+- **App-on-launch crash** introduced silently in v0.28.0 and surviving
+  through v0.28.x and v0.29.0. The new app-logo pieces (mid-market
+  popup avatar in `Avatar.kt`, top app-bar wordmark icon in
+  `RatesScreen.kt`) called `painterResource(R.drawable.ic_splash)` —
+  but `ic_splash.xml` is a `<bitmap>` XML drawable wrapping
+  `@mipmap/ic_splash_image`. Compose's `painterResource()` only accepts
+  **vector drawables** (`<vector>`) **or direct raster files**
+  (PNG/JPG/WEBP); the `<bitmap>` wrapper throws
+  `IllegalArgumentException: Only VectorDrawables and rasterized
+  asset types are supported`. The crash fired during the first measure
+  pass, before any frame rendered — so the app appeared to "not open".
+  Both call sites switched to `R.drawable.transfer_rate_logo` (a real
+  PNG in `drawable-nodpi/`) which is what `SplashScreen` was already
+  using successfully. `ic_splash.xml` itself is preserved — it's still
+  used by the OS-level Android 12+ splash mechanism, which DOES accept
+  `<bitmap>` drawables.
+
+### Why this slipped past CI
+- Gradle compiled successfully because `painterResource()` is type-safe
+  on the resource ID — Kotlin doesn't know whether the resource is a
+  vector, bitmap, or raster at compile time.
+- `changelog-sync` only validates docs.
+- We have no on-device smoke test in CI; the crash only surfaces at
+  measure-pass time on a real Android runtime.
+
+---
+
 ## [0.29.0] — 2026-05-08
 
 ### Removed
@@ -542,6 +572,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.1
 [0.29.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.0
 [0.28.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.2
 [0.28.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.1

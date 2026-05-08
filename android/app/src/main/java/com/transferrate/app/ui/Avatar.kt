@@ -99,8 +99,14 @@ fun ProviderAvatar(
     // provider's avatar).  Routed through the same white-circle treatment
     // as a real provider logo so the visual rhythm of the rates list and
     // history sheets stays consistent.
+    //
+    // IMPORTANT: use `transfer_rate_logo` (a direct PNG in drawable-nodpi)
+    // not `ic_splash` (which is a <bitmap> XML wrapper around a mipmap).
+    // Compose's painterResource() throws IllegalArgumentException on
+    // <bitmap> XML drawables — only vector drawables and direct raster
+    // assets (PNG/JPG/WEBP) are accepted.
     val effectiveLogoRes = if (providerId == "mid_market") {
-        R.drawable.ic_splash
+        R.drawable.transfer_rate_logo
     } else {
         logoResIdFor(providerId)
     }

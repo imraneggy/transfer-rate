@@ -117,9 +117,13 @@ fun RatesScreen(
                     // + ⓘ leaves ~120 dp for the title which fits the
                     // logo + "Transfer Rate" cleanly.
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Use `transfer_rate_logo` (direct PNG in
+                        // drawable-nodpi) NOT `ic_splash` (a <bitmap>
+                        // XML wrapper).  painterResource() rejects
+                        // <bitmap> drawables with IllegalArgumentException.
                         androidx.compose.foundation.Image(
                             painter = androidx.compose.ui.res.painterResource(
-                                id = R.drawable.ic_splash,
+                                id = R.drawable.transfer_rate_logo,
                             ),
                             contentDescription = null,
                             contentScale = androidx.compose.ui.layout.ContentScale.Fit,
