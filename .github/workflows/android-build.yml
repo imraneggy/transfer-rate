@@ -58,6 +58,13 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          # Cloudflare Worker bearer secret for the refresh-trigger
+          # endpoint.  Gradle reads this via System.getenv() in
+          # build.gradle.kts and bakes it into BuildConfig.  Held in
+          # GitHub Actions repo secrets as REFRESH_TRIGGER_SECRET; the
+          # corresponding Worker-side variable is named SHARED_SECRET
+          # in the Cloudflare dashboard (the names differ; values match).
+          REFRESH_TRIGGER_SECRET: ${{ secrets.REFRESH_TRIGGER_SECRET }}
         run: |
           cd android
           gradle assembleRelease --no-daemon --stacktrace

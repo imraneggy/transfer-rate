@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.28.0 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.28.1 · 2026-05-08</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-28-1">v0.28.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-0">v0.28.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-1">v0.27.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-0">v0.27.0</a><span class="date">2026-05-08</span></li>
@@ -351,8 +352,54 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-28-0">
-  <h2><span class="ver">v0.28.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-28-1">
+  <h2><span class="ver">v0.28.1</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="fixed">Security</h3>
+  <ul>
+    <li><strong>Cloudflare Worker bearer secret rotated, and the new
+      value is no longer hardcoded in <code>build.gradle.kts</code>.</strong>
+      Resolution order at build time is now:
+      <ol>
+        <li>Environment variable <code>REFRESH_TRIGGER_SECRET</code> —
+          used by CI; held in GitHub Actions repo secrets and injected
+          into the gradle build by
+          <code>.github/workflows/android-build.yml</code>.</li>
+        <li><code>android/secrets.properties</code> (gitignored) — used
+          for local debug builds. Template at
+          <code>android/secrets.properties.example</code>.</li>
+        <li>Empty string — F-Droid reproducible builds and contributors
+          who don't need the refresh-trigger feature. The existing
+          <code>takeIf { it.isNotBlank() }</code> guard at
+          <code>RatesRepository.kt:38</code> already handles this case
+          by disabling the refresh-button-to-Worker path entirely.</li>
+      </ol>
+      The Cloudflare-side variable is named <code>SHARED_SECRET</code>;
+      the GitHub / build-time variable is named
+      <code>REFRESH_TRIGGER_SECRET</code>. The names differ deliberately
+      so a search across either side cannot collide; the values must
+      match. Old secret
+      <code>tr-refresh-J9k4Lm7Qw…Ie3</code> is now dead — the Worker
+      rejects it with <code>HTTP 401 Unauthorized</code>. Verified
+      before ship.</li>
+  </ul>
+
+  <h3 class="changed">Notes for contributors</h3>
+  <ul>
+    <li><code>android/secrets.properties.example</code> is checked in as
+      a template. Copy to <code>android/secrets.properties</code> and
+      fill in the value to enable refresh-button testing in local debug
+      builds.</li>
+    <li>F-Droid + reproducible builds: leave the env var unset and don't
+      create a <code>secrets.properties</code>. The build will pass; the
+      refresh button becomes a silent no-op (the 15-min cron continues
+      to update rates regardless).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-28-0">
+  <h2><span class="ver">v0.28.0</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="fixed">Security</h3>

@@ -15,6 +15,43 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.28.1] — 2026-05-08
+
+### Security
+- **Cloudflare Worker bearer secret rotated, and the new value is no
+  longer hardcoded in `build.gradle.kts`.** Resolution order at build
+  time is now:
+  1. Environment variable `REFRESH_TRIGGER_SECRET` — used by CI; held
+     in GitHub Actions repo secrets and injected into the gradle build
+     by `.github/workflows/android-build.yml`.
+  2. `android/secrets.properties` (gitignored) — used for local debug
+     builds. Template at `android/secrets.properties.example`.
+  3. Empty string — F-Droid reproducible builds and contributors who
+     don't need the refresh-trigger feature. The existing
+     `takeIf { it.isNotBlank() }` guard at `RatesRepository.kt:38`
+     already handles this case by disabling the refresh-button-to-Worker
+     path entirely.
+
+  The Cloudflare-side variable is named `SHARED_SECRET`; the
+  GitHub/build-time variable is named `REFRESH_TRIGGER_SECRET`. The two
+  names differ deliberately so a search across either side cannot
+  collide; the values must match.
+
+  Old secret `tr-refresh-J9k4Lm7Qw…Ie3` (still publicly visible in the
+  v0.28.0 build.gradle.kts and earlier git history) is now dead — the
+  Worker rejects it with `HTTP 401 Unauthorized`. Verified before ship.
+
+### Notes for contributors
+- `android/secrets.properties.example` is checked in as a template.
+  Copy to `android/secrets.properties` and fill in the value to enable
+  refresh-button testing in local debug builds.
+- F-Droid + reproducible builds: leave the env var unset and don't
+  create a `secrets.properties`. The build will pass; the refresh
+  button becomes a silent no-op (the 15-min cron continues to update
+  rates regardless).
+
+---
+
 ## [0.28.0] — 2026-05-08
 
 ### Security
@@ -440,6 +477,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.28.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.1
 [0.28.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.0
 [0.27.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.1
 [0.27.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.0

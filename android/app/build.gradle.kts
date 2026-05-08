@@ -19,8 +19,8 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 40
-        versionName = "0.28.0"
+        versionCode = 41
+        versionName = "0.28.1"
 
         resourceConfigurations += listOf("en")
 
@@ -33,8 +33,34 @@ android {
         // via BuildConfig.  The shared secret is extractable with
         // apktool — that's an accepted abuse-prevention layer, NOT a
         // strong security boundary.  The strong boundary is the PAT
-        // staying inside Cloudflare.  If the secret leaks we just
-        // rotate it in the Worker's env + ship a new APK.
+        // staying inside Cloudflare.  If the secret leaks we rotate
+        // it in the Worker's env + ship a new APK.
+        //
+        // v0.28.1: the secret is no longer a string literal in this
+        // file (a public repo, indexed by github.com/search the moment
+        // it was committed).  Resolution order:
+        //
+        //   1. Environment variable REFRESH_TRIGGER_SECRET — used by
+        //      CI; the value lives in GitHub Actions repo secrets and
+        //      is injected into the build by the workflow.
+        //   2. secrets.properties at the android/ root (gitignored) —
+        //      used by maintainer for local debug builds.
+        //   3. Empty string — F-Droid reproducible builds, contributors
+        //      who don't need the refresh-trigger feature.  The empty
+        //      string is gracefully handled by the existing guard in
+        //      RatesRepository (`takeIf { it.isNotBlank() }`), which
+        //      disables the refresh-button-to-Worker path entirely.
+        val refreshSecret: String =
+            System.getenv("REFRESH_TRIGGER_SECRET")
+                ?: run {
+                    val secretsFile = rootProject.file("secrets.properties")
+                    if (secretsFile.exists()) {
+                        Properties().apply {
+                            secretsFile.inputStream().use { load(it) }
+                        }.getProperty("REFRESH_TRIGGER_SECRET", "")
+                    } else ""
+                }
+
         buildConfigField(
             "String",
             "REFRESH_TRIGGER_URL",
@@ -43,7 +69,7 @@ android {
         buildConfigField(
             "String",
             "REFRESH_TRIGGER_SECRET",
-            "\"tr-refresh-J9k4Lm7QwXz2pYvBn3Hd6Rs8Tg1Ie3\"",
+            "\"$refreshSecret\"",
         )
     }
 
