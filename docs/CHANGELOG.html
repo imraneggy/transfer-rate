@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.27.0 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.27.1 · 2026-05-08</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-27-1">v0.27.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-0">v0.27.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-26-0">v0.26.0</a><span class="date">2026-05-07</span></li>
     <li><a href="#v0-25-0">v0.25.0</a><span class="date">2026-05-07</span></li>
@@ -349,8 +350,57 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-27-0">
-  <h2><span class="ver">v0.27.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-27-1">
+  <h2><span class="ver">v0.27.1</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Popup heading legibility — both light and dark mode.</strong>
+      All in-sheet text labels were styled with
+      <code>MaterialTheme.colorScheme.outline</code>, which is the M3 role
+      for <strong>divider strokes</strong> (light = <code>#A6C1DE</code>
+      at L=80, dark = <code>#4A6684</code> at L=50) — designed to be too
+      faint to read as text. Section headings ("30-day stats", "Recent
+      days", "24K trend") now use <code>onSurface</code> + Bold +
+      <code>labelMedium</code>. Secondary labels (table column headers,
+      sources footer, sparkline unit labels, placeholder text) use
+      <code>onSurfaceVariant</code>. Dividers continue to use
+      <code>outlineVariant</code> — that one is the right role.</li>
+    <li><strong>Mid-market header card on home — same-hue muddy
+      contrast.</strong> The big "1 AED → INR" card on the home screen
+      used <code>primaryContainer</code> (pale indigo, L=95) as
+      background with <code>onPrimaryContainer</code> (deep indigo, L=20)
+      text. APCA contrast technically passed, but both colours sat in the
+      same hue family so the eye registered the pair as muddy — there
+      was no hue cut, only a lightness cut. Background switched to
+      <code>surfaceVariant</code> (near-neutral slate) and the body text
+      to <code>onSurface</code> (deep navy, distinct hue). The
+      "MID-MARKET" eyebrow stays in <code>primary</code> colour so the
+      brand identity reads as a tinted accent rather than a tinted slab.</li>
+    <li><strong>"View full N-day history" sub-sheet button.</strong> Same
+      hue-collision fix: switched from
+      <code>primaryContainer.copy(alpha = 0.55f)</code> bg +
+      <code>onPrimaryContainer</code> text to <code>surfaceVariant</code>
+      bg + <code>primary</code>-coloured bold text. Reads cleanly as a
+      "view more" link without the muddy pale-purple-on-deep-indigo feel.</li>
+    <li><code>StatPill</code> label colour likewise corrected from
+      <code>outline</code> to <code>onSurfaceVariant</code> so High / Low
+      / Avg tags are readable.</li>
+  </ul>
+
+  <h3 class="removed">Removed</h3>
+  <ul>
+    <li>Dead <code>_LegacySnapshotCard</code> composable (~130 lines) from
+      <code>GoldHistorySheet.kt</code>. Kept across v0.26 and v0.27 as a
+      "fallback in case we revert"; two releases on, the design isn't
+      reverting and the dead code carried the same bad-colour-role usage
+      we just fixed in the live code.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-27-0">
+  <h2><span class="ver">v0.27.0</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="changed">Changed</h3>

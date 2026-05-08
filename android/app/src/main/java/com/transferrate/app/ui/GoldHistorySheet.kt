@@ -234,9 +234,9 @@ fun GoldHistorySheet(
                             "30-day stats · Silver"
                         else
                             "30-day stats · $selectedCarat",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline,
-                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         softWrap = false,
                     )
@@ -266,7 +266,7 @@ fun GoldHistorySheet(
                             Text(
                                 "spot price only — no daily history",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.outline,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 softWrap = false,
                             )
@@ -291,9 +291,9 @@ fun GoldHistorySheet(
                         "Recent days · Silver"
                     else
                         "Recent days · $selectedCarat",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     softWrap = false,
                 )
@@ -332,14 +332,17 @@ fun GoldHistorySheet(
                     // sub-sheet that scrolls the full date range.
                     if (allHistoryDates.size > miniHistoryDates.size) {
                         Spacer(Modifier.height(10.dp))
+                        // Neutral-tinted surface with primary-coloured text:
+                        // pale-indigo bg + dark-indigo text was technically
+                        // contrast-passing but read as muddy because both
+                        // colours sat in the same hue family.  Splitting bg
+                        // (neutral) from fg (indigo) gives a proper hue cut
+                        // for legibility while keeping the brand accent.
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    MaterialTheme.colorScheme.primaryContainer
-                                        .copy(alpha = 0.55f),
-                                )
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable { fullHistoryOpen = true }
                                 .padding(vertical = 13.dp, horizontal = 14.dp),
                             contentAlignment = Alignment.Center,
@@ -348,7 +351,7 @@ fun GoldHistorySheet(
                                 text = "View full ${allHistoryDates.size}-day history  →",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
                                 softWrap = false,
                             )
@@ -368,7 +371,7 @@ fun GoldHistorySheet(
                         "Sources: Khaleej Times (UAE) · LiveChennai (India). " +
                         "Indicative; actual jeweller prices may differ.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -511,7 +514,9 @@ private fun FullHistorySheet(
 
 /** Shared 3-column header row used by both the inline mini-table and
  *  the full-history sub-sheet.  Pulled out so the column weights stay
- *  identical between the two contexts. */
+ *  identical between the two contexts.  Uses `onSurfaceVariant` for
+ *  proper "muted-but-legible" body contrast (was `outline` — which is
+ *  the M3 role for divider strokes, too pale for text). */
 @Composable
 private fun HistoryTableHeader(uaeLabel: String, indiaLabel: String) {
     Row(
@@ -521,26 +526,29 @@ private fun HistoryTableHeader(uaeLabel: String, indiaLabel: String) {
         Text(
             "Date",
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1.2f),
-            color = MaterialTheme.colorScheme.outline,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
         )
         Text(
             uaeLabel,
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
-            color = MaterialTheme.colorScheme.outline,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
         )
         Text(
             indiaLabel,
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.End,
-            color = MaterialTheme.colorScheme.outline,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
         )
@@ -611,9 +619,9 @@ private fun TrendRow(
 ) {
     Text(
         title,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.outline,
-        fontWeight = FontWeight.SemiBold,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        fontWeight = FontWeight.Bold,
         maxLines = 1,
         softWrap = false,
     )
@@ -627,7 +635,8 @@ private fun TrendRow(
                 Text(
                     "UAE  (AED)",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     softWrap = false,
                 )
@@ -639,7 +648,7 @@ private fun TrendRow(
                     Text(
                         uaePlaceholder,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -856,140 +865,6 @@ private fun MetalDivider(color: androidx.compose.ui.graphics.Color) {
     )
 }
 
-/* The original SnapshotCard is no longer used by the v0.26 design but
- * kept here for future reuse / fallback if we ever revert.  Renamed
- * with a leading underscore so we don't accidentally call it. */
-@Composable
-@Suppress("unused")
-private fun _LegacySnapshotCard(
-    modifier: Modifier,
-    country: String,
-    currencySym: String,
-    r24: Double?,
-    r22: Double?,
-    silver: Double?,
-) {
-    Column(
-        modifier = modifier
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant,
-                RoundedCornerShape(12.dp),
-            )
-            .padding(12.dp),
-    ) {
-        Text(
-            country,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.8.sp,
-            color = MaterialTheme.colorScheme.outline,
-            maxLines = 1,
-            softWrap = false,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text("24K · 1g", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline, maxLines = 1, softWrap = false)
-        Text(
-            text = if (r24 != null) "$currencySym ${formatGold(r24)}" else "—",
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontFeatureSettings = "tnum",
-            ),
-            maxLines = 1,
-            softWrap = false,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text("24K · 8g", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline, maxLines = 1, softWrap = false)
-        Text(
-            text = if (r24 != null) "$currencySym ${formatGold(r24 * 8)}" else "—",
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontFeatureSettings = "tnum",
-            ),
-            maxLines = 1,
-            softWrap = false,
-        )
-        Spacer(Modifier.height(10.dp))
-        Text("22K · 1g", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline, maxLines = 1, softWrap = false)
-        Text(
-            text = if (r22 != null) "$currencySym ${formatGold(r22)}" else "—",
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontFeatureSettings = "tnum",
-            ),
-            maxLines = 1,
-            softWrap = false,
-        )
-        Spacer(Modifier.height(2.dp))
-        Text("22K · 8g", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline, maxLines = 1, softWrap = false)
-        Text(
-            text = if (r22 != null) "$currencySym ${formatGold(r22 * 8)}" else "—",
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontFeatureSettings = "tnum",
-            ),
-            maxLines = 1,
-            softWrap = false,
-        )
-
-        if (silver != null) {
-            Spacer(Modifier.height(10.dp))
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-            Spacer(Modifier.height(8.dp))
-            // Silver weights: 1g + 1kg.
-            //   Gold uses 1g + 8g because 8g is the common Indian
-            //   jewellery purchase unit (~0.69 tola).
-            //   Silver bullion is bought in much larger quantities, so
-            //   the kg-mark is the meaningful comparison weight.
-            // Per-gram silver: AED uses 2 decimals (single-digit
-            // precision matters), INR is integer-like.  Per-kg: both
-            // currencies switch to thousands-grouped integer output.
-            val perGramFmt = if (currencySym == "AED") "%.2f".format(silver)
-                             else formatGold(silver)
-            Text(
-                "Silver · 1g",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-                maxLines = 1,
-                softWrap = false,
-            )
-            Text(
-                text = "$currencySym $perGramFmt",
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-                maxLines = 1,
-                softWrap = false,
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                "Silver · 1kg",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-                maxLines = 1,
-                softWrap = false,
-            )
-            val perKgValue = silver * 1000.0
-            val perKgFmt = formatGold(perKgValue)
-            Text(
-                text = "$currencySym $perKgFmt",
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-                maxLines = 1,
-                softWrap = false,
-            )
-        }
-    }
-}
-
 @Composable
 private fun SparkColumn(
     label: String,
@@ -1001,7 +876,8 @@ private fun SparkColumn(
         Text(
             "$label  ($unit)",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.outline,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
         )
@@ -1024,7 +900,7 @@ private fun SparkColumn(
                 Text(
                     "Building…",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

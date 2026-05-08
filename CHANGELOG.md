@@ -15,6 +15,45 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.27.1] — 2026-05-08
+
+### Fixed
+- **Popup heading legibility — both light and dark mode.** All in-sheet
+  text labels were styled with `MaterialTheme.colorScheme.outline`, which
+  is the M3 role for **divider strokes** (light = `#A6C1DE` at L=80, dark
+  = `#4A6684` at L=50) — designed to be too faint to read as text.
+  Section headings ("30-day stats", "Recent days", "24K trend") now use
+  `onSurface` + Bold + `labelMedium`. Secondary labels (table column
+  headers, sources footer, sparkline unit labels, placeholder text) use
+  `onSurfaceVariant`. Dividers continue to use `outlineVariant` — that
+  one is the right role.
+- **Mid-market header card on home — same-hue muddy contrast.** The big
+  "1 AED → INR" card on the home screen used `primaryContainer` (pale
+  indigo, L=95) as background with `onPrimaryContainer` (deep indigo,
+  L=20) text. APCA contrast technically passed, but both colours sat in
+  the same hue family so the eye registered the pair as muddy — there
+  was no hue cut, only a lightness cut. Background switched to
+  `surfaceVariant` (near-neutral slate) and the body text to `onSurface`
+  (deep navy, distinct hue). The "MID-MARKET" eyebrow stays in
+  `primary` colour so the brand identity reads as a tinted accent
+  rather than a tinted slab.
+- **"View full N-day history" sub-sheet button.** Same hue-collision
+  fix: switched from `primaryContainer.copy(alpha = 0.55f)` bg +
+  `onPrimaryContainer` text to `surfaceVariant` bg + `primary`-coloured
+  bold text. Reads cleanly as a "view more" link without the muddy
+  pale-purple-on-deep-indigo feel.
+- `StatPill` label colour likewise corrected from `outline` to
+  `onSurfaceVariant` so High / Low / Avg tags are readable.
+
+### Removed
+- Dead `_LegacySnapshotCard` composable (~130 lines) from
+  `GoldHistorySheet.kt`. Kept across v0.26 and v0.27 as a "fallback in
+  case we revert"; two releases on, the design isn't reverting and the
+  dead code carried the same bad-colour-role usage we just fixed in the
+  live code.
+
+---
+
 ## [0.27.0] — 2026-05-08
 
 ### Changed
@@ -296,6 +335,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.27.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.1
 [0.27.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.0
 [0.26.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.26.0
 [0.25.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.25.0

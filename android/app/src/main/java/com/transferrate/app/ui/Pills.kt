@@ -36,7 +36,8 @@ fun StatPill(label: String, value: String, modifier: Modifier = Modifier) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.outline,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
             textAlign = TextAlign.Center,

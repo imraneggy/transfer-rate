@@ -553,6 +553,12 @@ private fun MidMarketHeader(
     val baseMod = modifier
         .fillMaxWidth()
         .heightIn(min = 156.dp)
+    // v0.27.1: bg switched from primaryContainer (saturated pale indigo)
+    // to surfaceVariant (near-neutral slate) and the body text from
+    // onPrimaryContainer (deep indigo, same hue as old bg → muddy) to
+    // onSurface (deep navy, distinct hue from bg → crisp).  The eyebrow
+    // "MID-MARKET" stays in primary colour so the brand identity reads
+    // as a tinted accent rather than a tinted slab.
     Card(
         modifier = if (onClick != null) baseMod.clickable(
             onClick = onClick,
@@ -560,18 +566,18 @@ private fun MidMarketHeader(
         ) else baseMod,
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            // Eyebrow label — bold, full opacity for legibility
+            // Eyebrow label — primary-coloured to retain brand pop
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "MID-MARKET",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     softWrap = false,
                 )
@@ -582,13 +588,13 @@ private fun MidMarketHeader(
             }
             Spacer(Modifier.height(10.dp))
 
-            // Hero rate — large, bold, full opacity
+            // Hero rate — large, bold, full-contrast neutral
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = if (midMarket != null) "%.4f".format(midMarket) else "—",
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontFeatureSettings = "tnum",
                     ),
@@ -601,7 +607,7 @@ private fun MidMarketHeader(
                         text = info.symbol,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                         maxLines = 1,
                     )
                 }
@@ -611,7 +617,7 @@ private fun MidMarketHeader(
                 text = if (info != null) "1 AED → ${info.code}" else "1 AED → ${'$'}rate",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 softWrap = false,
             )
@@ -622,7 +628,7 @@ private fun MidMarketHeader(
                 text = "Updated ${relativeTime(completedAt)}",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 softWrap = false,
             )
