@@ -93,9 +93,19 @@ fun ProviderAvatar(
     size: androidx.compose.ui.unit.Dp = 40.dp,
     modifier: Modifier = Modifier,
 ) {
-    val logoRes = logoResIdFor(providerId)
+    // The mid-market "provider" is us — show the Transfer Rate brand mark
+    // rather than falling through to the initials fallback (which produces
+    // a generic "MR" colored chip indistinguishable from a third-party
+    // provider's avatar).  Routed through the same white-circle treatment
+    // as a real provider logo so the visual rhythm of the rates list and
+    // history sheets stays consistent.
+    val effectiveLogoRes = if (providerId == "mid_market") {
+        R.drawable.ic_splash
+    } else {
+        logoResIdFor(providerId)
+    }
 
-    if (logoRes != 0) {
+    if (effectiveLogoRes != 0) {
         // Bundled logo: render on a near-white circle (logos are
         // typically designed to read on white). Apply a subtle
         // theme-aware ring so the white doesn't look harsh on dark
@@ -117,7 +127,7 @@ fun ProviderAvatar(
             contentAlignment = Alignment.Center,
         ) {
             Image(
-                painter = painterResource(id = logoRes),
+                painter = painterResource(id = effectiveLogoRes),
                 contentDescription = "$displayName logo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier

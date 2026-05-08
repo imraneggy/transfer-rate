@@ -2,10 +2,25 @@
 <!--
   Network Security Config.
 
-  Defaults are deny-cleartext globally. We further constrain so the app can
-  only talk to the GitHub Pages domain hosting our rates.json — even if a
-  bug or supply-chain attack tries to exfiltrate to elsewhere, the platform
-  refuses the connection.
+  Cleartext is denied globally (`cleartextTrafficPermitted="false"`) so
+  no HTTPS-to-HTTP downgrade can happen, anywhere in the app, regardless
+  of which library issues the request.  System-CA trust is used because
+  GitHub Pages and Cloudflare both rotate certificates frequently and a
+  hard pin would brick the app on every rotation.
+
+  IMPORTANT — what this file does and does NOT do:
+
+    * It DOES enforce: HTTPS-only, system-CA trust, and per-host
+      cleartext / cert-anchor overrides for the listed domains.
+    * It does NOT enforce a domain allowlist.  Android's <domain-config>
+      block only overrides the trust-anchor / cleartext policy for the
+      listed hosts; HTTPS connections to unlisted hosts still succeed
+      via <base-config>'s system-CA trust.
+
+  The actual outbound host allowlist is enforced at the OkHttp layer in
+  com.transferrate.app.data.NetworkSecurity (HostAllowlistInterceptor),
+  which BOTH RatesRepository and OverpassService share.  Adding a new
+  outbound host requires an entry in BOTH places — keep them in sync.
 -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
@@ -14,15 +29,23 @@
         </trust-anchors>
     </base-config>
 
-    <!-- Hard allowlist: only these domains. -->
+    <!--
+      Per-host configs.  The list mirrors NetworkSecurity.kt::ALLOWED_HOSTS
+      so the platform-level cleartext + trust-anchor policy is consistent
+      with the application-level allowlist.
+    -->
     <domain-config cleartextTrafficPermitted="false">
         <!-- Static rates / history JSON served by GitHub Pages. -->
         <domain includeSubdomains="false">imraneggy.github.io</domain>
-        <!-- Cloudflare Worker that proxies workflow_dispatch to GitHub
-             Actions when the user taps Refresh.  The Worker holds the
-             GitHub PAT in its encrypted env so the app can trigger a
-             fresh scrape without ever touching the token. -->
+        <!-- Cloudflare Worker proxying workflow_dispatch (refresh button).
+             The Worker holds the GitHub PAT in its encrypted env so the
+             app never touches the token. -->
         <domain includeSubdomains="false">transfer-rate-refresh.imranbatchait.workers.dev</domain>
+        <!-- OpenStreetMap Overpass API mirror (mosque finder). -->
+        <domain includeSubdomains="false">overpass-api.de</domain>
+        <!-- OpenStreetMap raster tile servers (mosque map background).
+             includeSubdomains=true covers a.tile, b.tile, c.tile mirrors. -->
+        <domain includeSubdomains="true">tile.openstreetmap.org</domain>
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>

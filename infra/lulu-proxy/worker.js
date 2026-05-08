@@ -191,8 +191,11 @@ async function getToken() {
     throw new Error('no access_token in auth response');
   }
   cachedToken = token;
-  // Cache for 5 minutes — JWT itself is valid much longer
-  cachedTokenExpiresAt = now + 5 * 60 * 1000;
+  // Cache for 2 minutes (was 5).  JWT itself is valid much longer, but
+  // a tighter window means a rotated upstream credential propagates
+  // into the Worker faster after redeploy and reduces the time an
+  // older isolate could still hold a valid bearer.
+  cachedTokenExpiresAt = now + 2 * 60 * 1000;
   return token;
 }
 

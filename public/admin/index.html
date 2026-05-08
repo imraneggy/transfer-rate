@@ -4,6 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<!--
+  Content Security Policy.
+
+  GitHub Pages cannot set response headers, so the CSP is delivered via
+  <meta http-equiv>.  The page holds a fine-grained PAT in browser
+  storage; the CSP exists to make exfiltration of that PAT meaningfully
+  harder if any future XSS bug lands.
+
+    * default-src 'none'  — deny everything by default.
+    * script-src 'self' 'unsafe-inline' — the page bundles its only
+      script inline.  In a future refactor we should extract the
+      <script> block into admin.js and tighten this to just 'self'.
+    * connect-src https://api.github.com — fetch() can ONLY hit
+      api.github.com.  An injected exfil call to evil.example fails.
+    * img-src data: — only data: URIs (no remote pixels for tracking).
+    * style-src 'self' 'unsafe-inline' — inline <style> block.
+    * form-action 'none' — no form submissions go anywhere.
+    * frame-ancestors 'none' — page cannot be iframed (clickjacking
+      defence).
+    * base-uri 'none' — <base> tag injection cannot redirect relative
+      URLs.
+
+  COOP/COEP close the Spectre-class side channels that a cross-origin
+  iframe could use to read this page's PAT-bearing memory.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'none';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  connect-src https://api.github.com;
+  img-src data:;
+  form-action 'none';
+  frame-ancestors 'none';
+  base-uri 'none';
+">
+<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
 <title>transfer-rate · admin</title>
 <style>
   :root {
@@ -149,7 +186,7 @@
 
 <section class="auth" id="authSection">
   <h2>1. GitHub access</h2>
-  <p class="small">Paste a fine-grained PAT with <code>contents: read+write</code> on <code>imraneggy/transfer-rate</code>. Stored in your browser only (localStorage); never sent anywhere except GitHub's API.</p>
+  <p class="small">Paste a fine-grained PAT with <code>contents: read+write</code> on <code>imraneggy/transfer-rate</code>. Stored in your browser only and <strong>auto-cleared after 8 hours</strong>; never sent anywhere except GitHub's API.</p>
   <div class="row" style="margin-top:8px">
     <input id="patInput" type="password" placeholder="github_pat_…" autocomplete="off">
   </div>
@@ -238,23 +275,66 @@ const REPO_NAME  = "transfer-rate";
 const FILE_PATH  = "data/manual-rates.json";
 
 // === Auth ===
-let pat = localStorage.getItem("transfer-rate.admin.pat") || "";
+// PAT storage with an 8-hour idle expiry: we wrap localStorage in a JSON
+// envelope {pat, savedAt} and treat anything older than 8h as absent.
+// Rationale: a fine-grained PAT with `contents: write` is a high-value
+// long-lived credential.  Without an expiry, it would survive across
+// browser restarts and shared-device sessions indefinitely.  Eight
+// hours covers a normal admin work session while keeping the stolen-
+// device window bounded.
+const PAT_KEY = "transfer-rate.admin.pat.v2";
+const PAT_TTL_MS = 8 * 60 * 60 * 1000;
+
+function loadStoredPat() {
+  // Migrate v1 (raw string) to v2 (envelope) on first load if present.
+  const legacy = localStorage.getItem("transfer-rate.admin.pat");
+  if (legacy) {
+    localStorage.removeItem("transfer-rate.admin.pat");
+    storePat(legacy);
+    return legacy;
+  }
+  let envelope;
+  try {
+    envelope = JSON.parse(localStorage.getItem(PAT_KEY) || "null");
+  } catch (_) {
+    return "";
+  }
+  if (!envelope || typeof envelope.pat !== "string" || typeof envelope.savedAt !== "number") {
+    return "";
+  }
+  if (Date.now() - envelope.savedAt > PAT_TTL_MS) {
+    localStorage.removeItem(PAT_KEY);
+    return "";
+  }
+  return envelope.pat;
+}
+
+function storePat(value) {
+  localStorage.setItem(PAT_KEY, JSON.stringify({ pat: value, savedAt: Date.now() }));
+}
+
+function clearStoredPat() {
+  localStorage.removeItem(PAT_KEY);
+  localStorage.removeItem("transfer-rate.admin.pat"); // belt-and-braces, drops v1 too
+}
+
+let pat = loadStoredPat();
 const patInput  = document.getElementById("patInput");
 const authStatus = document.getElementById("authStatus");
 patInput.value = pat;
-if (pat) authStatus.textContent = "(token loaded from browser storage)";
+if (pat) authStatus.textContent = "(token loaded from browser storage; auto-clears after 8 h)";
 
 document.getElementById("saveAuthBtn").addEventListener("click", async () => {
   const v = patInput.value.trim();
   if (!v) { toast("Enter a token first", "error"); return; }
   pat = v;
-  localStorage.setItem("transfer-rate.admin.pat", pat);
+  storePat(pat);
   await loadCurrent();
 });
 
 document.getElementById("clearAuthBtn").addEventListener("click", () => {
   pat = "";
-  localStorage.removeItem("transfer-rate.admin.pat");
+  clearStoredPat();
   patInput.value = "";
   authStatus.textContent = "(cleared)";
   document.getElementById("formSection").style.display = "none";
@@ -500,14 +580,21 @@ async function quickSave(provider, rate, chipEl) {
     fetched_at: new Date().toISOString(),
     note: "Quick-pasted from clipboard",
   };
+  // Validate _doc as a string before round-tripping — a malformed value
+  // committed to data/manual-rates.json by some other path shouldn't be
+  // re-broadcast verbatim.
+  const docField = typeof currentDoc._doc === "string" ? currentDoc._doc : undefined;
   const newDoc = {
     schema_version: 1,
-    _doc: currentDoc._doc,
+    ...(docField ? { _doc: docField } : {}),
     updated_at: new Date().toISOString(),
     rates: newRates,
   };
   const newJson = JSON.stringify(newDoc, null, 2) + "\n";
-  const message = "admin: quick-paste " + provider.name + " INR=" + rate;
+  // Commit message intentionally omits the rate value — git history is
+  // public and we don't need to expose entry-time numerics there
+  // (they're already in the file diff).
+  const message = "admin: quick-paste " + provider.name + " INR (manual)";
   // Mark chip as busy
   chipEl.classList.add("busy");
   chipEl.textContent = provider.name + " · saving…";
@@ -567,9 +654,10 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     toast(invalidCount + " rate(s) out of plausible range — check inputs", "error");
     return;
   }
+  const docField2 = typeof currentDoc._doc === "string" ? currentDoc._doc : undefined;
   const newDoc = {
     schema_version: 1,
-    _doc: currentDoc._doc,
+    ...(docField2 ? { _doc: docField2 } : {}),
     updated_at: new Date().toISOString(),
     rates: newRates,
   };

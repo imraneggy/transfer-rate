@@ -127,6 +127,27 @@ fun RatesDocument.validate(): RatesDocument {
             p.effectiveRate?.let { require(it in 0.0001..10000.0) }
             p.promoRate?.let { require(it in 0.0001..10000.0) }
             p.feeBase?.let { require(it in 0.0..100_000.0) }
+
+            // String-field bounds — defence in depth so a poisoned doc
+            // can't ship a 1 MB providerName that would blow notifications,
+            // accessibility readouts, or layout heuristics.
+            require(p.providerId.length in 1..64) { "providerId out of range: ${p.providerId.take(20)}…" }
+            require(p.providerName.length in 1..64) { "providerName out of range" }
+            p.note?.let { require(it.length <= 256) { "note too long for ${p.providerId}" } }
+            p.deliveryEstimate?.let { require(it.length <= 64) }
+            p.promoNote?.let { require(it.length <= 256) }
+
+            // URL scheme allowlist — the value flows into Intent.ACTION_VIEW
+            // when the user taps "Visit Provider".  Without this guard a
+            // poisoned doc with `intent://...`, `app://...`, `file:///...`,
+            // or `content://...` could launch arbitrary registered
+            // activities on the device with attacker-controlled extras.
+            p.url?.let {
+                require(it.length <= 256) { "url too long for ${p.providerId}" }
+                require(it.startsWith("https://")) {
+                    "Provider URL must be https:// — refusing ${p.providerId}: ${it.take(40)}…"
+                }
+            }
         }
     }
     return this

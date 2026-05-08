@@ -215,13 +215,23 @@ verified, you can enter rates manually:
 4. **Click Save** — the admin page commits the new
    `data/manual-rates.json` to the repo via GitHub's Contents API.
 5. **Wait for next cron tick (~hourly)** OR manually trigger the scrape
-   workflow:
+   workflow.  Read the PAT from an environment variable (or the GitHub
+   CLI keychain), **never** from a plaintext file in the working
+   directory — `git.txt`-style files are easy to forget about and
+   accidentally commit.
+
    ```bash
-   GH_TOKEN=$(cat git.txt) curl -X POST \
-     -H "Authorization: Bearer $GH_TOKEN" \
-     -H "Accept: application/vnd.github+json" \
-     https://api.github.com/repos/imraneggy/transfer-rate/actions/workflows/269638606/dispatches \
-     -d '{"ref":"main"}'
+   # Option A — environment variable (recommended).  Set GH_TOKEN once
+   # in your shell profile (~/.zshrc / ~/.bashrc) or paste at use site:
+   GH_TOKEN="${GH_TOKEN:?Set GH_TOKEN in your environment}" \
+     curl -X POST \
+       -H "Authorization: Bearer $GH_TOKEN" \
+       -H "Accept: application/vnd.github+json" \
+       https://api.github.com/repos/imraneggy/transfer-rate/actions/workflows/269638606/dispatches \
+       -d '{"ref":"main"}'
+
+   # Option B — GitHub CLI (manages the token in the OS keychain):
+   gh workflow run scrape.yml --ref main
    ```
 
 Manual rates appear in the app with a `MANUAL` badge to distinguish from

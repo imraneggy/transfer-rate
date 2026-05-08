@@ -60,14 +60,31 @@ Expected: a JSON envelope with the AED rate set:
 
 ## Security stance
 
-This is intentionally **not** an open proxy. The Worker only
-forwards requests matching the documented LuLu payload signature
-(`activityType: "rates.get"`, fixed UAE `aglcid`, allowed
-`instype` values). Anything else returns 403.
+The Worker is intentionally **not** an open proxy.  Concretely:
 
-The Gravitee API key embedded in the Worker is the same key sent
-by every browser visitor of luluexchange.com — it's public by
-design. No private credentials are stored.
+- **Method + path lock.** Only `GET /` is accepted; every other
+  method or path returns 404.  The body / query string is **not**
+  forwarded — the upstream LuLu rate-history call is fully
+  hardcoded inside `worker.js`, so a caller cannot redirect the
+  Worker to a different upstream resource.
+- **Token caching.** A short-lived bearer obtained from LuLu's auth
+  endpoint is held in a per-isolate cache for ~2 minutes (see
+  `cachedTokenExpiresAt` in `worker.js`) so we don't pound the
+  auth endpoint on every cron tick.
+- **Public credentials only.** The Gravitee API key embedded in the
+  Worker is the same key sent by every browser visitor of
+  luluexchange.com — it's public by design.  No private credentials
+  are stored.
+- **Rate limit.** Cloudflare Workers free tier caps at 100 000
+  requests / day; the hourly cron uses ~720 / month, leaving the
+  rest as a hard ceiling against abuse.
+
+> **Earlier versions of this README claimed payload-signature
+> filtering** (e.g. `activityType: "rates.get"` checks).  The Worker
+> never actually inspected the request body — the filtering is done
+> by the harder mechanism of ignoring the request entirely and
+> issuing a fixed upstream call.  The README has been corrected to
+> match what the code does.
 
 ## Removing the proxy later
 

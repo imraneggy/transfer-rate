@@ -111,18 +111,30 @@ fun RatesScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    // maxLines=1 + ellipsize defends against the
-                    // (rare) case where the actions row gets so wide
-                    // it pushes the title off-screen on a 360 dp
-                    // phone. Currently 3 chips + ⓘ leaves ~120 dp
-                    // for the title which fits "Transfer Rate" cleanly.
-                    Text(
-                        stringResource(R.string.app_name),
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    )
+                    // App logo + wordmark.  maxLines=1 + ellipsize on
+                    // the text defends against the (rare) case where
+                    // the actions row gets so wide it pushes the title
+                    // off-screen on a 360 dp phone.  Currently 3 chips
+                    // + ⓘ leaves ~120 dp for the title which fits the
+                    // logo + "Transfer Rate" cleanly.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        androidx.compose.foundation.Image(
+                            painter = androidx.compose.ui.res.painterResource(
+                                id = R.drawable.ic_splash,
+                            ),
+                            contentDescription = null,
+                            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                            modifier = Modifier.size(24.dp),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            stringResource(R.string.app_name),
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        )
+                    }
                 },
                 actions = {
                     // Word-labeled toolbar chips per user request.
@@ -836,7 +848,11 @@ private fun ProviderCard(
                         Text(
                             p.providerName,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp,
+                            // 15sp (was 16sp) — extra horizontal breathing
+                            // room so longer names like "Wall Street Exchange"
+                            // and "Index Exchange" still fit alongside the
+                            // BEST badge even at the 1.15x font-scale cap.
+                            fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             softWrap = false,

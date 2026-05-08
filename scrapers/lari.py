@@ -27,11 +27,24 @@ Verified live 2026-05-04: AED -> INR ~25.75
 """
 from __future__ import annotations
 
+import os
 import re
+from pathlib import Path
 
+import certifi
 import httpx
 
 from .base import BaseProvider, Quote
+
+# Cert chain bundle for lariexchange.com — used when the system / certifi
+# trust store rejects Lari's incomplete chain.  If this file does not
+# exist, we fall back to certifi.where() (which works for most clients
+# at this point; the v0.4 + v0.13 era of "verify=False" is no longer
+# necessary on most runners).  The "fix lari TLS" path is therefore:
+#   1. Prefer the explicit chain file if shipped: scrapers/certs/lari-chain.pem
+#   2. Otherwise verify against certifi (correct, default-secure)
+#   3. Never silently disable verification.
+_LARI_CHAIN = Path(__file__).resolve().parent / "certs" / "lari-chain.pem"
 
 
 class LariProvider(BaseProvider):
@@ -40,15 +53,23 @@ class LariProvider(BaseProvider):
     PAGE_URL = "https://www.lariexchange.com/"
 
     def fetch(self, target_currency: str = "INR", amount_base: float = 1000.0) -> Quote:
-        # verify=False: lariexchange.com ships an incomplete SSL chain
-        # (Python's bundled CAs + certifi both reject it; only browsers
-        # with bundled intermediate-CA fetching work).  Acceptable here
-        # because we only read public HTML - no credentials, no PII -
-        # and a MITM at most gives us a stale public rate.
+        # TLS: verify against the bundled chain if present, else fall back
+        # to certifi.  v0.28: was previously `verify=False`, which let any
+        # MITM substitute the "rate" with arbitrary values and the result
+        # would be committed to rates.json verbatim — see security audit
+        # finding P1#3.  If the GHA runner ever genuinely cannot verify
+        # Lari's chain again, drop the up-to-date chain into
+        # scrapers/certs/lari-chain.pem and re-run.
+        verify_target: str | bool
+        if _LARI_CHAIN.exists():
+            verify_target = str(_LARI_CHAIN)
+        else:
+            verify_target = certifi.where()
+
         with httpx.Client(
             timeout=20.0,
             follow_redirects=True,
-            verify=False,
+            verify=verify_target,
             headers={
                 "User-Agent": (
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -86,8 +107,20 @@ class LariProvider(BaseProvider):
         except (TypeError, ValueError) as exc:
             raise RuntimeError(f"Lari: rate value malformed: {exc}") from exc
 
+        # Generic plausibility window (any corridor).
         if not 0.0001 <= rate <= 10000.0:
             raise RuntimeError(f"Lari: rate out of plausible range: {rate}")
+
+        # Tighter corridor-specific window for AED→INR — the real rate has
+        # been in 22..30 for the past decade.  This catches a poisoned
+        # response that *looks* numeric (e.g. an attacker substituting
+        # "1.0000" or "999.99") even when the broad bound would accept it.
+        # If we add other corridors later, generalise this to a corridor
+        # → (lo, hi) lookup table.
+        if target_currency == "INR" and not 20.0 <= rate <= 32.0:
+            raise RuntimeError(
+                f"Lari: AED→INR rate {rate} outside plausible 20..32 window"
+            )
 
         return Quote(
             provider_id=self.id,

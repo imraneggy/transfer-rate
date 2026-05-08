@@ -27,8 +27,12 @@ object PrefetchScheduler {
     private const val UNIQUE_WORK_NAME = "transfer-rate.prefetch"
 
     fun schedule(context: Context) {
+        // UNMETERED (was CONNECTED) — match the doc-comment promise on
+        // RatesPrefetchWorker that the worker won't run on metered
+        // (cellular) networks by default.  Saves user data and matches
+        // the public "$0 surprises" stance for an always-free app.
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiredNetworkType(NetworkType.UNMETERED)
             .setRequiresBatteryNotLow(true)
             .build()
 

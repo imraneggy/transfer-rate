@@ -19,8 +19,8 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 39
-        versionName = "0.27.1"
+        versionCode = 40
+        versionName = "0.28.0"
 
         resourceConfigurations += listOf("en")
 
@@ -94,14 +94,30 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            // Use the release signing config IF it has a storeFile;
-            // otherwise fall back to debug so the build doesn't fail
-            // when no keystore is configured (useful for first-time
-            // local builds + reproducible-builds verification).
+            // Use the release signing config IF it has a storeFile.  In
+            // CI we MUST refuse to fall back to debug signing — a debug
+            // keystore is shared across all SDK installations, so a
+            // release APK signed with it could be over-installed by
+            // anyone.  Locally (no CI) we still permit the fallback so
+            // first-time contributors and reproducible-build verifiers
+            // can run `assembleRelease` without a keystore at hand.
             val releaseConfig = signingConfigs.getByName("release")
             signingConfig = if (releaseConfig.storeFile?.exists() == true) {
                 releaseConfig
             } else {
+                val isCi = System.getenv("CI") == "true" ||
+                    System.getenv("GITHUB_ACTIONS") == "true"
+                if (isCi) {
+                    error(
+                        "CI release build attempted with no signing keystore configured. " +
+                        "Provide KEYSTORE_FILE / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD " +
+                        "in the workflow env, or a keystore.properties file at the project root.",
+                    )
+                }
+                logger.warn(
+                    "WARNING: release build is falling back to the debug-signing " +
+                    "keystore — local-only.  Do not distribute this APK.",
+                )
                 signingConfigs.getByName("debug")
             }
             isDebuggable = false

@@ -138,6 +138,14 @@ class OverpassService(
         private val DEFAULT_CLIENT = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .followRedirects(false)
+            .followSslRedirects(false)
+            // Share the application-level host allowlist with
+            // RatesRepository so a future code path or a transitive
+            // dependency cannot exfiltrate to an unexpected host even
+            // if the platform-level network_security_config doesn't
+            // catch it.  See NetworkSecurity.kt.
+            .addInterceptor(HostAllowlistInterceptor)
             .build()
     }
 }

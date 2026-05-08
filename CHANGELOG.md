@@ -15,6 +15,111 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.28.0] — 2026-05-08
+
+### Security
+- **Real outbound host allowlist enforced at the OkHttp layer.** Android's
+  `<network-security-config>` does not actually restrict which hosts the
+  app can reach — `<domain-config>` only overrides cleartext / cert-anchor
+  policy per host. The "allowlist" the prior comment claimed was therefore
+  not enforced. Added `data/NetworkSecurity.kt` with a shared
+  `HostAllowlistInterceptor` used by both `RatesRepository` and
+  `OverpassService`; an outbound HTTPS request to anything outside
+  `{imraneggy.github.io, transfer-rate-refresh.imranbatchait.workers.dev,
+  overpass-api.de, *.tile.openstreetmap.org}` now throws. The
+  `network_security_config.xml` block was rewritten to (a) accurately
+  describe what the platform layer does and does not do, and (b) cover
+  `overpass-api.de` and `tile.openstreetmap.org` so per-host cleartext +
+  cert-anchor policy matches the application-level allowlist.
+- **TLS verification re-enabled on `scrapers/lari.py`.** Was
+  `verify=False`; a MITM at the GHA-runner→Lari path could have poisoned
+  `rates.json` with an arbitrary "Lari rate" that would be committed to
+  `main` and shown to all users. Now verifies against `certifi.where()`
+  by default, with an opt-in path for shipping `scrapers/certs/lari-chain.pem`
+  if the chain genuinely fails default trust. Added a corridor-aware
+  bound check (AED→INR rate must fall in 20..32) so a parsed-but-poisoned
+  numeric rate is still rejected.
+- **Disabled redirect following on both OkHttp clients.** A 3xx from an
+  allowed host pointing to an attacker-controlled host would otherwise
+  be chased silently with attacker headers in tow.
+- **Admin UI Content Security Policy added.** `public/admin/index.html`
+  now ships `default-src 'none'; connect-src https://api.github.com;
+  frame-ancestors 'none'; base-uri 'none'` plus COOP/COEP, all delivered
+  via `<meta http-equiv>` since GitHub Pages can't set custom headers.
+  Closes the obvious XSS-to-PAT-exfiltration path.
+- **Admin UI PAT now expires after 8 hours.** Storage envelope changed
+  from raw `localStorage` to `{pat, savedAt}` with a TTL check on read.
+  v1 keys are auto-migrated on first load. The "Forget token" button
+  clears both v1 and v2 keys.
+- **Admin UI quick-paste commit message no longer leaks the rate value.**
+  The provider name stays (it's already in the file diff); the rate goes
+  away (was redundant with the diff and exposed precise entry-time
+  numerics in the public commit history).
+- **Provider URLs from `rates.json` are now scheme-validated** in
+  `Rates.kt::validate()`. Only `https://` survives — defends against a
+  poisoned doc using `intent://...`, `app://...`, `file:///...`, or
+  `content://...` to launch arbitrary registered activities via
+  `Intent.ACTION_VIEW`.
+- **String fields in `rates.json` are now length-bounded** (providerId
+  / providerName ≤ 64, note / promoNote ≤ 256, deliveryEstimate ≤ 64,
+  url ≤ 256). Belt-and-braces against a poisoned doc shipping a 1 MB
+  providerName that would blow notification body strings or layout
+  heuristics.
+- **CI release builds now error if no signing keystore is configured.**
+  Was a silent fallback to the (shared) debug keystore — risk of a
+  release tag accidentally producing a debug-signed APK that other
+  attackers can over-install. Local builds still permit the fallback
+  with a loud warning so first-time contributors and reproducible-build
+  verifiers can run `assembleRelease` without a keystore at hand.
+- **`android-build.yml` permissions are now job-scoped.** Was top-level
+  `contents: write`; now `permissions: {}` at workflow level with
+  `contents: write` granted only on the `build` job (which is the only
+  one that needs it for `softprops/action-gh-release`).
+- **`changelog.yml` now SHA-pins `actions/checkout`** (was the mutable
+  `@v4` tag) and runs on `ubuntu-24.04` (was `ubuntu-latest`), matching
+  the SHA-pinning + Ubuntu version used by every other workflow.
+- **Validate `_doc` field type in admin UI before round-tripping.**
+  Previously passed verbatim from `currentDoc._doc` to the new commit;
+  now type-checked as a string and dropped if not.
+- **`infra/lulu-proxy/worker.js` token cache TTL reduced** 5 min → 2
+  min so a rotated upstream credential propagates faster after redeploy.
+- **`infra/lulu-proxy/README.md` security stance corrected** — the prior
+  text claimed payload-signature filtering that the worker never
+  implemented (it ignores the request body and issues a fixed upstream
+  call, which is *more* restrictive). Documentation now matches code.
+- **`docs/RUNBOOK.md` no longer teaches the `cat git.txt` PAT pattern.**
+  Replaced with `${GH_TOKEN:?...}` env-var pattern + a `gh workflow run`
+  alternative that uses the OS keychain.
+- **Play Store description** (`fastlane/.../full_description.txt`) now
+  describes the actual allowlist semantics (application-layer) and
+  acknowledges the optional location + notification permissions —
+  previously claimed "single permission: INTERNET" which became
+  inaccurate when the mosque finder shipped.
+
+### Changed
+- **Capped in-app font scale at 1.15×.** On phones with a system font
+  scale of 1.3× or above, "Aspora" was wrapping to "Asp\nora" or
+  ellipsizing to "Asp..." in the rates list because the provider-name
+  column is contested with the BEST/MANUAL badge and the rate column.
+  Cap installed via a `CompositionLocalProvider` of `LocalDensity` at
+  the AppRoot. Users wanting larger text beyond 1.15× can use
+  system-level magnification (which scales the whole UI uniformly).
+- **Reduced provider-name fontSize 16sp → 15sp** for additional
+  breathing room next to the BEST/MANUAL badge even at the 1.15× cap.
+- **Mid-market history popup now shows the app logo** instead of a
+  generic "MR" colored chip. The `ProviderAvatar` widget special-cases
+  `providerId == "mid_market"` and renders `R.drawable.ic_splash` on
+  the same white-circle treatment as a real provider logo.
+- **Top app bar now shows the app logo to the left of "Transfer Rate"**
+  (24 dp icon + 8 dp gap). The maxLines/ellipsize defence on the
+  wordmark stays intact.
+
+### Removed
+- Dead `_LegacySnapshotCard` composable (~130 lines) from
+  `GoldHistorySheet.kt`.
+
+---
+
 ## [0.27.1] — 2026-05-08
 
 ### Fixed
@@ -335,6 +440,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.28.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.0
 [0.27.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.1
 [0.27.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.0
 [0.26.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.26.0

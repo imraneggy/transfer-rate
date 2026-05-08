@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.27.1 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.28.0 · 2026-05-08</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-28-0">v0.28.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-1">v0.27.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-0">v0.27.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-26-0">v0.26.0</a><span class="date">2026-05-07</span></li>
@@ -350,8 +351,101 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-27-1">
-  <h2><span class="ver">v0.27.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-28-0">
+  <h2><span class="ver">v0.28.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="fixed">Security</h3>
+  <ul>
+    <li><strong>Real outbound host allowlist enforced at the OkHttp layer.</strong>
+      Android's <code>&lt;network-security-config&gt;</code> does not actually
+      restrict which hosts the app can reach — <code>&lt;domain-config&gt;</code>
+      only overrides cleartext / cert-anchor policy per host. Added
+      <code>data/NetworkSecurity.kt</code> with a shared
+      <code>HostAllowlistInterceptor</code> used by both
+      <code>RatesRepository</code> and <code>OverpassService</code>; outbound
+      HTTPS to anything outside <code>{imraneggy.github.io,
+      transfer-rate-refresh.imranbatchait.workers.dev, overpass-api.de,
+      *.tile.openstreetmap.org}</code> now throws.
+      <code>network_security_config.xml</code> rewritten to accurately
+      describe what the platform layer does and does not do.</li>
+    <li><strong>TLS verification re-enabled on <code>scrapers/lari.py</code>.</strong>
+      Was <code>verify=False</code>; a MITM at the GHA-runner→Lari path
+      could have poisoned <code>rates.json</code>. Now verifies against
+      <code>certifi.where()</code> with an opt-in cert-bundle path. Added a
+      corridor-aware bound check: AED→INR rate must fall in 20..32.</li>
+    <li><strong>Disabled redirect following on both OkHttp clients.</strong>
+      A 3xx from an allowed host pointing to an attacker-controlled host
+      is no longer chased silently.</li>
+    <li><strong>Admin UI Content Security Policy added</strong>
+      (<code>default-src 'none'; connect-src https://api.github.com;
+      frame-ancestors 'none'; base-uri 'none'</code> + COOP/COEP), all
+      delivered via <code>&lt;meta http-equiv&gt;</code>. Closes the
+      XSS-to-PAT-exfiltration path.</li>
+    <li><strong>Admin UI PAT now expires after 8 hours.</strong> Storage
+      envelope changed from raw <code>localStorage</code> to
+      <code>{pat, savedAt}</code> with a TTL check on read.</li>
+    <li><strong>Admin UI quick-paste commit message no longer leaks the
+      rate value.</strong></li>
+    <li><strong>Provider URLs from <code>rates.json</code> are now
+      scheme-validated</strong> in <code>Rates.kt::validate()</code>. Only
+      <code>https://</code> survives — defends against a poisoned doc using
+      <code>intent://</code>, <code>app://</code>, <code>file:///</code>, or
+      <code>content://</code> to launch arbitrary registered activities via
+      <code>Intent.ACTION_VIEW</code>.</li>
+    <li><strong>String fields in <code>rates.json</code> are now
+      length-bounded</strong> (providerId / providerName ≤ 64, note /
+      promoNote ≤ 256, deliveryEstimate ≤ 64, url ≤ 256).</li>
+    <li><strong>CI release builds now error if no signing keystore is
+      configured.</strong> Was a silent fallback to the shared debug
+      keystore — risk of a release tag accidentally producing a
+      debug-signed APK that other attackers can over-install. Local builds
+      still permit the fallback with a loud warning.</li>
+    <li><strong><code>android-build.yml</code> permissions are now
+      job-scoped.</strong> Workflow level is <code>permissions: {}</code>;
+      <code>contents: write</code> is granted only on the <code>build</code>
+      job for <code>softprops/action-gh-release</code>.</li>
+    <li><strong><code>changelog.yml</code> now SHA-pins
+      <code>actions/checkout</code></strong> (was <code>@v4</code> mutable
+      tag) and runs on <code>ubuntu-24.04</code>.</li>
+    <li><strong><code>_doc</code> field type-validated in admin UI</strong>
+      before round-tripping into the new commit.</li>
+    <li><strong><code>infra/lulu-proxy/worker.js</code> token cache TTL
+      reduced</strong> 5 min → 2 min so a rotated upstream credential
+      propagates faster.</li>
+    <li><strong><code>infra/lulu-proxy/README.md</code> security stance
+      corrected</strong> — the prior text claimed payload-signature
+      filtering that the worker never implemented.</li>
+    <li><strong><code>docs/RUNBOOK.md</code> no longer teaches the
+      <code>cat git.txt</code> PAT pattern.</strong> Replaced with the
+      <code>${GH_TOKEN:?...}</code> env-var pattern and a
+      <code>gh workflow run</code> alternative.</li>
+    <li><strong>Play Store description corrected</strong>
+      (<code>fastlane/.../full_description.txt</code>) — now describes the
+      actual allowlist semantics (application-layer) and acknowledges the
+      optional location + notification permissions.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Capped in-app font scale at 1.15×.</strong> On phones with
+      a system font scale of 1.3× or above, "Aspora" was wrapping to
+      "Asp\nora" or ellipsizing to "Asp..." in the rates list because the
+      provider-name column is contested with the BEST/MANUAL badge and the
+      rate column. Cap installed via a <code>CompositionLocalProvider</code>
+      of <code>LocalDensity</code> at the <code>AppRoot</code>. Users
+      wanting larger text beyond 1.15× can use system-level magnification.</li>
+    <li><strong>Reduced provider-name fontSize 16sp → 15sp</strong> for
+      additional breathing room next to the BEST/MANUAL badge.</li>
+    <li><strong>Mid-market history popup now shows the app logo</strong>
+      instead of a generic "MR" colored chip.</li>
+    <li><strong>Top app bar now shows the app logo to the left of
+      "Transfer Rate"</strong> (24 dp icon + 8 dp gap).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-27-1">
+  <h2><span class="ver">v0.27.1</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="fixed">Fixed</h3>

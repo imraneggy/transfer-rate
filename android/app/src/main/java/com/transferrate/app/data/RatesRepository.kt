@@ -42,9 +42,16 @@ class RatesRepository(
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .callTimeout(15, TimeUnit.SECONDS)
-        .followRedirects(true)
-        .followSslRedirects(true)
+        // followRedirects=false (was true): a 3xx from imraneggy.github.io
+        // pointing to an attacker-controlled host would otherwise be
+        // chased silently.  We'd rather see the redirect and fail.
+        .followRedirects(false)
+        .followSslRedirects(false)
         .retryOnConnectionFailure(true)
+        // Application-level host allowlist — the "allowlist" guarantee
+        // documented in network_security_config.xml is only enforceable
+        // here, not at the platform layer.  See NetworkSecurity.kt.
+        .addInterceptor(HostAllowlistInterceptor)
         .build()
 
     private val json = Json {

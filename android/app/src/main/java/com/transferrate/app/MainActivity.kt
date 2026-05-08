@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +19,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.Density
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,7 +66,27 @@ class MainActivity : ComponentActivity() {
             }
 
             TransferRateTheme(darkTheme = isDark) {
-                AppRoot(themeMode = themeMode, onCycleThemeMode = { themeMode = themeMode.next() })
+                // Cap user font scale at 1.15x within the app.  The dashboard
+                // packs a provider name + BEST/MANUAL badge + rate + delta
+                // into one row; at the platform default 1.0x scale the
+                // layout fits comfortably, but Android's accessibility
+                // settings let users set fontScale up to 2.0x — at which
+                // point "Aspora" wraps to "Asp\nora" or ellipsizes to
+                // "Asp..." in the rates list.  Capping at 1.15x preserves
+                // a meaningful portion of the accessibility scale-up
+                // (15% larger text is still helpful) while keeping the
+                // dashboard layout intact across all phones.  Users who
+                // need text larger than 1.15x can still use system-level
+                // magnification gestures, which scale the whole UI rather
+                // than just text.
+                val baseDensity = LocalDensity.current
+                val cappedDensity = Density(
+                    density = baseDensity.density,
+                    fontScale = baseDensity.fontScale.coerceAtMost(1.15f),
+                )
+                CompositionLocalProvider(LocalDensity provides cappedDensity) {
+                    AppRoot(themeMode = themeMode, onCycleThemeMode = { themeMode = themeMode.next() })
+                }
             }
         }
     }
