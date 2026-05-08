@@ -91,19 +91,29 @@ class RatesViewModel(
     /**
      * User-initiated refresh — the Refresh button.
      *
-     * Two-phase flow so the user actually sees freshly-scraped data:
-     *   1. Trigger the upstream scrape via the Cloudflare Worker
-     *      (the Worker proxies workflow_dispatch to GitHub Actions
-     *      with a PAT held in its env).  Returns in <1 sec.
-     *   2. Poll rates.json (cache-busted on every call) until
-     *      `completed_at` advances past what we had before, or until
-     *      we time out at ~50 sec (slightly above the typical 30-35 s
-     *      scrape duration).
+     * Three-phase flow (v0.28.2 — stale-while-revalidate):
+     *
+     *   0. **Immediate fetch of the public rates.json.**  The cron tick
+     *      may have produced a doc fresher than what the user sees on
+     *      screen, in which case the new values land within ~1 second
+     *      of tapping refresh — no spinner-and-wait UX.  This is the
+     *      perceived-speed win; it doesn't change real freshness, but
+     *      it makes the app feel instant.
+     *
+     *   1. **Upstream scrape trigger.**  POST the Cloudflare Worker so
+     *      it dispatches a fresh workflow_dispatch (PAT held in the
+     *      Worker's env).  Returns in well under a second.
+     *
+     *   2. **Poll until completed_at advances.**  After a short 2 s
+     *      head-start (was 6 s pre-v0.28.2), poll rates.json every 2 s
+     *      (was 4 s) for up to 24 attempts (was 12).  Same ~48 s total
+     *      budget; finer-grained detection so a fresh scrape lands on
+     *      the screen 0–4 s sooner than before.
      *
      * If the upstream trigger fails (no Worker configured, network
-     * blip, Worker returned non-202), we fall through to a single
-     * snappy fetch — same UX as the pre-v0.22 refresh.  Never makes
-     * the refresh button worse than before.
+     * blip, Worker returned non-202), Phase 0 has already surfaced the
+     * latest cron-published doc — we just clear the spinner.  Never
+     * makes the refresh button worse than before.
      */
     fun refresh() {
         val current = _state.value
@@ -116,36 +126,70 @@ class RatesViewModel(
     }
 
     private suspend fun performRefresh() {
-        val previousSelected = (_state.value as? RatesUiState.Ready)?.selectedCurrency
-        val previousHistory  = (_state.value as? RatesUiState.Ready)?.history
-        val previousCompleted = (_state.value as? RatesUiState.Ready)?.doc?.completedAt
+        val initialState = _state.value as? RatesUiState.Ready
+        val previousSelected = initialState?.selectedCurrency
+        val previousHistory  = initialState?.history
+        // Tracks the latest completed_at we've shown — advances after
+        // Phase 0 if the cron-published doc is fresher than what was
+        // on screen, then again in Phase 2 if the upstream scrape
+        // produces something fresher still.
+        var lastSeenCompleted = initialState?.doc?.completedAt
+
+        // Phase 0: immediate fetch of the currently-published doc.  Most
+        // refresh taps land while there's a doc on Pages that's already
+        // a few minutes newer than the cached one on screen — surfacing
+        // it within ~1 s gives the user instant feedback while the
+        // upstream-trigger flow runs in the background.
+        repo.fetch().fold(
+            onSuccess = { doc ->
+                val advanced = lastSeenCompleted == null
+                    || doc.completedAt != lastSeenCompleted
+                if (advanced) {
+                    val selected = pickCurrency(doc, previousSelected)
+                    _state.value = RatesUiState.Ready(
+                        doc = doc,
+                        selectedCurrency = selected,
+                        history = previousHistory,
+                        refreshing = true,   // keep spinner — more updates may follow
+                    )
+                    lastSeenCompleted = doc.completedAt
+                    fetchHistory()
+                }
+            },
+            onFailure = { /* don't fail fast — Phase 1 may still succeed */ },
+        )
 
         // Phase 1: ask the Worker to dispatch a fresh scrape upstream.
         // Quick POST — should return in well under a second.
         val triggered = repo.triggerUpstreamRefresh()
 
         if (!triggered) {
-            // No Worker, or Worker rejected.  Fall back to the simple
-            // single-fetch behaviour the app had before v0.22.
-            performSingleFetch(previousSelected, previousHistory)
+            // No Worker, or Worker rejected.  Phase 0 already surfaced
+            // the latest cron-published doc (or kept the previous one
+            // if Phase 0 also failed); just clear the spinner.
+            val current = _state.value
+            if (current is RatesUiState.Ready) {
+                _state.value = current.copy(refreshing = false)
+            } else {
+                performSingleFetch(previousSelected, previousHistory)
+            }
             return
         }
 
-        // Phase 2: poll rates.json until completed_at advances.  Initial
-        // 6 s headstart absorbs the dispatch + GHA queue latency before
-        // we waste cycles on requests that can only re-fetch the same
-        // stale doc.  Then poll every 4 s up to ~12 attempts (50 s
-        // total budget).
-        delay(6_000)
-        val pollIntervalMs = 4_000L
-        val maxAttempts = 12
+        // Phase 2: poll rates.json until completed_at advances past
+        // whatever Phase 0 surfaced.  Tightened from v0.28.1: 2 s
+        // head-start (was 6 s), 2 s interval × 24 attempts (was 4 s ×
+        // 12).  Same ~48 s total budget — finer detection grain.
+        delay(2_000)
+        val pollIntervalMs = 2_000L
+        val maxAttempts = 24
         var settled = false
         for (attempt in 1..maxAttempts) {
             val result = repo.fetch()
             result.fold(
                 onSuccess = { doc ->
-                    val advanced = previousCompleted == null
-                        || doc.completedAt != previousCompleted
+                    val advanced = lastSeenCompleted == null
+                        || doc.completedAt != lastSeenCompleted
                     if (advanced) {
                         val selected = pickCurrency(doc, previousSelected)
                         _state.value = RatesUiState.Ready(
@@ -153,6 +197,7 @@ class RatesViewModel(
                             selectedCurrency = selected,
                             history = previousHistory,
                         )
+                        lastSeenCompleted = doc.completedAt
                         fetchHistory()
                         settled = true
                     }
@@ -163,10 +208,16 @@ class RatesViewModel(
             if (attempt < maxAttempts) delay(pollIntervalMs)
         }
 
-        // Timeout: the scrape likely failed or took longer than 50 s.
-        // Surface whatever the latest fetch produced, even if it's the
-        // same doc we already had — at least the spinner stops.
-        performSingleFetch(previousSelected, previousHistory)
+        // Timeout: the upstream scrape likely failed or took longer
+        // than the budget.  Phase 0 already showed the user the freshest
+        // available cron-tick doc; just clear the spinner so the UI
+        // stops spinning.
+        val current = _state.value
+        if (current is RatesUiState.Ready) {
+            _state.value = current.copy(refreshing = false)
+        } else {
+            performSingleFetch(previousSelected, previousHistory)
+        }
     }
 
     /** Single-shot fetch + state update.  Used as the fallback path

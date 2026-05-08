@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.28.1 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.28.2 · 2026-05-08</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-28-2">v0.28.2</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-1">v0.28.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-0">v0.28.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-27-1">v0.27.1</a><span class="date">2026-05-08</span></li>
@@ -352,8 +353,44 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-28-1">
-  <h2><span class="ver">v0.28.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-28-2">
+  <h2><span class="ver">v0.28.2</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Refresh-button feels instant.</strong> Reworked
+      <code>RatesViewModel.performRefresh()</code> into a three-phase flow
+      that surfaces the latest cron-published doc within ~1 second of
+      tap, instead of holding the user behind a spinner for 30–50
+      seconds:
+      <ul>
+        <li><strong>Phase 0 (new):</strong> immediate
+          <code>rates.json</code> fetch — when the cron tick has produced
+          a fresher doc than what's on screen, the new values land
+          instantly. The spinner stays on (more updates may follow).</li>
+        <li><strong>Phase 1:</strong> unchanged — POST the Cloudflare
+          Worker to dispatch a fresh upstream scrape via
+          <code>workflow_dispatch</code>.</li>
+        <li><strong>Phase 2 (tightened):</strong> initial head-start cut
+          from 6 s → 2 s; poll interval cut from 4 s → 2 s; max attempts
+          raised 12 → 24 to keep the same ~48 s total budget. A
+          truly-fresh upstream scrape now surfaces 0–4 seconds sooner
+          than in v0.28.1.</li>
+      </ul>
+      Total time-to-truly-fresh data is unchanged (still bound by GitHub
+      Actions queue + scraper runtime + Pages CDN propagation, which we
+      can't make faster from the client). What changed is the
+      <em>perceived</em> responsiveness — the user sees something update
+      within a second instead of a half-minute spinner. When the upstream
+      trigger fails (no Worker, network blip), Phase 0's fetch is now the
+      final state and the spinner clears — the refresh button never feels
+      worse than before, only faster.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-28-1">
+  <h2><span class="ver">v0.28.1</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="fixed">Security</h3>

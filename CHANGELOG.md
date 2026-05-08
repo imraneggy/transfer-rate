@@ -15,6 +15,35 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.28.2] — 2026-05-08
+
+### Changed
+- **Refresh-button feels instant.** Reworked `RatesViewModel.performRefresh()`
+  into a three-phase flow that surfaces the latest cron-published doc
+  within ~1 second of tap, instead of holding the user behind a spinner
+  for 30–50 seconds:
+  - **Phase 0 (new):** immediate `rates.json` fetch — when the cron tick
+    has produced a fresher doc than what's on screen, the new values
+    land instantly. The spinner stays on (more updates may follow).
+  - **Phase 1:** unchanged — POST the Cloudflare Worker to dispatch a
+    fresh upstream scrape via `workflow_dispatch`.
+  - **Phase 2 (tightened):** initial head-start cut from 6 s → 2 s; poll
+    interval cut from 4 s → 2 s; max attempts raised 12 → 24 to keep
+    the same ~48 s total budget. A truly-fresh upstream scrape now
+    surfaces 0–4 seconds sooner than in v0.28.1.
+
+  Total time-to-truly-fresh data is unchanged (still bound by GitHub
+  Actions queue + scraper runtime + Pages CDN propagation, which we
+  can't make faster from the client). What changed is the **perceived**
+  responsiveness — the user sees something update within a second
+  instead of a half-minute spinner.
+
+  When the upstream trigger fails (no Worker, network blip), Phase 0's
+  fetch is now the final state and the spinner clears — the refresh
+  button never feels worse than before, only faster.
+
+---
+
 ## [0.28.1] — 2026-05-08
 
 ### Security
@@ -477,6 +506,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.28.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.2
 [0.28.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.1
 [0.28.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.0
 [0.27.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.27.1
