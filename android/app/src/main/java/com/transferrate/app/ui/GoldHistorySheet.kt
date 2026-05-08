@@ -1,6 +1,7 @@
 package com.transferrate.app.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +18,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -89,7 +90,14 @@ fun GoldHistorySheet(
     gold: GoldDocument,
     onDismiss: () -> Unit,
 ) {
+    // v0.27 structure: outer body is a LazyColumn (not a Column) so the
+    // sheet has a single scrollable child, cooperating with M3's
+    // ModalBottomSheet nestedScrollConnection.  The inline 30-row table
+    // that used to sit inside a fixed-height LazyColumn is now a 5-row
+    // mini-preview with a "View full history" tap-target — the full
+    // table lives in its own dedicated [FullHistorySheet] sub-popup.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val historySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val silverAvailable = gold.uaeSilver?.status == "ok"
         && gold.indiaSilver?.status == "ok"
@@ -97,6 +105,8 @@ fun GoldHistorySheet(
         && gold.indiaSilver?.perG != null
 
     var selectedCarat by remember { mutableStateOf("24K") }
+    var fullHistoryOpen by remember { mutableStateOf(false) }
+
     val (uaeSelectedRates, indiaSelectedRates) = remember(gold, selectedCarat) {
         ratesForCarat(selectedCarat, gold)
     }
@@ -105,68 +115,79 @@ fun GoldHistorySheet(
     val uaeGoldHistory = remember(gold) { gold.uae.history.sortedBy { it.date } }
     val indiaGoldHistory = remember(gold) { gold.india.history.sortedBy { it.date } }
 
+    val allHistoryDates = remember(uaeSelectedRates, indiaSelectedRates) {
+        (uaeSelectedRates.map { it.date } + indiaSelectedRates.map { it.date })
+            .toSortedSet(reverseOrder())
+            .toList()
+    }
+    val miniHistoryDates = remember(allHistoryDates) { allHistoryDates.take(5) }
+    val uaeMap = remember(uaeSelectedRates) { uaeSelectedRates.associateBy { it.date } }
+    val inrMap = remember(indiaSelectedRates) { indiaSelectedRates.associateBy { it.date } }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 24.dp),
         ) {
             // 1. Header
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("🪙", fontSize = 22.sp, maxLines = 1)
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = if (silverAvailable)
-                            "Gold & silver · UAE vs India"
-                        else
-                            "Gold rate · UAE vs India",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        softWrap = false,
-                    )
-                    Text(
-                        "Last 30 days, per gram",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        softWrap = false,
-                    )
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("🪙", fontSize = 22.sp, maxLines = 1)
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = if (silverAvailable)
+                                "Gold & silver · UAE vs India"
+                            else
+                                "Gold rate · UAE vs India",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                        Text(
+                            "Last 30 days, per gram",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                    }
                 }
+                Spacer(Modifier.height(14.dp))
+                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                Spacer(Modifier.height(14.dp))
             }
 
-            Spacer(Modifier.height(14.dp))
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-            Spacer(Modifier.height(14.dp))
+            // 2. Snapshot grid (gold + optional silver column)
+            item {
+                SnapshotGrid(gold = gold, silverAvailable = silverAvailable)
+                Spacer(Modifier.height(18.dp))
+            }
 
-            // 2. Snapshot grid (24K + 22K + optional Ag, both regions)
-            SnapshotGrid(gold = gold, silverAvailable = silverAvailable)
-
-            Spacer(Modifier.height(18.dp))
-
-            // 3. 24K trend (always visible if any history)
-            // 4. 22K trend (always visible if any history)
+            // 3-4. Gold trend sparklines (24K + 22K)
             if (uaeGoldHistory.size >= 2 || indiaGoldHistory.size >= 2) {
-                TrendRow(
-                    title = "24K trend (newest right)",
-                    uaeValues = uaeGoldHistory.map { it.perG24k },
-                    indiaValues = indiaGoldHistory.map { it.perG24k },
-                )
-                Spacer(Modifier.height(12.dp))
-
-                TrendRow(
-                    title = "22K trend (newest right)",
-                    uaeValues = uaeGoldHistory.map { it.perG22k },
-                    indiaValues = indiaGoldHistory.map { it.perG22k },
-                )
-                Spacer(Modifier.height(16.dp))
+                item {
+                    TrendRow(
+                        title = "24K trend (newest right)",
+                        uaeValues = uaeGoldHistory.map { it.perG24k },
+                        indiaValues = indiaGoldHistory.map { it.perG24k },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    TrendRow(
+                        title = "22K trend (newest right)",
+                        uaeValues = uaeGoldHistory.map { it.perG22k },
+                        indiaValues = indiaGoldHistory.map { it.perG22k },
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
             }
 
             // Optional silver trend (India only — UAE silver is spot, no history)
@@ -174,203 +195,160 @@ fun GoldHistorySheet(
                 val indiaSilverChrono = gold.indiaSilver?.history.orEmpty()
                     .sortedBy { it.date }
                 if (indiaSilverChrono.size >= 2) {
-                    TrendRow(
-                        title = "Silver trend · India (newest right)",
-                        uaeValues = emptyList(),
-                        indiaValues = indiaSilverChrono.map { it.perG },
-                        uaePlaceholder = "spot only",
-                    )
-                    Spacer(Modifier.height(16.dp))
+                    item {
+                        TrendRow(
+                            title = "Silver trend · India (newest right)",
+                            uaeValues = emptyList(),
+                            indiaValues = indiaSilverChrono.map { it.perG },
+                            uaePlaceholder = "spot only",
+                        )
+                        Spacer(Modifier.height(16.dp))
+                    }
                 }
             }
 
-            // 5. Carat selector — controls stats + table below
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CaratChip("24K", selected = selectedCarat == "24K") { selectedCarat = "24K" }
-                Spacer(Modifier.width(10.dp))
-                CaratChip("22K", selected = selectedCarat == "22K") { selectedCarat = "22K" }
-                if (silverAvailable) {
+            // 5. Carat selector — controls the mini-history + stats + sub-sheet
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CaratChip("24K", selected = selectedCarat == "24K") { selectedCarat = "24K" }
                     Spacer(Modifier.width(10.dp))
-                    CaratChip("Ag", selected = selectedCarat == "Ag") { selectedCarat = "Ag" }
+                    CaratChip("22K", selected = selectedCarat == "22K") { selectedCarat = "22K" }
+                    if (silverAvailable) {
+                        Spacer(Modifier.width(10.dp))
+                        CaratChip("Ag", selected = selectedCarat == "Ag") { selectedCarat = "Ag" }
+                    }
                 }
+                Spacer(Modifier.height(14.dp))
             }
-
-            Spacer(Modifier.height(14.dp))
 
             // 6. 30-day stats (per region, follows selectedCarat)
             val showStatsBlock = uaeSelectedRates.isNotEmpty() || indiaSelectedRates.isNotEmpty()
             if (showStatsBlock) {
+                item {
+                    Text(
+                        text = if (selectedCarat == "Ag")
+                            "30-day stats · Silver"
+                        else
+                            "30-day stats · $selectedCarat",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
+                    Spacer(Modifier.height(8.dp))
+
+                    if (uaeSelectedRates.isNotEmpty()) {
+                        StatRegionRow(
+                            regionLabel = "UAE",
+                            currencySym = "AED",
+                            rates = uaeSelectedRates.map { it.rate },
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    } else if (selectedCarat == "Ag") {
+                        // Honest spot disclosure: UAE silver has no daily
+                        // history, just a live spot-converted rate.
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "UAE",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.width(48.dp),
+                                maxLines = 1,
+                                softWrap = false,
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "spot price only — no daily history",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                maxLines = 1,
+                                softWrap = false,
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    if (indiaSelectedRates.isNotEmpty()) {
+                        StatRegionRow(
+                            regionLabel = "India",
+                            currencySym = "₹",
+                            rates = indiaSelectedRates.map { it.rate },
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+
+            // 7. Recent days mini-table (5 rows) + "View full history" tap-target
+            item {
                 Text(
                     text = if (selectedCarat == "Ag")
-                        "30-day stats · Silver"
+                        "Recent days · Silver"
                     else
-                        "30-day stats · $selectedCarat",
+                        "Recent days · $selectedCarat",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     softWrap = false,
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
 
-                if (uaeSelectedRates.isNotEmpty()) {
-                    StatRegionRow(
-                        regionLabel = "UAE",
-                        currencySym = "AED",
-                        rates = uaeSelectedRates.map { it.rate },
-                    )
-                    Spacer(Modifier.height(8.dp))
-                } else if (selectedCarat == "Ag") {
-                    // Honest spot disclosure: UAE silver has no daily
-                    // history, just a live spot-converted rate.
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                HistoryTableHeader(uaeLabel = "UAE", indiaLabel = "IN")
+                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+
+                if (miniHistoryDates.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         Text(
-                            "UAE",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold,
+                            text = if (selectedCarat == "Ag")
+                                "Silver history is India-only (UAE shows live spot)."
+                            else
+                                "Building history — check back tomorrow.",
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.width(48.dp),
-                            maxLines = 1,
-                            softWrap = false,
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "spot price only — no daily history",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline,
-                            maxLines = 1,
-                            softWrap = false,
+                            textAlign = TextAlign.Center,
                         )
                     }
-                    Spacer(Modifier.height(8.dp))
-                }
-                if (indiaSelectedRates.isNotEmpty()) {
-                    StatRegionRow(
-                        regionLabel = "India",
-                        currencySym = "₹",
-                        rates = indiaSelectedRates.map { it.rate },
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
-            }
+                } else {
+                    miniHistoryDates.forEach { date ->
+                        HistoryRow(
+                            date = date,
+                            uaeRate = uaeMap[date]?.rate,
+                            indiaRate = inrMap[date]?.rate,
+                            isSilver = selectedCarat == "Ag",
+                        )
+                    }
 
-            // 7. Daily history table — 3 cols: Date | UAE | IN
-            Text(
-                text = if (selectedCarat == "Ag")
-                    "Daily history · Silver"
-                else
-                    "Daily history · $selectedCarat",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                softWrap = false,
-            )
-            Spacer(Modifier.height(6.dp))
-
-            Row(
-                Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    "Date",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.weight(1.2f),
-                    color = MaterialTheme.colorScheme.outline,
-                    maxLines = 1,
-                    softWrap = false,
-                )
-                Text(
-                    "UAE",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End,
-                    color = MaterialTheme.colorScheme.outline,
-                    maxLines = 1,
-                    softWrap = false,
-                )
-                Text(
-                    "IN",
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End,
-                    color = MaterialTheme.colorScheme.outline,
-                    maxLines = 1,
-                    softWrap = false,
-                )
-            }
-            Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-
-            val allDates = remember(uaeSelectedRates, indiaSelectedRates) {
-                (uaeSelectedRates.map { it.date } + indiaSelectedRates.map { it.date })
-                    .toSortedSet(reverseOrder())
-                    .toList()
-                    .take(30)
-            }
-            val uaeMap = remember(uaeSelectedRates) { uaeSelectedRates.associateBy { it.date } }
-            val inrMap = remember(indiaSelectedRates) { indiaSelectedRates.associateBy { it.date } }
-
-            if (allDates.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = if (selectedCarat == "Ag")
-                            "Silver history is India-only (UAE shows live spot)."
-                        else
-                            "Building history — check back tomorrow.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp),
-                ) {
-                    items(allDates) { date ->
-                        Row(
-                            Modifier
+                    // Show the "View full" CTA when we have more days than
+                    // the mini-preview can fit.  Tapping opens a dedicated
+                    // sub-sheet that scrolls the full date range.
+                    if (allHistoryDates.size > miniHistoryDates.size) {
+                        Spacer(Modifier.height(10.dp))
+                        Box(
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer
+                                        .copy(alpha = 0.55f),
+                                )
+                                .clickable { fullHistoryOpen = true }
+                                .padding(vertical = 13.dp, horizontal = 14.dp),
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = formatShortDate(date),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.weight(1.2f),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                softWrap = false,
-                            )
-                            Text(
-                                text = uaeMap[date]?.rate?.let {
-                                    if (selectedCarat == "Ag") "%.2f".format(it)
-                                    else "%.0f".format(it)
-                                } ?: "—",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFeatureSettings = "tnum",
-                                ),
-                                modifier = Modifier.weight(1f),
-                                textAlign = TextAlign.End,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                softWrap = false,
-                            )
-                            Text(
-                                text = inrMap[date]?.rate?.let { "%,.0f".format(it) } ?: "—",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFeatureSettings = "tnum",
-                                ),
-                                modifier = Modifier.weight(1f),
-                                textAlign = TextAlign.End,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                text = "View full ${allHistoryDates.size}-day history  →",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 maxLines = 1,
                                 softWrap = false,
                             )
@@ -379,20 +357,244 @@ fun GoldHistorySheet(
                 }
             }
 
-            Spacer(Modifier.height(14.dp))
-            Text(
-                text = if (silverAvailable)
-                    "Sources: Khaleej Times (UAE gold) · LiveChennai (India gold + silver) · " +
-                    "spot XAG via gold-api.com (UAE silver). Indicative; jeweller prices may differ."
-                else
-                    "Sources: Khaleej Times (UAE) · LiveChennai (India). " +
-                    "Indicative; actual jeweller prices may differ.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // 8. Source attribution footer
+            item {
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    text = if (silverAvailable)
+                        "Sources: Khaleej Times (UAE gold) · LiveChennai (India gold + silver) · " +
+                        "spot XAG via gold-api.com (UAE silver). Indicative; jeweller prices may differ."
+                    else
+                        "Sources: Khaleej Times (UAE) · LiveChennai (India). " +
+                        "Indicative; actual jeweller prices may differ.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
+    }
+
+    // Sub-sheet: full daily history for the currently selected carat.
+    // Stacks on top of the parent sheet (sheet-on-sheet); dismissing it
+    // returns the user to the overview sheet without closing the parent.
+    if (fullHistoryOpen) {
+        FullHistorySheet(
+            carat = selectedCarat,
+            uaeRates = uaeSelectedRates,
+            indiaRates = indiaSelectedRates,
+            sheetState = historySheetState,
+            onDismiss = { fullHistoryOpen = false },
+        )
+    }
+}
+
+/**
+ * Dedicated full-history popup, opened from the parent gold sheet.
+ *
+ * Body is a single LazyColumn so the table scrolls cleanly inside the
+ * ModalBottomSheet — no nested-scroll trap, no fixed-height cap.  Title,
+ * column headers, and rows are all `item`/`items` blocks so the sheet
+ * grows with the data and the OS handles the swipe-to-dismiss gesture
+ * uniformly across the entire sheet body.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FullHistorySheet(
+    carat: String,
+    uaeRates: List<DatedRate>,
+    indiaRates: List<DatedRate>,
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
+) {
+    val allDates = remember(uaeRates, indiaRates) {
+        (uaeRates.map { it.date } + indiaRates.map { it.date })
+            .toSortedSet(reverseOrder())
+            .toList()
+    }
+    val uaeMap = remember(uaeRates) { uaeRates.associateBy { it.date } }
+    val inrMap = remember(indiaRates) { indiaRates.associateBy { it.date } }
+    val isSilver = carat == "Ag"
+    val metals = LocalMetalColors.current
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp),
+        ) {
+            // Title row — metal-tinted icon + carat-aware label
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isSilver) {
+                        Text(
+                            "◇",
+                            fontSize = 22.sp,
+                            color = metals.silverAccent,
+                            maxLines = 1,
+                        )
+                    } else {
+                        Text("🪙", fontSize = 22.sp, maxLines = 1)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = if (isSilver)
+                                "Silver · ${allDates.size}-day history"
+                            else
+                                "$carat gold · ${allDates.size}-day history",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                        Text(
+                            text = "UAE vs India · per gram",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                Spacer(Modifier.height(8.dp))
+            }
+
+            // Column headers — wider currency labels because there's room
+            item {
+                HistoryTableHeader(
+                    uaeLabel = "UAE (AED)",
+                    indiaLabel = "India (₹)",
+                )
+                Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+            }
+
+            if (allDates.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 36.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = if (isSilver)
+                                "Silver history is India-only (UAE shows live spot)."
+                            else
+                                "Building history — check back tomorrow.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            } else {
+                items(allDates) { date ->
+                    HistoryRow(
+                        date = date,
+                        uaeRate = uaeMap[date]?.rate,
+                        indiaRate = inrMap[date]?.rate,
+                        isSilver = isSilver,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Shared 3-column header row used by both the inline mini-table and
+ *  the full-history sub-sheet.  Pulled out so the column weights stay
+ *  identical between the two contexts. */
+@Composable
+private fun HistoryTableHeader(uaeLabel: String, indiaLabel: String) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            "Date",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.weight(1.2f),
+            color = MaterialTheme.colorScheme.outline,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Text(
+            uaeLabel,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            color = MaterialTheme.colorScheme.outline,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Text(
+            indiaLabel,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            color = MaterialTheme.colorScheme.outline,
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
+}
+
+/** Single date row (Date | UAE | INR), shared between the mini-preview
+ *  in the parent sheet and the LazyColumn rows in the sub-sheet. */
+@Composable
+private fun HistoryRow(
+    date: String,
+    uaeRate: Double?,
+    indiaRate: Double?,
+    isSilver: Boolean,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = formatShortDate(date),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1.2f),
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Text(
+            text = uaeRate?.let {
+                if (isSilver) "%.2f".format(it) else "%.0f".format(it)
+            } ?: "—",
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontFeatureSettings = "tnum",
+            ),
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Text(
+            text = indiaRate?.let { "%,.0f".format(it) } ?: "—",
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontFeatureSettings = "tnum",
+            ),
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }
 

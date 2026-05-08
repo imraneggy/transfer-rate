@@ -1,0 +1,87 @@
+# Verifies that CHANGELOG.md and docs/CHANGELOG.html both contain an entry
+# for the tag being pushed.  This is the "keep docs updated as changes are
+# made in the future" invariant: if either file is out of sync, the release
+# build fails fast and the maintainer fixes the docs *before* the APK ships.
+#
+# The hand-authored HTML changelog is treated as canonical (it has richer
+# section-coloured rendering than a pandoc auto-render would produce).
+# This workflow does not regenerate it — see docs/CONTRIBUTING.md or the
+# release checklist for the manual update ritual.
+#
+# Trigger: every annotated tag matching v*.*.* (the same shape used by the
+# android-build workflow that produces APKs).
+
+name: changelog-sync
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify CHANGELOG entries match the tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: ver
+        run: |
+          # refs/tags/v0.27.0 → 0.27.0  and  v0-27-0 (HTML id form)
+          TAG="${GITHUB_REF#refs/tags/v}"
+          ID_TAG="v${TAG//./-}"
+          echo "tag=${TAG}"           >> "$GITHUB_OUTPUT"
+          echo "html_id=${ID_TAG}"    >> "$GITHUB_OUTPUT"
+          echo "→ version: ${TAG}"
+          echo "→ html id : ${ID_TAG}"
+
+      - name: CHANGELOG.md must contain an entry for this version
+        run: |
+          TAG="${{ steps.ver.outputs.tag }}"
+          if [ ! -f CHANGELOG.md ]; then
+            echo "::error file=CHANGELOG.md::CHANGELOG.md is missing"
+            exit 1
+          fi
+          if ! grep -qE "^## \[${TAG}\]" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::No '## [${TAG}]' heading found in CHANGELOG.md"
+            echo "Add a section like:"
+            echo "  ## [${TAG}] — $(date +%Y-%m-%d)"
+            echo "  ### Added / Changed / Fixed / Removed"
+            echo "  - Bullet points describing user-visible changes"
+            exit 1
+          fi
+          echo "✓ CHANGELOG.md has an entry for v${TAG}"
+
+      - name: docs/CHANGELOG.html must contain a section for this version
+        run: |
+          ID="${{ steps.ver.outputs.html_id }}"
+          TAG="${{ steps.ver.outputs.tag }}"
+          if [ ! -f docs/CHANGELOG.html ]; then
+            echo "::error file=docs/CHANGELOG.html::docs/CHANGELOG.html is missing"
+            exit 1
+          fi
+          if ! grep -q "id=\"${ID}\"" docs/CHANGELOG.html; then
+            echo "::error file=docs/CHANGELOG.html::No <section id=\"${ID}\"> found"
+            echo "Add a <section class=\"release\" id=\"${ID}\"> block to docs/CHANGELOG.html"
+            echo "matching the v${TAG} entry in CHANGELOG.md, plus a <li><a href=\"#${ID}\">"
+            echo "entry in the <nav class=\"toc\"> at the top of the page."
+            exit 1
+          fi
+          echo "✓ docs/CHANGELOG.html has a section for v${TAG}"
+
+      - name: Stamp the workflow run summary
+        run: |
+          TAG="${{ steps.ver.outputs.tag }}"
+          {
+            echo "## ✓ Changelog sync verified"
+            echo ""
+            echo "**Tag:** \`v${TAG}\`"
+            echo ""
+            echo "Both \`CHANGELOG.md\` and \`docs/CHANGELOG.html\` contain an entry"
+            echo "for this version. The release is safe to ship from a docs perspective."
+          } >> "$GITHUB_STEP_SUMMARY"

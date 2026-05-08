@@ -61,6 +61,51 @@ Wrong-rate issues are P0 — we patch and force a fresh scrape ASAP.
 * Kotlin: official style (already enforced via `kotlin.code.style=official`)
 * No comments that restate the code; comments explain *why*.
 
+## Release checklist (maintainers)
+
+Every `v*.*.*` tag push runs the `changelog-sync` workflow, which **fails
+the build** if either `CHANGELOG.md` or `docs/CHANGELOG.html` is missing
+an entry for the new version. The intent is to catch forgotten doc
+updates before the APK ships.
+
+Before tagging:
+
+1. Bump `versionCode` (+1) and `versionName` (semver) in
+   [`android/app/build.gradle.kts`](android/app/build.gradle.kts).
+2. Add a new `## [X.Y.Z] — YYYY-MM-DD` section at the top of
+   [`CHANGELOG.md`](CHANGELOG.md) under one or more of the
+   *Added / Changed / Fixed / Removed / Infrastructure* headings.
+3. Add a matching `<section class="release" id="vX-Y-Z">` block at the
+   top of [`docs/CHANGELOG.html`](docs/CHANGELOG.html), and a
+   corresponding `<li><a href="#vX-Y-Z">` entry in the `<nav class="toc">`.
+   Move the `current` CSS class from the previous release section onto
+   the new one. Update the "Latest:" pill in the hero header.
+4. Update the link reference at the bottom of `CHANGELOG.md`:
+   `[X.Y.Z]: https://github.com/imraneggy/transfer-rate/releases/tag/vX.Y.Z`
+5. Refresh user-visible docs that reference the version: e.g.,
+   [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) "Last updated for…" line.
+6. Commit with the standard subject style:
+   `feat: <one-line summary> (vX.Y.Z)`.
+7. Push to `main`. Once CI is green, tag and push:
+   ```bash
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   ```
+8. The `android-build` workflow produces signed APKs and the
+   `changelog-sync` workflow validates the docs. Both must succeed
+   before the GitHub Release is published.
+
+If `changelog-sync` fails, fix the missing doc entry, push the fix,
+delete the tag locally + remote, and re-tag:
+
+```bash
+git tag -d vX.Y.Z
+git push --delete origin vX.Y.Z
+# fix docs, commit, push
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
 ## Disclosure
 
 Found a security issue? See [`SECURITY.md`](SECURITY.md). Do not file public

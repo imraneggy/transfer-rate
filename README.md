@@ -1,16 +1,66 @@
-# transfer-rate
+# Transfer Rate
 
-Open-source AED → INR rate aggregator for UAE remittance services.
+Open-source AED → INR rate aggregator for UAE remittance services, with
+side-by-side gold and silver rates for the UAE / India corridor.
 Public, free, ad-free, no analytics, no accounts.
 
 [![scrape](https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml)
-[![pages](https://github.com/imraneggy/transfer-rate/actions/workflows/pages.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/pages.yml)
+[![android-build](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+> **Latest release:** see [`CHANGELOG.md`](CHANGELOG.md) for the full
+> version history; the rendered HTML report lives at
+> [`docs/CHANGELOG.html`](docs/CHANGELOG.html). End-user docs are in
+> [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
 
 ## What this is
 
-A small Android 14+ app that shows current 1 AED → INR rates from major UAE
-remittance services side-by-side. Updates every 15 minutes.
+A small Android 14+ app that shows three things side-by-side, refreshed
+every 15 minutes:
+
+1. **AED → INR remittance rates** from twelve UAE money-transfer
+   providers (Wise, Remitly, LuLu, Aspora, Careem Pay, TransferGo,
+   Ahalia, and others).
+2. **The Google Finance mid-market rate** as a benchmark, so the
+   provider spread is visible at a glance.
+3. **Gold & silver rates** for the UAE (Khaleej Times) and India
+   (LiveChennai), with 24K + 22K gold (1 g + 8 g) and silver (1 g +
+   1 kg), plus 30-day history.
+
+A built-in **mosque finder** uses MapLibre + OpenStreetMap tiles
+(no API key, $0-ops) to surface nearby mosques while travelling.
+
+## Tech stack
+
+| Layer | Component | Version |
+|-------|-----------|---------|
+| Android — runtime | minSdk / targetSdk | **34** (Android 14) |
+| Android — runtime | compileSdk | **35** |
+| Android — runtime | JDK | **17** |
+| Android — language | Kotlin | **2.1.0** |
+| Android — toolchain | Android Gradle Plugin | **8.7.3** |
+| Android — UI | Compose BOM | **2024.12.01** |
+| Android — UI | Material 3 (`compose-material3`) | (BOM-managed) |
+| Android — UI | Activity Compose | **1.9.3** |
+| Android — UI | Lifecycle ViewModel + Runtime | **2.8.7** |
+| Android — networking | OkHttp | **4.12.0** |
+| Android — serialization | kotlinx.serialization JSON | **1.7.3** |
+| Android — concurrency | kotlinx.coroutines (Android) | **1.9.0** |
+| Android — background | WorkManager (`work-runtime-ktx`) | **2.10.0** |
+| Android — maps | MapLibre Native Android SDK | **11.11.0** |
+| Android — maps | MapLibre Annotation Plugin v9 | **3.0.2** |
+| Android — fonts | Manrope, Space Grotesk (OFL 1.1) | bundled |
+| Data pipeline | Python (scrapers + orchestrator) | **3.11+** |
+| Data pipeline | GitHub Actions (cron `*/15`) | hosted |
+| Data hosting | GitHub Pages (Fastly CDN) | static |
+| Refresh proxy | Cloudflare Worker (free tier) | hosted |
+| Distribution | Google Play (release-signed AAB) | per-ABI splits |
+| Distribution | F-Droid (reproducible from source) | metadata in `fastlane/` |
+
+All Android dependency versions are pinned in
+[`android/gradle/libs.versions.toml`](android/gradle/libs.versions.toml).
+Floating versions (`1.+`) are deliberately avoided — they turn every
+build into an unauditable supply-chain risk.
 
 ## Screenshots
 
@@ -111,27 +161,52 @@ Contributions to add scrapers for them are welcome — see `CONTRIBUTING.md`.
 
 ```
 transfer-rate/
+├── CHANGELOG.md               Canonical version history (see also
+│                              docs/CHANGELOG.html for the rendered report)
 ├── scrapers/                  Python scrapers + orchestrator
 │   ├── base.py                Provider/Quote interface
 │   ├── utils.py               HTTP client (polite User-Agent, timeouts)
 │   ├── run_all.py             Runs everything, writes public/rates.json
-│   ├── wise.py, remitly.py, …
+│   ├── gold.py                UAE gold (Khaleej Times) + India gold/silver
+│   │                          (LiveChennai) + UAE silver (XAG spot × peg)
+│   ├── wise.py, remitly.py, lulu.py, aspora.py, careem.py, …
 ├── public/
-│   └── rates.json             Output, served by GitHub Pages
+│   ├── rates.json             Output, served by GitHub Pages
+│   └── admin/                 Static manual-entry admin UI
 ├── android/                   Android 14+ Compose app
-│   ├── app/
+│   ├── app/                   :app module (UI, data, theme, workers)
 │   ├── settings.gradle.kts
 │   ├── build.gradle.kts
-│   └── gradle/libs.versions.toml
+│   └── gradle/libs.versions.toml   Pinned dependency versions
+├── infra/
+│   ├── lulu-proxy/            Residential-proxy helper for LuLu
+│   ├── lulu-residential/      Playwright-based fallback (legacy)
+│   └── refresh-worker/        Cloudflare Worker source (PAT custodian)
 ├── .github/workflows/
-│   ├── scrape.yml             Cron */15, runs scrapers, commits JSON
-│   └── pages.yml              Publishes public/ to GitHub Pages
+│   ├── scrape.yml             Cron */15, runs scrapers, deploys Pages
+│   ├── android-build.yml      Builds + signs APKs on tag push
+│   ├── changelog.yml          Regenerates docs/CHANGELOG.html on tag push
+│   └── test.yml               Python scraper unit tests
 └── docs/
-    ├── ARCHITECTURE.md
-    ├── RUNBOOK.md
-    ├── PUBLISHING.md
-    └── report.html
+    ├── ARCHITECTURE.md        Two-plane design, failure model, schema
+    ├── RUNBOOK.md             Operator playbook (manual entries, incidents)
+    ├── PUBLISHING.md          Play Store + F-Droid release procedures
+    ├── USER_GUIDE.md          End-user-facing app documentation
+    ├── CHANGELOG.html         Rendered version history (auto-generated)
+    └── report.html            Hand-curated technical narrative
 ```
+
+## Documentation map
+
+| Audience | Document |
+|----------|----------|
+| End user | [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) |
+| Anyone wanting the version history | [`CHANGELOG.md`](CHANGELOG.md) |
+| Anyone wanting a printable / shareable changelog | [`docs/CHANGELOG.html`](docs/CHANGELOG.html) |
+| New contributor | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Maintainer / on-call | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) |
+| Releaser | [`docs/PUBLISHING.md`](docs/PUBLISHING.md) |
+| Security / privacy / takedown | [`SECURITY.md`](SECURITY.md), [`PRIVACY.md`](PRIVACY.md), [`DISCLAIMER.md`](DISCLAIMER.md), [`TAKEDOWN.md`](TAKEDOWN.md) |
 
 ## Manual rate entry
 

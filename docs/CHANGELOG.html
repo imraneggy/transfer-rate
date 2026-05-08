@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transfer Rate — Changelog</title>
+<meta name="description" content="Release history for the Transfer Rate Android app — UAE→India rate aggregator with gold and silver tracking.">
+<style>
+  /* Palette mirrors android/app/src/main/java/com/transferrate/app/ui/theme/Theme.kt
+     (v0.27 — Stripe Atlas Premium with indigo lifted to L=70). */
+  :root {
+    --fg:           #0A2540;  /* Stripe deep navy */
+    --fg-muted:     #4A6684;  /* neutral L=50 */
+    --fg-subtle:    #A6C1DE;  /* neutral L=80 */
+    --bg:           #F6F9FC;  /* Stripe paper */
+    --surface:      #FFFFFF;
+    --surface-alt:  #F0F3F8;  /* neutral L=92 */
+    --primary:      #8486FF;  /* indigo L=70 (v0.27 anchor) */
+    --primary-deep: #635BFF;  /* indigo L=60 (v0.26 anchor → now secondary) */
+    --primary-soft: #DCE7FF;  /* indigo L=95 */
+    --primary-ink:  #241776;  /* indigo L=20 */
+    --gold:         #D4A017;  /* metal palette gold accent */
+    --gold-soft:    #FFF9E6;
+    --silver:       #8E9AA8;
+    --silver-soft:  #F2F4F7;
+    --border:       #CCE0FB;  /* neutral L=90 */
+    --border-soft:  #E6EEF8;
+    --code-bg:      #F0F3F8;
+    --shadow-sm:    0 1px 2px rgba(10,37,64,.06), 0 1px 1px rgba(10,37,64,.04);
+    --shadow-md:    0 4px 12px rgba(10,37,64,.08), 0 2px 4px rgba(10,37,64,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg:           #E0F1FF;
+      --fg-muted:     #A6C1DE;
+      --fg-subtle:    #4A6684;
+      --bg:           #0F1720;
+      --surface:      #1F2F41;
+      --surface-alt:  #334462;
+      --primary:      #A3ACFF;
+      --primary-deep: #8486FF;
+      --primary-soft: #241776;
+      --primary-ink:  #DCE7FF;
+      --gold:         #E8C76B;
+      --gold-soft:    #3D2D00;
+      --silver:       #C5CDD8;
+      --silver-soft:  #2F3742;
+      --border:       #334462;
+      --border-soft:  #1F2F41;
+      --code-bg:      #1F2F41;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    font-feature-settings: 'tnum';
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  /* --- Header / hero --- */
+  header.hero {
+    background: linear-gradient(135deg, var(--primary-soft) 0%, var(--bg) 60%);
+    border-radius: 20px;
+    padding: 40px 32px;
+    margin-bottom: 40px;
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-sm);
+  }
+  header.hero .eyebrow {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    color: var(--primary-deep);
+    margin: 0 0 8px;
+  }
+  header.hero h1 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin: 0 0 8px;
+    color: var(--fg);
+  }
+  header.hero p.tagline {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    margin: 0 0 20px;
+    max-width: 60ch;
+  }
+  header.hero .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+  header.hero .meta strong { color: var(--fg); font-weight: 600; }
+  header.hero .meta a {
+    color: var(--primary-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--primary-soft);
+  }
+  header.hero .meta a:hover { border-bottom-color: var(--primary-deep); }
+
+  /* --- Version index --- */
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    box-shadow: var(--shadow-sm);
+  }
+  nav.toc h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--fg-muted);
+    margin: 0 0 12px;
+  }
+  nav.toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px 14px;
+  }
+  nav.toc li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+  }
+  nav.toc a {
+    color: var(--primary-deep);
+    text-decoration: none;
+    font-weight: 600;
+    font-feature-settings: 'tnum';
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc .date {
+    color: var(--fg-subtle);
+    font-size: 12px;
+  }
+
+  /* --- Version sections --- */
+  section.release {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    scroll-margin-top: 24px;
+  }
+  section.release.current {
+    border: 1px solid var(--primary-deep);
+    box-shadow: var(--shadow-md), 0 0 0 4px var(--primary-soft);
+  }
+  section.release h2 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--fg);
+  }
+  section.release h2 .ver { color: var(--primary-deep); }
+  section.release h2 .badge {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--primary-deep);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-family: 'Manrope', system-ui, sans-serif;
+  }
+  section.release .date {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin: 0 0 16px;
+    font-feature-settings: 'tnum';
+  }
+  section.release h3 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    margin: 18px 0 8px;
+    color: var(--fg-muted);
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  section.release h3.added    { background: #E1F4EA; color: #0F7B2F; }
+  section.release h3.changed  { background: var(--primary-soft); color: var(--primary-ink); }
+  section.release h3.fixed    { background: #FFF1D6; color: #7A4D00; }
+  section.release h3.removed  { background: #FFE3DD; color: #8E1B00; }
+  section.release h3.infra    { background: var(--silver-soft); color: var(--fg); }
+  @media (prefers-color-scheme: dark) {
+    section.release h3.added    { background: #143828; color: #6BD9A3; }
+    section.release h3.changed  { background: #241776; color: #DCE7FF; }
+    section.release h3.fixed    { background: #3D2D00; color: #FFD788; }
+    section.release h3.removed  { background: #4A1611; color: #FFB1A1; }
+    section.release h3.infra    { background: #2F3742; color: #C5CDD8; }
+  }
+  section.release ul {
+    margin: 0 0 12px;
+    padding-left: 22px;
+  }
+  section.release li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+  section.release strong { color: var(--fg); font-weight: 700; }
+
+  code, kbd, samp, pre {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'Menlo',
+                 'Consolas', monospace;
+    font-size: 13.5px;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--primary-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    code { color: var(--primary); }
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border-soft);
+    margin: 32px 0;
+  }
+
+  /* --- Footer --- */
+  footer.foot {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--fg-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  footer.foot a {
+    color: var(--primary-deep);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--primary-soft);
+  }
+  footer.foot a:hover { border-bottom-style: solid; }
+
+  /* --- Print --- */
+  @media print {
+    :root { --shadow-sm: none; --shadow-md: none; }
+    body { background: white; color: black; }
+    .container { max-width: none; padding: 16px; }
+    header.hero, nav.toc, section.release, footer.foot {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      page-break-inside: avoid;
+    }
+    section.release.current {
+      box-shadow: none !important;
+      border-color: #888 !important;
+    }
+    a { color: black !important; border: none !important; }
+    nav.toc { page-break-after: always; }
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 28px 16px 64px; }
+    header.hero { padding: 28px 22px; }
+    section.release { padding: 22px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <p class="eyebrow">Transfer Rate · Release notes</p>
+  <h1>Changelog</h1>
+  <p class="tagline">
+    Version history for the open-source Android app that compares
+    AED → INR remittance rates and tracks gold &amp; silver across the
+    UAE / India corridor.
+  </p>
+  <div class="meta">
+    <span><strong>Latest:</strong> v0.27.0 · 2026-05-08</span>
+    <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
+    <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
+    <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Versions</h2>
+  <ul>
+    <li><a href="#v0-27-0">v0.27.0</a><span class="date">2026-05-08</span></li>
+    <li><a href="#v0-26-0">v0.26.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-25-0">v0.25.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-24-0">v0.24.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-23-0">v0.23.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-22-0">v0.22.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-21-0">v0.21.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-20-0">v0.20.0</a><span class="date">2026-05-07</span></li>
+    <li><a href="#v0-19-0">v0.19.0</a><span class="date">2026-05-06</span></li>
+    <li><a href="#v0-18-0">v0.18.0</a><span class="date">2026-05-06</span></li>
+    <li><a href="#v0-17-0">v0.17.0</a><span class="date">2026-05-06</span></li>
+    <li><a href="#v0-16-x">v0.16.x</a><span class="date">2026-05-04</span></li>
+    <li><a href="#v0-15-0">v0.15.0</a><span class="date">2026-05-04</span></li>
+    <li><a href="#v0-14-0">v0.14.0</a><span class="date">2026-05-03</span></li>
+    <li><a href="#v0-13-x">v0.13.x</a><span class="date">2026-05-03</span></li>
+    <li><a href="#v0-11-0">v0.11.0</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-10-x">v0.10.x</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-9-x">v0.9.x</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-8-x">v0.8.x</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-7-0">v0.7.0</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-6-0">v0.6.0</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-5-x">v0.5.x</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-4-0">v0.4.0</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-3-0">v0.3.0</a><span class="date">2026-05-02</span></li>
+    <li><a href="#v0-1-0">v0.1.0</a><span class="date">2026-05-01</span></li>
+  </ul>
+</nav>
+
+<section class="release current" id="v0-27-0">
+  <h2><span class="ver">v0.27.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-08</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Primary palette lifted one step on the OKLCh ramp.</strong>
+      Light-mode primary is now <code>#8486FF</code> (L=70) instead of
+      <code>#635BFF</code> (L=60); dark-mode primary is <code>#A3ACFF</code>
+      (L=80) instead of <code>#8486FF</code> (L=70). Addresses feedback that
+      Stripe indigo at L=60 read too dark against the paper-light background.
+      The previous primary anchors slot one step down to become the new
+      secondary, so the dual-tone identity is preserved.</li>
+    <li><strong>Gold/silver bottom sheet body restructured to a single
+      <code>LazyColumn</code>.</strong> All sections (header, snapshot grid,
+      sparklines, carat selector, stats, recent days, footer) are now
+      <code>item { }</code> blocks. Eliminates the nested-scroll trap that
+      prevented the inline 30-row history from scrolling cleanly.</li>
+  </ul>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Dedicated full-history sub-sheet.</strong> The inline 30-row
+      table is now a 5-row recent-days preview followed by a <code>View full
+      {N}-day history →</code> button that opens a second
+      <code>ModalBottomSheet</code>. The sub-sheet's body is a single
+      <code>LazyColumn</code> so the table scrolls without bound —
+      sheet-on-sheet pattern, dismissing returns to the overview without
+      closing the parent.</li>
+    <li><strong>Project documentation system.</strong>
+      <code>CHANGELOG.md</code>, <code>docs/CHANGELOG.html</code> (this
+      file), <code>docs/USER_GUIDE.md</code>, and
+      <code>.github/workflows/changelog.yml</code> for automatic HTML
+      regeneration on each release tag.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-26-0">
+  <h2><span class="ver">v0.26.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Stripe Atlas Premium design refresh.</strong> Full palette
+      regenerated from OKLCh tonal ramps anchored on Stripe brand values:
+      primary indigo <code>#635BFF</code>, neutral navy <code>#0A2540</code>,
+      paper background <code>#F6F9FC</code>. APCA contrast ratings tracked
+      per role.</li>
+    <li><strong>Metal-specific tonal ramps.</strong> Gold and silver now
+      have their own warm (saddle) and cool (steel) ramps in
+      <code>Theme.kt</code>, exposed via <code>LocalMetalColors</code>.
+      Replaces the previous trick of borrowing from secondary + neutral
+      for metal tinting.</li>
+    <li><strong>Two-column gold/silver header card</strong> with side-by-side
+      metal columns, each rendered with its own gradient background (warm
+      gold | cool steel).</li>
+    <li><strong>Per-metal snapshot cards</strong> in the bottom sheet — gold
+      card shows 24K + 22K rates per region, silver card shows 1g + 1kg per
+      region.</li>
+    <li><strong>Bumped display typography</strong> (<code>displayLarge</code>
+      57sp → 72sp, <code>displayMedium</code> 45sp → 56sp,
+      <code>displaySmall</code> 36sp → 40sp) with negative tracking for
+      "hero numeral" rendering on the home rate card.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-25-0">
+  <h2><span class="ver">v0.25.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Renamed the metal label "Ag" → "Silver" in all UI surfaces.</li>
+    <li>Standardised silver weights to <strong>1 g + 1 kg</strong> (gold
+      remains 1 g + 8 g). Reflects how each metal is bought in practice.</li>
+    <li>Bolder sparkline strokes (1.6 dp → 2.4 dp) for legibility on small
+      phone screens.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-24-0">
+  <h2><span class="ver">v0.24.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>Silver columns in the gold/silver bottom sheet alongside gold. UAE
+      silver is spot-only (no daily history); India silver has 10-day
+      history from LiveChennai.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-23-0">
+  <h2><span class="ver">v0.23.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Switched India gold source from BankBazaar (Mumbai) to
+      LiveChennai (Chennai).</strong> LiveChennai publishes 10 days of
+      historical rates per page, feeding the new history sheet without
+      requiring daily snapshots.</li>
+    <li>Added silver scraping on both sides:
+      <ul>
+        <li><strong>UAE silver</strong> via gold-api.com XAG spot × the
+          AED-USD peg (3.6725).</li>
+        <li><strong>India silver</strong> parsed from LiveChennai's silver
+          table.</li>
+      </ul>
+    </li>
+  </ul>
+</section>
+
+<section class="release" id="v0-22-0">
+  <h2><span class="ver">v0.22.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Refresh button now triggers a fresh upstream scrape.</strong>
+      Tapping refresh dispatches a <code>workflow_dispatch</code> to the
+      scrape workflow via the Cloudflare Worker proxy; new rates land in
+      ~30–45 seconds instead of waiting for the next 15-minute cron tick.</li>
+  </ul>
+  <h3 class="infra">Infrastructure</h3>
+  <ul>
+    <li>Cloudflare Worker
+      (<code>transfer-rate-refresh.imranbatchait.workers.dev</code>) holds
+      the GitHub PAT in encrypted env so the APK never ships a token.
+      Worker accepts a shared bearer secret and returns <code>{ "dispatched":
+      true, "etaSeconds": 35 }</code>.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-21-0">
+  <h2><span class="ver">v0.21.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Defeated all CDN caching on rates fetch.</strong> Added a
+      <code>?_t=&lt;currentMillis&gt;</code> cache-bust query parameter to
+      every <code>RatesRepository</code> request after observing 3+ minute
+      staleness from GitHub Pages' <code>Cache-Control: max-age=600</code>
+      combined with Fastly edge cache.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-20-0">
+  <h2><span class="ver">v0.20.0</span></h2>
+  <p class="date">2026-05-07</p>
+  <h3 class="removed">Removed</h3>
+  <ul>
+    <li>"Today's Best" in-app banner from the home dashboard. The status-bar
+      notification (added in v0.19) covers the same need without consuming
+      screen real estate.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-19-0">
+  <h2><span class="ver">v0.19.0</span></h2>
+  <p class="date">2026-05-06</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Opt-in status-bar notifications for new daily highs.</strong>
+      WorkManager periodic worker compares the current best rate to today's
+      running high; a notification fires when a new high is set. User opts
+      in from the About screen; channel uses
+      <code>IMPORTANCE_DEFAULT</code>.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-18-0">
+  <h2><span class="ver">v0.18.0</span></h2>
+  <p class="date">2026-05-06</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>"Today's Best" banner above the rates list, showing the
+      current-best provider plus today's running peak. (Reverted in v0.20
+      in favour of notifications-only.)</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-17-0">
+  <h2><span class="ver">v0.17.0</span></h2>
+  <p class="date">2026-05-06</p>
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>App rebranded from "Exchangia" to "Transfer Rate".</strong>
+      New logo, wordmark, splash, palette. Package name remains
+      <code>com.transferrate.app</code>.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-16-x">
+  <h2><span class="ver">v0.16.x</span></h2>
+  <p class="date">2026-05-04</p>
+  <ul>
+    <li><strong>0.16.3</strong> — New launcher icon (Stair-Step E variant).</li>
+    <li><strong>0.16.2</strong> — User location marker on the mosque map;
+      per-pin distance badge.</li>
+    <li><strong>0.16.1</strong> — Mosque finder UX cleanup (filter chips,
+      smoother camera).</li>
+    <li><strong>0.16.0</strong> — Smoother MapLibre camera, location
+      accuracy improvements, Lari (Georgia) provider logo refresh.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-15-0">
+  <h2><span class="ver">v0.15.0</span></h2>
+  <p class="date">2026-05-04</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Mosque finder.</strong> New screen with MapLibre + OSM raster
+      tiles (no API key, $0-ops). 12th provider added.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-14-0">
+  <h2><span class="ver">v0.14.0</span></h2>
+  <p class="date">2026-05-03</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>22K gold trend in addition to 24K.</li>
+    <li>Mid-market rate history sparkline.</li>
+    <li>Typography pass: tightened tracking, bumped headline weights.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-13-x">
+  <h2><span class="ver">v0.13.x</span></h2>
+  <p class="date">2026-05-03</p>
+  <ul>
+    <li><strong>0.13.6</strong> — Word labels in the toolbar; LuLu workaround
+      attempt notes.</li>
+    <li><strong>0.13.5</strong> — Hide LuLu when the residential proxy is
+      unavailable (Playwright path was a dead end).</li>
+    <li><strong>0.13.4</strong> — Icon padding fix; tagline added;
+      data-source attribution removed from About.</li>
+    <li><strong>0.13.3</strong> — Equal-height + bolder mid-market &amp;
+      gold headers.</li>
+    <li><strong>0.13.2</strong> — Launcher icon: soft-grey background +
+      clean hero foreground.</li>
+    <li><strong>0.13.1</strong> — LuLu working in CI via Playwright headless
+      Chromium.</li>
+    <li><strong>0.13.0</strong> — Brand-asset refresh from Media(2) design.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-11-0">
+  <h2><span class="ver">v0.11.0</span></h2>
+  <p class="date">2026-05-02</p>
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Rebrand to <strong>Exchangia</strong> — typography, icon, palette.
+      (Subsequently rebranded again to Transfer Rate in v0.17.)</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-10-x">
+  <h2><span class="ver">v0.10.x</span></h2>
+  <p class="date">2026-05-02</p>
+  <ul>
+    <li><strong>0.10.1</strong> — Ahalia Exchange (11th provider).</li>
+    <li><strong>0.10.0</strong> — TransferGo provider; redesigned icon,
+      splash, theme polish.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-9-x">
+  <h2><span class="ver">v0.9.x</span></h2>
+  <p class="date">2026-05-02</p>
+  <ul>
+    <li><strong>0.9 (later)</strong> — Provider history sheet; provider
+      logos; 10-day retention.</li>
+    <li><strong>0.9.0</strong> — WorkManager prefetch worker;
+      distribution-ready release builds (signing, ABI splits, ProGuard
+      rules).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-8-x">
+  <h2><span class="ver">v0.8.x</span></h2>
+  <p class="date">2026-05-02</p>
+  <ul>
+    <li><strong>0.8.1</strong> — Rate history sparklines; improved logo
+      graphics.</li>
+    <li><strong>0.8.0</strong> — Variable amount input; pull-to-refresh;
+      on-disk cache; better error states.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-7-0">
+  <h2><span class="ver">v0.7.0</span></h2>
+  <p class="date">2026-05-02</p>
+  <h3 class="added">Added</h3>
+  <ul><li>Three-bar logo and branded splash.</li></ul>
+  <h3 class="removed">Removed</h3>
+  <ul><li>Unverified provider stubs trimmed from the rates list.</li></ul>
+</section>
+
+<section class="release" id="v0-6-0">
+  <h2><span class="ver">v0.6.0</span></h2>
+  <p class="date">2026-05-02</p>
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>App scoped to the <strong>AED → INR corridor only</strong>
+      (was multi-corridor).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-5-x">
+  <h2><span class="ver">v0.5.x</span></h2>
+  <p class="date">2026-05-02</p>
+  <ul>
+    <li><strong>0.5.1</strong> — Minimalist T-monogram icon and splash
+      screen.</li>
+    <li><strong>0.5.0</strong> — Manual rate-entry admin UI
+      (<code>/admin/</code>) for app-only providers (e&amp;, Botim, Comera,
+      Careem Pay).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-4-0">
+  <h2><span class="ver">v0.4.0</span></h2>
+  <p class="date">2026-05-02</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>Google Finance mid-market rate as the benchmark/header.</li>
+    <li>Light/dark mode toggle.</li>
+    <li>New launcher icon.</li>
+    <li>Receive-amount estimates per provider.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-3-0">
+  <h2><span class="ver">v0.3.0</span></h2>
+  <p class="date">2026-05-02</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>App icon (initial design).</li>
+    <li>Mid-market rate header.</li>
+    <li>Ten provider stubs (most marked <code>investigating</code>).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-1-0">
+  <h2><span class="ver">v0.1.0</span></h2>
+  <p class="date">2026-05-01</p>
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>Initial scaffold: Python scrapers, Android 14+ Compose app,
+      GitHub Actions CI, project documentation.</li>
+  </ul>
+</section>
+
+<footer class="foot">
+  <p>
+    This page is auto-regenerated from
+    <a href="../CHANGELOG.md"><code>CHANGELOG.md</code></a> on every
+    <code>v*.*.*</code> tag push by
+    <a href="../.github/workflows/changelog.yml"><code>.github/workflows/changelog.yml</code></a>.
+    Edit the Markdown source — never this HTML directly.
+  </p>
+  <p>
+    Source code · <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a>
+    · MIT licensed
+    · Privacy: no analytics, no telemetry, no tracking.
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

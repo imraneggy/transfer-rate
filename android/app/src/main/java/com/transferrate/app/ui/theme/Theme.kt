@@ -19,14 +19,26 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * Transfer Rate palette — Stripe Atlas Premium (v0.26 design refresh).
+ * Transfer Rate palette — Stripe Atlas Premium (v0.27 lift).
  *
  * This palette was generated using OKLCh perceptually-uniform colour
  * space, anchored on real Stripe brand values:
  *
- *   - Primary anchor:   #635BFF  (Stripe Indigo, real brand)
+ *   - Primary anchor:   #8486FF  (Stripe indigo lifted to L=70)
  *   - Neutral anchor:   #0A2540  (Stripe deep navy, real brand text)
  *   - Background:       #F6F9FC  (Stripe paper bg, real brand)
+ *
+ * v0.27 change: the primary anchor moved up one step on the indigo
+ * tonal ramp (L=60 → L=70) because the L=60 reading felt too heavy
+ * against the paper-light background.  L=70 lifts the brand toward
+ * "fresh fintech" without losing the indigo identity.  Secondary now
+ * occupies the deeper L=60 step so the dual-tone relationship stays —
+ * primary feels airy, secondary feels grounded.
+ *
+ * Trade-off acknowledged: AED-on-primary contrast at L=70 is APCA Lc
+ * ~-65 (passes Body+ at 14sp/Bold, fails AAA Normal).  Buttons in this
+ * app use 14sp/Bold labels so the threshold is met; if we ever add
+ * 12sp body text on a filled primary surface we'd need to revisit.
  *
  * Each role colour is taken from a hue-locked OKLCh tonal ramp at a
  * specific lightness step (notation: <role>_L<lightness>).  This is
@@ -34,11 +46,7 @@ import androidx.core.view.WindowCompat
  * decisions ladder back to perceptual-uniformity rather than HSL
  * eyeballing.
  *
- * APCA contrast (modern WCAG 3.0 candidate) ratings are listed beside
- * each role for the dominant pairing; both LIGHT and DARK schemes pass
- * APCA Body+ for primary text and APCA Body for secondary text.
- *
- * NEW in v0.26: metal accent colours.  Gold and silver now have their
+ * NEW in v0.26: metal accent colours.  Gold and silver have their
  * own warm/cool tonal ramps rather than borrowing from secondary +
  * neutral.  Exposed to the UI layer via [LocalMetalColors] so the
  * gold/silver bottom-sheet and home-card can render their respective
@@ -46,12 +54,12 @@ import androidx.core.view.WindowCompat
  */
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF635BFF),                  // Stripe indigo L=60 (anchor)
-    onPrimary = Color.White,
+    primary = Color(0xFF8486FF),                  // indigo L=70 (v0.27 lift — was L=60)
+    onPrimary = Color.White,                      // APCA Lc -65 vs primary, passes Body+ at 14sp/Bold
     primaryContainer = Color(0xFFDCE7FF),         // primary L=95
     onPrimaryContainer = Color(0xFF241776),       // primary L=20
 
-    secondary = Color(0xFF3929AD),                // primary L=40 (deeper indigo for dual-tone)
+    secondary = Color(0xFF635BFF),                // indigo L=60 (was the v0.26 primary anchor)
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFA3ACFF),       // primary L=80
     onSecondaryContainer = Color(0xFF100D3B),     // primary L=12
@@ -76,14 +84,14 @@ private val LightColors = lightColorScheme(
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF8486FF),                  // primary L=70 (lifted for dark)
-    onPrimary = Color(0xFF100D3B),                // primary L=12
-    primaryContainer = Color(0xFF241776),         // primary L=20
-    onPrimaryContainer = Color(0xFFA3ACFF),       // primary L=80
+    primary = Color(0xFFA3ACFF),                  // primary L=80 (v0.27 lift — was L=70)
+    onPrimary = Color(0xFF241776),                // primary L=20 (lifted from L=12 to read against brighter primary)
+    primaryContainer = Color(0xFF3929AD),         // primary L=40 (was L=20 — keeps the same step gap to primary)
+    onPrimaryContainer = Color(0xFFDCE7FF),       // primary L=95
 
-    secondary = Color(0xFFA3ACFF),                // primary L=80 (slightly brighter)
-    onSecondary = Color(0xFF100D3B),
-    secondaryContainer = Color(0xFF3929AD),       // primary L=40
+    secondary = Color(0xFF8486FF),                // primary L=70 (was L=80; swapped with primary so dual-tone stays)
+    onSecondary = Color(0xFF241776),
+    secondaryContainer = Color(0xFF241776),       // primary L=20
     onSecondaryContainer = Color(0xFFDCE7FF),
 
     tertiary = Color(0xFFA6C1DE),                 // neutral L=80
