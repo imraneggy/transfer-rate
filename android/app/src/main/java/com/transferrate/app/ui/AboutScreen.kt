@@ -72,19 +72,17 @@ fun AboutScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
-            // Hero block: logo on a colored coin + name + tagline + version.
-            // The logo PNG is dark navy + teal but only ~22% opaque, so
-            // on its own at 72 dp it sits awkwardly small against the
-            // light page background; the primaryContainer coin gives it
-            // a defining circular shape and a soft brand-tinted halo
-            // without competing for attention.
+            // Hero block: logo on a NEUTRAL near-white coin (both light
+            // and dark modes) so the brand mark's own navy + teal
+            // palette reads as the logo.  Tinting the coin (as in
+            // v0.29.2) muted the original colours.
             Spacer(Modifier.height(16.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Box(
                     modifier = Modifier
                         .size(112.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                        .background(androidx.compose.ui.graphics.Color(0xFFFFFFFF)),
                     contentAlignment = Alignment.Center,
                 ) {
                     TransferRateLogo(size = 96.dp)
@@ -110,7 +108,7 @@ fun AboutScreen(onBack: () -> Unit) {
             Text(
                 "v${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
@@ -128,10 +126,10 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "We source it from Google Finance, with Open ExchangeRate " +
-                    "as a fallback when the primary is unavailable. The label " +
-                    "below the rate tells you which source was used at fetch " +
-                    "time.",
+                    "We pull it from public financial-data sources, with " +
+                    "automatic fallbacks if the primary is unavailable. The " +
+                    "rate is refreshed alongside provider rates on the " +
+                    "regular cycle.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -165,18 +163,17 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Outbound HTTPS is allowlisted at the OkHttp layer to " +
-                    "two hosts only: GitHub Pages (rates JSON) and the " +
-                    "Cloudflare Worker that proxies the refresh button. " +
-                    "Anything else is blocked at the application layer, " +
+                    "Outbound network access is allowlisted at the " +
+                    "application layer to a small set of public data hosts " +
+                    "needed for rate updates. Anything else is blocked " +
                     "regardless of what any future dependency tries to do.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Permissions: INTERNET (always) and ACCESS_NETWORK_STATE " +
-                    "(always). The optional POST_NOTIFICATIONS permission " +
+                    "Permissions: INTERNET and ACCESS_NETWORK_STATE for the " +
+                    "rate fetch. The optional POST_NOTIFICATIONS permission " +
                     "is requested once for daily-high alerts; you can deny " +
                     "or revoke it any time without breaking the app.",
                     style = MaterialTheme.typography.bodySmall,
@@ -204,14 +201,14 @@ fun AboutScreen(onBack: () -> Unit) {
                 "of their respective owners, used here for nominative " +
                 "identification in a comparison context only.",
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "Released under the MIT License.",
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(40.dp))
@@ -311,7 +308,7 @@ private fun DailyHighToggleCard() {
                     "Settings → Apps → Transfer Rate → Notifications, " +
                     "allow them, then return here and toggle on.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -219,7 +219,10 @@ fun GoldHistorySheet(
                     CaratChip("22K", selected = selectedCarat == "22K") { selectedCarat = "22K" }
                     if (silverAvailable) {
                         Spacer(Modifier.width(10.dp))
-                        CaratChip("Ag", selected = selectedCarat == "Ag") { selectedCarat = "Ag" }
+                        // Display "Silver" but keep the internal carat key as
+                        // "Ag" — touching the data path would cascade through
+                        // ratesForCarat() and the stats / table logic.
+                        CaratChip("Silver", selected = selectedCarat == "Ag") { selectedCarat = "Ag" }
                     }
                 }
                 Spacer(Modifier.height(14.dp))
@@ -332,17 +335,16 @@ fun GoldHistorySheet(
                     // sub-sheet that scrolls the full date range.
                     if (allHistoryDates.size > miniHistoryDates.size) {
                         Spacer(Modifier.height(10.dp))
-                        // Neutral-tinted surface with primary-coloured text:
-                        // pale-indigo bg + dark-indigo text was technically
-                        // contrast-passing but read as muddy because both
-                        // colours sat in the same hue family.  Splitting bg
-                        // (neutral) from fg (indigo) gives a proper hue cut
-                        // for legibility while keeping the brand accent.
+                        // Filled-button CTA (v0.29.3): primary bg + onPrimary
+                        // text reads as the standard Material 3 "fill"
+                        // affordance, and gives APCA Lc 65+ in both schemes
+                        // (the prior surfaceVariant + primary-text combo was
+                        // Lc 50 in light mode, failing Body threshold).
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(MaterialTheme.colorScheme.primary)
                                 .clickable { fullHistoryOpen = true }
                                 .padding(vertical = 13.dp, horizontal = 14.dp),
                             contentAlignment = Alignment.Center,
@@ -351,7 +353,7 @@ fun GoldHistorySheet(
                                 text = "View full ${allHistoryDates.size}-day history  →",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 maxLines = 1,
                                 softWrap = false,
                             )
@@ -364,12 +366,8 @@ fun GoldHistorySheet(
             item {
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text = if (silverAvailable)
-                        "Sources: Khaleej Times (UAE gold) · LiveChennai (India gold + silver) · " +
-                        "spot XAG via gold-api.com (UAE silver). Indicative; jeweller prices may differ."
-                    else
-                        "Sources: Khaleej Times (UAE) · LiveChennai (India). " +
-                        "Indicative; actual jeweller prices may differ.",
+                    text = "Indicative rates from public market data; " +
+                        "actual prices at jewellers and exchanges may differ.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

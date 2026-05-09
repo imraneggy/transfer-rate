@@ -120,21 +120,17 @@ fun RatesScreen(
                     // + ⓘ leaves ~120 dp for the title which fits the
                     // logo + "Transfer Rate" cleanly.
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Logo on a primaryContainer-tinted circle.  The
-                        // PNG is dark navy + teal but only ~22% opaque,
-                        // so on its own at 24 dp it visually disappears
-                        // against the toolbar's near-white surface.
-                        // The pale-indigo coin gives it a defining
-                        // shape and a low-contrast brand accent without
-                        // shouting.
-                        // Use `transfer_rate_logo` (direct PNG) NOT
-                        // `ic_splash` (a <bitmap> XML wrapper) — the
-                        // latter throws in Compose's painterResource().
+                        // Logo on a NEUTRAL near-white coin in BOTH light
+                        // and dark modes.  The brand mark's own dark-navy
+                        // + teal palette is what reads as "this is the
+                        // logo"; tinting the coin (as in v0.29.x) muted
+                        // those colours.  Apple/Stripe pattern: brand
+                        // marks always sit on a neutral container.
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                .background(Color(0xFFFFFFFF)),
                             contentAlignment = Alignment.Center,
                         ) {
                             androidx.compose.foundation.Image(
@@ -351,7 +347,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
         Text(
             message,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             maxLines = 3,
         )
@@ -470,7 +466,7 @@ private fun ReadyView(
             Text(
                 text = stringResource(R.string.disclaimer),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -862,11 +858,30 @@ private fun AmountPanel(
     }
 
     Column(Modifier.fillMaxWidth()) {
+        // Trailing "Set" affordance inside the field — visible button so
+        // users on phones know the amount can be confirmed without
+        // dismissing the keyboard via the system Done key.  Tapping it
+        // commits the amount and removes focus (closes the keyboard).
         OutlinedTextField(
             value = fieldValue,
             onValueChange = { fieldValue = it },
             label = { Text("Sending") },
             prefix = { Text("AED ") },
+            trailingIcon = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        commitAmount(fieldValue.text)
+                        focusManager.clearFocus()
+                    },
+                    modifier = Modifier.padding(end = 4.dp),
+                ) {
+                    Text(
+                        "Set",
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -942,15 +957,30 @@ private fun ProviderCard(
     history: List<Double>,
     onClick: () -> Unit,
 ) {
+    // BEST card carries the winning provider's brand tint so the
+    // identity reads at a glance (was a generic indigo secondary
+    // container in v0.27.x — visually identifiable as "best" but did
+    // not say *which* provider).  bestCardTintFor() defines the
+    // per-provider light/dark mode tint and falls back to the prior
+    // dual-tone indigo for unknown providers.
     val containerColor = when {
-        isBest -> MaterialTheme.colorScheme.secondaryContainer
+        isBest -> bestCardTintFor(p.providerId)
         p.status == "ok" -> MaterialTheme.colorScheme.surfaceVariant
         else -> MaterialTheme.colorScheme.surface
     }
+    // BEST border matches the brand tint at a deeper saturation so the
+    // card edge is unmistakable without overpowering the fill.
     val border = if (isBest) {
+        val tint = bestCardTintFor(p.providerId)
+        val borderShade = androidx.compose.ui.graphics.Color(
+            red = (tint.red * 0.65f).coerceIn(0f, 1f),
+            green = (tint.green * 0.65f).coerceIn(0f, 1f),
+            blue = (tint.blue * 0.65f).coerceIn(0f, 1f),
+            alpha = 1f,
+        )
         Modifier.border(
             width = 1.5.dp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = borderShade,
             shape = RoundedCornerShape(16.dp),
         )
     } else Modifier
@@ -1012,7 +1042,7 @@ private fun ProviderCard(
                         Text(
                             p.note,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 2,
                         )
                     }
@@ -1170,7 +1200,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
             "stale" -> {
                 Text(
                     text = if (rate != null) "%.4f".format(rate) else "—",
-                    color = MaterialTheme.colorScheme.outline,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontFeatureSettings = "tnum",
@@ -1179,7 +1209,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                 Text(
                     "stale",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             "investigating" -> {
@@ -1192,7 +1222,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                         text = "≈ %.4f".format(midMarket),
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
@@ -1200,7 +1230,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?) {
                     Text(
                         "Estimated · awaiting verification",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.End,
                     )
                 } else {

@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.29.2 · 2026-05-09</span>
+    <span><strong>Latest:</strong> v0.29.3 · 2026-05-10</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-29-3">v0.29.3</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-2">v0.29.2</a><span class="date">2026-05-09</span></li>
     <li><a href="#v0-29-1">v0.29.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-29-0">v0.29.0</a><span class="date">2026-05-08</span></li>
@@ -356,8 +357,61 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-29-2">
-  <h2><span class="ver">v0.29.2</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-29-3">
+  <h2><span class="ver">v0.29.3</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-10</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Light-mode palette no longer feels "washed out and pale".</strong>
+      Primary moved L=70 -> L=63; surface variant darkened L=92 -> L=87
+      for visible card depth; outline lifted L=80 -> L=72.</li>
+    <li><strong>13 stale <code>colorScheme.outline</code> text usages
+      converted to <code>onSurfaceVariant</code></strong> across
+      AboutScreen, ProviderHistorySheet, RatesScreen.
+      <code>outline</code> is the M3 role for divider strokes; using
+      it as text was leaving labels at APCA Lc 17–44 (fail).</li>
+    <li><strong>Dark-mode contrast tightening</strong> — onPrimary deepened
+      L=20 -> L=12 (Lc 57 fail -> 90 pass); onSurfaceVariant lifted L=80 -> L=85
+      (Lc -56 fail -> -64 pass); primary lifted L=80 -> L=85 so it works
+      legibly when used as text on dark surface, not just as fill.</li>
+    <li><strong>"View full N-day history" sub-sheet button</strong>
+      converted from surface-variant bg + primary text (Lc 50 fail) to
+      filled-button style (Lc 90+ pass). Reads more clearly as a CTA.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>"Ag" carat chip relabelled to "Silver"</strong> in the
+      gold/silver history sheet. Internal carat key stays "Ag".</li>
+    <li><strong>BEST provider card uses the winning provider's brand
+      tint</strong> instead of generic indigo. New
+      <code>ProviderBrand.kt</code> maps each known provider to a
+      light-mode and dark-mode tint that reads as that brand while
+      keeping onSurface text APCA-legible.</li>
+    <li><strong>AED "Set" trailing button</strong> on the Sending
+      input — visible affordance to commit + dismiss the keyboard.</li>
+    <li><strong>Logo coin neutral white</strong> in both light and
+      dark mode so the brand mark's own navy + teal palette renders
+      correctly. v0.29.2 had been tinting it with primaryContainer,
+      muting the original colours.</li>
+    <li><strong>About page sources genericised</strong> — specific
+      upstream-host names removed; gold/silver sheet footer also
+      genericised.</li>
+  </ul>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong><code>tools/validate_color_palette.py</code></strong> —
+      APCA contrast validator that programmatically scores every
+      text-on-background pair the app renders, plus a swatch-PNG
+      generator for visual review. Output:
+      <code>docs/color-validation/{report.md,light-swatches.png,dark-swatches.png}</code>.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-29-2">
+  <h2><span class="ver">v0.29.2</span></h2>
   <p class="date">2026-05-09</p>
 
   <h3 class="added">Added</h3>

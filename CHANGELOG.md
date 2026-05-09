@@ -15,6 +15,49 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.3] — 2026-05-10
+
+### Fixed
+- **Light-mode palette tightened — no more "washed out and pale".**
+  Primary moved from `#8486FF` (L=70) to `#6F73FF` (L=63). Surface
+  variant darkened L=92 → L=87 for visible card depth. Outline
+  lifted L=80 → L=72.
+- **All 13 remaining `colorScheme.outline` text usages corrected** —
+  `outline` is the M3 role for divider strokes, not text. Footers,
+  table headers, version stamps, "= mid-market" delta labels, and
+  similar quiet labels switched to `onSurfaceVariant`. APCA Body
+  threshold now passes for all of them in both schemes.
+- **Dark-mode `onPrimary` deepened** L=20 → L=12 (Lc 57 fail → 90 pass).
+- **Dark-mode `onSurfaceVariant` lifted** L=80 → L=85 (Lc -56 → -64).
+- **Dark-mode primary lifted** L=80 → L=85 so it reads legibly when
+  used as text on dark surface (AED "Set" trailing button, MID-MARKET
+  eyebrow), not just as fill.
+- **"View full N-day history" sub-sheet button** converted from
+  surface-variant bg + primary text (Lc 50 fail) to filled-button
+  style (Lc 90+ pass). Reads more clearly as a CTA simultaneously.
+
+### Changed
+- **"Ag" carat chip relabelled to "Silver"** in the gold/silver sheet.
+  Internal carat key still `"Ag"`.
+- **BEST provider card uses the winning provider's brand tint**
+  instead of generic indigo. New `ProviderBrand.kt` maps each known
+  provider to light-mode and dark-mode tints chosen so onSurface text
+  stays APCA-legible.
+- **AED "Set" trailing button** on the Sending input — visible
+  affordance to commit + dismiss the keyboard.
+- **Logo coin neutral white** in both light and dark mode so the
+  brand mark's own navy + teal palette renders correctly.
+- **About page sources genericised** — specific upstream-host names
+  removed; gold/silver sheet footer also genericised.
+
+### Added
+- **`tools/validate_color_palette.py`** — APCA contrast validator
+  that programmatically scores every text-on-background pair the app
+  renders, plus a swatch-PNG generator. Run it after any palette
+  change. Output: `docs/color-validation/{report.md,light-swatches.png,dark-swatches.png}`.
+
+---
+
 ## [0.29.2] — 2026-05-09
 
 ### Added
@@ -630,6 +673,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.3]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.3
 [0.29.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.2
 [0.29.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.1
 [0.29.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.0

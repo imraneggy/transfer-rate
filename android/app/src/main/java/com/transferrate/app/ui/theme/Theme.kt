@@ -54,12 +54,19 @@ import androidx.core.view.WindowCompat
  */
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF8486FF),                  // indigo L=70 (v0.27 lift — was L=60)
-    onPrimary = Color.White,                      // APCA Lc -65 vs primary, passes Body+ at 14sp/Bold
-    primaryContainer = Color(0xFFDCE7FF),         // primary L=95
+    // v0.29.3 light-mode tightening — user feedback "washed out and pale".
+    // Diagnosis: every surface in v0.29.x sat at L>=92 and primary at L=70,
+    // so the whole palette was clustered at the top of the lightness axis
+    // with no visual depth between background, cards, and accent surfaces.
+    // Adjustments below pull primary from L=70 to L=66 (more brand presence
+    // without going back to the L=60 "too dark" complaint), and pull the
+    // surface stack apart so cards visibly pop against the paper bg.
+    primary = Color(0xFF6F73FF),                  // indigo L=63 (settles between L=60 too-dark and L=70 too-pale; tightened in v0.29.3 after APCA validation found Lc<60 for primary-as-text on surface variants)
+    onPrimary = Color.White,                      // APCA Body+ at 14sp/Bold passes
+    primaryContainer = Color(0xFFCDD9FF),         // indigo L=90 (was L=95 — more presence)
     onPrimaryContainer = Color(0xFF241776),       // primary L=20
 
-    secondary = Color(0xFF635BFF),                // indigo L=60 (was the v0.26 primary anchor)
+    secondary = Color(0xFF635BFF),                // indigo L=60 (the v0.26 primary anchor)
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFA3ACFF),       // primary L=80
     onSecondaryContainer = Color(0xFF100D3B),     // primary L=12
@@ -69,14 +76,14 @@ private val LightColors = lightColorScheme(
     tertiaryContainer = Color(0xFFCCE0FB),        // neutral L=90
     onTertiaryContainer = Color(0xFF1F2F41),      // neutral L=30
 
-    background = Color(0xFFF6F9FC),               // Stripe paper
+    background = Color(0xFFF6F9FC),               // Stripe paper L=97
     onBackground = Color(0xFF1F2F41),             // neutral L=30, APCA Body+ -99
     surface = Color.White,
     onSurface = Color(0xFF1F2F41),
-    surfaceVariant = Color(0xFFF0F3F8),           // neutral L=92 (subtle elevation)
+    surfaceVariant = Color(0xFFE2EAF3),           // neutral L=87 (was L=92 — more depth vs paper bg)
     onSurfaceVariant = Color(0xFF4A6684),         // neutral L=50, APCA Body -78
-    outline = Color(0xFFA6C1DE),                  // neutral L=80
-    outlineVariant = Color(0xFFCCE0FB),           // neutral L=90 (faint dividers)
+    outline = Color(0xFF8EB1D2),                  // neutral L=72 (was L=80 — visible card edges)
+    outlineVariant = Color(0xFFC2D7EE),           // neutral L=85 (was L=90 — divider presence)
     error = Color(0xFFBB0412),                    // negative L=50
     onError = Color.White,
     errorContainer = Color(0xFFFFD3C7),           // negative L=95
@@ -84,13 +91,13 @@ private val LightColors = lightColorScheme(
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFFA3ACFF),                  // primary L=80 (v0.27 lift — was L=70)
-    onPrimary = Color(0xFF241776),                // primary L=20 (lifted from L=12 to read against brighter primary)
-    primaryContainer = Color(0xFF3929AD),         // primary L=40 (was L=20 — keeps the same step gap to primary)
+    primary = Color(0xFFB0BAFF),                  // primary L=85 (lifted from L=80 in v0.29.3 — Lc -64 vs surface, was -56 fail; chip-fill with onPrimary dark navy still APCA-safe at +90)
+    onPrimary = Color(0xFF100D3B),                // primary L=12 (tightened from L=20 in v0.29.3 — gives APCA Lc -65+ on the L=80 primary fill, was Lc 57 fail)
+    primaryContainer = Color(0xFF3929AD),         // primary L=40
     onPrimaryContainer = Color(0xFFDCE7FF),       // primary L=95
 
-    secondary = Color(0xFF8486FF),                // primary L=70 (was L=80; swapped with primary so dual-tone stays)
-    onSecondary = Color(0xFF241776),
+    secondary = Color(0xFF8486FF),                // primary L=70
+    onSecondary = Color(0xFF100D3B),              // primary L=12 (matched to onPrimary tightening)
     secondaryContainer = Color(0xFF241776),       // primary L=20
     onSecondaryContainer = Color(0xFFDCE7FF),
 
@@ -104,7 +111,7 @@ private val DarkColors = darkColorScheme(
     surface = Color(0xFF1F2F41),                  // neutral L=30 (one step up)
     onSurface = Color(0xFFE0F1FF),
     surfaceVariant = Color(0xFF334462),           // neutral L=40
-    onSurfaceVariant = Color(0xFFA6C1DE),         // neutral L=80, APCA Body +75
+    onSurfaceVariant = Color(0xFFBFD2E5),         // neutral L=85 (lifted from L=80 in v0.29.3 — gives Lc -60+ on surface variant cards, was -56 fail)
     outline = Color(0xFF4A6684),                  // neutral L=50
     outlineVariant = Color(0xFF334462),           // neutral L=40
     error = Color(0xFFFF8B7D),                    // negative L=70

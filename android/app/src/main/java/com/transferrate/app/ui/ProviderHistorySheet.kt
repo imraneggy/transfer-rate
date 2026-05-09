@@ -179,7 +179,7 @@ fun ProviderHistorySheet(
                 Text(
                     "Date · Time",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(Modifier.height(4.dp))
@@ -284,7 +284,7 @@ private fun HistoryRow(
             Text(
                 time,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (deltaText != null) {
