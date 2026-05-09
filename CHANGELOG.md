@@ -15,6 +15,51 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.5] — 2026-05-10
+
+### Fixed
+- **History gaps fixed.** `public/history.json` and
+  `data/uae_gold_history.json` were being **regenerated every cron
+  run but never committed to the repo** — the scrape workflow only
+  staged `public/rates.json`. Result: per-provider 7-day sparklines
+  and the UAE gold 30-day chart only retained data from the rare
+  commits that happened to include them (May 2 and May 9 in
+  production — hence the "—" cells the user saw between those
+  dates). `.github/workflows/scrape.yml` now also stages and commits
+  `public/history.json` and `data/uae_gold_history.json`.
+- **Lari Exchange TLS chain fixed.** Lari sends only the leaf cert
+  in their handshake (browsers AIA-fetch the missing Sectigo
+  intermediate; Python's ssl module doesn't). Captured the Sectigo
+  intermediate via the leaf's AIA URL, bundled it with certifi's
+  root CA bundle into `scrapers/certs/lari-chain.pem` (137 certs
+  total, self-contained, ~280 KB). The lari.py scraper already
+  prefers this path when present; verified with httpx `HTTP 200`,
+  rate parsed as `25.63 INR/AED`.
+
+### Changed
+- **Real provider brand colors** for the BEST card tint, computed
+  from the bundled logo PNGs by `tools/extract_brand_colors.py` —
+  k-means clusters the most-saturated dominant pixels per logo,
+  blends 22% into white for light-mode tint and 45% into the dark
+  surface for dark-mode tint. No more hand-picked guesses;
+  `ProviderBrand.kt` is now generated from the real assets and
+  re-runnable (`python tools/extract_brand_colors.py --write`).
+  Captured raw colors:
+  Wise `#083500` (dark green), Remitly `#243954` (slate),
+  Aspora `#5523B2` (purple), LuLu `#15ABE7` (cyan),
+  TransferGo `#FFD000` (yellow), Lari `#F58E2C` (orange),
+  Federal `#EC9532` (orange), GCC `#02A451` (green),
+  Index `#FDDA26` (yellow), Ahalia `#023B7F` (navy),
+  Al Ansari `#112C69` (navy), Al Dahab `#02A12F` (green).
+
+### Added
+- **`tools/extract_brand_colors.py`** — re-runnable brand-color
+  extraction for `ProviderBrand.kt` whenever a logo PNG changes.
+- **`scrapers/certs/lari-chain.pem`** — self-contained TLS bundle
+  for Lari Exchange (intermediate + certifi roots).
+
+---
+
 ## [0.29.4] — 2026-05-10
 
 ### Added
@@ -709,6 +754,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.5]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.5
 [0.29.4]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.4
 [0.29.3]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.3
 [0.29.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.2

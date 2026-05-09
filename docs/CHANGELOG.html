@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.29.4 · 2026-05-10</span>
+    <span><strong>Latest:</strong> v0.29.5 · 2026-05-10</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-29-5">v0.29.5</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-4">v0.29.4</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-3">v0.29.3</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-2">v0.29.2</a><span class="date">2026-05-09</span></li>
@@ -358,8 +359,53 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-29-4">
-  <h2><span class="ver">v0.29.4</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-29-5">
+  <h2><span class="ver">v0.29.5</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-10</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>History gaps in gold/silver/provider charts.</strong>
+      <code>public/history.json</code> and
+      <code>data/uae_gold_history.json</code> were regenerated every
+      cron run but never committed — the workflow only staged
+      <code>rates.json</code>. Per-provider 7-day sparklines and the
+      UAE gold 30-day chart only had data from the rare commits that
+      included them (May 2 + May 9 in production — hence the "—"
+      cells between). Workflow fixed; future runs commit all three
+      files together.</li>
+    <li><strong>Lari Exchange TLS chain fixed.</strong> Lari sends
+      only the leaf cert (browsers AIA-fetch the Sectigo
+      intermediate; httpx/Python doesn't). Captured the intermediate
+      via the leaf's AIA URL and bundled it with certifi roots into
+      <code>scrapers/certs/lari-chain.pem</code> (137 certs total,
+      self-contained). Verified <code>HTTP 200</code>, rate parsed
+      as 25.63 INR/AED.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Real provider brand colours</strong> for the BEST
+      card tint, computed from the bundled logo PNGs by
+      <code>tools/extract_brand_colors.py</code> — k-means picks the
+      most-saturated dominant pixels per logo, then blends into
+      white (light mode) or dark surface (dark mode). No more
+      hand-picked guesses. Re-runnable when a logo updates.</li>
+  </ul>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong><code>tools/extract_brand_colors.py</code></strong> —
+      re-runnable brand-colour extraction for
+      <code>ProviderBrand.kt</code>.</li>
+    <li><strong><code>scrapers/certs/lari-chain.pem</code></strong> —
+      self-contained TLS bundle (Sectigo intermediate + certifi
+      roots).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-29-4">
+  <h2><span class="ver">v0.29.4</span></h2>
   <p class="date">2026-05-10</p>
 
   <h3 class="added">Added</h3>

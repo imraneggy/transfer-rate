@@ -109,8 +109,20 @@ jobs:
           set -euo pipefail
           git config user.name  "transfer-rate-bot"
           git config user.email "transfer-rate-bot@users.noreply.github.com"
-          if [ -n "$(git status --porcelain public/rates.json)" ]; then
-            git add public/rates.json
+          # Stage rates.json + history.json + the UAE gold history
+          # sidecar.  Pre-v0.29.5 only rates.json was committed — so
+          # history.json was regenerated every run but never persisted
+          # to the repo, leaving the per-provider 7-day sparklines and
+          # the UAE gold 30-day chart with only data from the rare
+          # commits that happened to include them (May 2 and May 9 in
+          # production).  Indian gold/silver history is parsed fresh
+          # from the upstream page each run, so no sidecar needed for
+          # those.
+          git add \
+            public/rates.json \
+            public/history.json \
+            data/uae_gold_history.json
+          if [ -n "$(git status --porcelain --cached)" ]; then
             git commit -m "rates: scheduled update"
             git push
           else
