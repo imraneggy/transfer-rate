@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.29.3 · 2026-05-10</span>
+    <span><strong>Latest:</strong> v0.29.4 · 2026-05-10</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-29-4">v0.29.4</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-3">v0.29.3</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-2">v0.29.2</a><span class="date">2026-05-09</span></li>
     <li><a href="#v0-29-1">v0.29.1</a><span class="date">2026-05-08</span></li>
@@ -357,8 +358,42 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-29-3">
-  <h2><span class="ver">v0.29.3</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-29-4">
+  <h2><span class="ver">v0.29.4</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-10</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Numeric value labels along sparkline trends.</strong>
+      Three labels — min (below trough), max (above peak), last (next
+      to the highlight dot) — render on the gold/silver trend
+      sparklines and the per-provider full-history chart. Caller
+      controls formatting via a `formatter` callback. Heights bumped to
+      give labels room without clipping the curve.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>WelcomeSheet copy genericised</strong> — no more
+      mentions of "Google Finance", "Khaleej Times", "LiveChennai",
+      "GitHub Pages", "Cloudflare Worker", or "Source code on GitHub"
+      in the visible bullets. Privacy bullet talks about outbound
+      restrictions without naming the hosts.</li>
+  </ul>
+
+  <h3 class="fixed">Known issues</h3>
+  <ul>
+    <li><strong>Lari Exchange shows status: error</strong> in
+      production (SSL CERTIFICATE_VERIFY_FAILED). The v0.28.0 TLS
+      hardening switched verify=False -> certifi but lariexchange.com
+      ships an incomplete chain. Fix needs the intermediate certs
+      shipped at scrapers/certs/lari-chain.pem. Tracked separately;
+      11 of 12 providers updating normally.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-29-3">
+  <h2><span class="ver">v0.29.3</span></h2>
   <p class="date">2026-05-10</p>
 
   <h3 class="fixed">Fixed</h3>

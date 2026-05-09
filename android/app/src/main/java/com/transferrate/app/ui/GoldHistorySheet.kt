@@ -885,10 +885,17 @@ private fun SparkColumn(
             val sparkColor =
                 if (isDark) MaterialTheme.colorScheme.secondary
                 else MaterialTheme.colorScheme.tertiary
+            // Height bumped to 64.dp so min/max/last value labels have
+            // room without clipping into the row above.  unit param is
+            // captured from the SparkColumn (AED, INR symbol, etc.).
             Sparkline(
                 values = values,
                 color = sparkColor.copy(alpha = 0.85f),
-                modifier = Modifier.fillMaxWidth().height(40.dp),
+                modifier = Modifier.fillMaxWidth().height(64.dp),
+                showLabels = true,
+                formatter = { v ->
+                    if (unit == "AED") "%.0f".format(v) else "%,.0f".format(v)
+                },
             )
         } else {
             Box(

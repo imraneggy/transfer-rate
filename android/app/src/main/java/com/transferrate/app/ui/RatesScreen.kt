@@ -560,16 +560,16 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
                 emoji = "📊",
                 title = "Mid-market benchmark",
                 body = "The big number at the top is the wholesale interbank " +
-                    "rate (Google Finance) — every provider charges some " +
-                    "markup over it. Each card shows the markup explicitly " +
-                    "so the comparison is honest.",
+                    "rate — every provider charges some markup over it. Each " +
+                    "card shows the markup explicitly so the comparison is " +
+                    "honest.",
             )
             WelcomeBullet(
                 emoji = "🪙",
                 title = "Gold & silver",
-                body = "Tap the gold/silver card on home for live UAE (Khaleej " +
-                    "Times) and India (LiveChennai) rates — 24K + 22K gold, " +
-                    "silver per gram and per kilogram, plus 30-day history.",
+                body = "Tap the gold/silver card on home for live UAE and " +
+                    "India rates — 24K + 22K gold, silver per gram and per " +
+                    "kilogram, plus 30-day history.",
             )
             WelcomeBullet(
                 emoji = "↻",
@@ -590,9 +590,9 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
             WelcomeBullet(
                 emoji = "🔒",
                 title = "Private by design",
-                body = "Two outbound hosts only (GitHub Pages + Cloudflare " +
-                    "Worker), no telemetry, no analytics, no Google Play " +
-                    "Services. Source code on GitHub.",
+                body = "Outbound network access is locked down at the " +
+                    "application layer; no telemetry, no analytics, no " +
+                    "third-party SDKs, no account.",
             )
 
             Spacer(Modifier.height(20.dp))

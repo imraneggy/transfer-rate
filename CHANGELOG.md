@@ -15,6 +15,42 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.4] — 2026-05-10
+
+### Added
+- **Numeric value labels along sparkline trends.** The Sparkline
+  composable gained a `showLabels` flag (default off) plus a `formatter`
+  callback. Enabled on the gold/silver trend sparklines in the gold
+  history sheet and the provider full-history sparkline in the
+  per-provider sheet — three labels render: at the **min** value
+  (below the trough), the **max** value (above the peak), and the
+  **last** value (next to the highlight dot). Caller controls
+  formatting (AED 0-decimal vs INR thousands-grouped vs four-decimal
+  rate). Sparkline height bumped 40→64 dp (gold sheet) / 56→76 dp
+  (provider sheet) so labels have room without clipping.
+
+### Changed
+- **WelcomeSheet copy genericised** — removed mentions of "Google
+  Finance", "Khaleej Times", "LiveChennai", "GitHub Pages",
+  "Cloudflare Worker", and "Source code on GitHub" from the
+  user-visible bullets. The mid-market bullet now just says "the
+  wholesale interbank rate"; the gold/silver bullet says "live UAE
+  and India rates"; the privacy bullet talks about
+  application-layer outbound restrictions without naming the hosts.
+
+### Known issues
+- **Lari Exchange shows `status: error` in production**
+  (`ConnectError: SSL CERTIFICATE_VERIFY_FAILED`). The v0.28.0 TLS
+  hardening switched `verify=False` to `verify=certifi.where()`,
+  but `lariexchange.com` ships an incomplete SSL chain that
+  certifi's bundled CAs reject. The fix is to capture Lari's
+  intermediate certs (`openssl s_client -connect www.lariexchange.com:443
+  -showcerts`) and ship them at `scrapers/certs/lari-chain.pem` —
+  the scraper already prefers that path when present. Tracked as a
+  separate item; remaining 11 providers continue to update normally.
+
+---
+
 ## [0.29.3] — 2026-05-10
 
 ### Fixed
@@ -673,6 +709,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.4]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.4
 [0.29.3]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.3
 [0.29.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.2
 [0.29.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.1

@@ -139,8 +139,10 @@ fun ProviderHistorySheet(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(76.dp)
                         .padding(vertical = 8.dp),
+                    showLabels = true,
+                    formatter = { v -> "%.4f".format(v) },
                 )
                 Spacer(Modifier.height(4.dp))
             }
