@@ -1,9 +1,14 @@
 package com.transferrate.app
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -26,7 +31,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
 import com.transferrate.app.data.NotificationCenter
+import com.transferrate.app.data.NotificationPrefs
 import com.transferrate.app.data.PrefetchScheduler
 import com.transferrate.app.ui.AboutScreen
 import com.transferrate.app.ui.RatesScreen
@@ -114,6 +121,40 @@ private fun AppRoot(
     val state by vm.state.collectAsStateWithLifecycle()
     var splashDone by remember { mutableStateOf(false) }
     var showAbout by rememberSaveable { mutableStateOf(false) }
+
+    // First-launch POST_NOTIFICATIONS prompt for daily-high alerts.
+    // v0.29.2: NotificationPrefs.dailyHighEnabled now defaults to true,
+    // so on a fresh install we ask for notification permission once.
+    // Three terminal states:
+    //   * granted   → keep dailyHighEnabled=true; alerts work
+    //   * denied    → flip dailyHighEnabled=false so the About toggle
+    //                 reflects reality (the user can re-enable from
+    //                 Android Settings → Apps → Transfer Rate)
+    //   * permanently dismissed → same as denied
+    // We set permissionRequested=true regardless so we never re-prompt
+    // (Android's "permanently denied" path is harsh UX — one ask only).
+    val ctxForPerms = androidx.compose.ui.platform.LocalContext.current
+    val notifPrefs = remember { NotificationPrefs(ctxForPerms) }
+    val notifPermLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        notifPrefs.permissionRequested = true
+        if (granted) {
+            NotificationCenter.ensureChannel(ctxForPerms)
+        } else {
+            notifPrefs.dailyHighEnabled = false
+        }
+    }
+    LaunchedEffect(Unit) {
+        val alreadyAsked = notifPrefs.permissionRequested
+        val wantsAlerts = notifPrefs.dailyHighEnabled
+        val alreadyGranted = ContextCompat.checkSelfPermission(
+            ctxForPerms, Manifest.permission.POST_NOTIFICATIONS,
+        ) == PackageManager.PERMISSION_GRANTED
+        if (!alreadyAsked && wantsAlerts && !alreadyGranted) {
+            notifPermLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     // Reset the splash on every foreground transition so users see it
     // each time they (re)open the app, not just on cold start.

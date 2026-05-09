@@ -15,6 +15,64 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.2] — 2026-05-09
+
+### Added
+- **First-launch welcome modal** replacing the small in-list "💡 Welcome"
+  hint card. Opens as a `ModalBottomSheet` covering six bullets — live
+  remittance rates, mid-market benchmark, gold/silver tracker, refresh
+  button, daily-high alerts, privacy posture. Persists dismissal via
+  `welcome_dismissed_v2` SharedPreference. Re-triggerable from
+  About → "Reset welcome tour" so users can revisit the feature tour.
+- **Daily-high status-bar alerts default to ON.** First cold start
+  with the toggle on triggers a one-shot `POST_NOTIFICATIONS` system
+  prompt. If granted: alerts work. If denied: `dailyHighEnabled` is
+  flipped to false so the About switch reflects reality. We never
+  re-prompt — Android's "permanently denied" path is harsher UX than
+  one polite ask. Track via the new `permission_requested_v1`
+  SharedPreference.
+- **`docs/LOCALIZATION.md`** — multi-day plan for shipping Tamil,
+  Hindi, Malayalam in v0.30.0. Six phases: string externalisation,
+  AI + native-speaker translation, resource folder structure, font /
+  typography for Indic scripts, per-locale numeric formatting,
+  testing matrix.
+
+### Fixed
+- **Logo visibility regression in dashboard + About page.** The
+  `transfer_rate_logo.png` PNG is dark navy + teal but only ~22%
+  opaque (large transparent margins around the brand mark), so on its
+  own at 24 dp (toolbar) or 72 dp (About hero) it visually disappears
+  against the light page background. Now wrapped in a
+  `primaryContainer`-tinted circular coin: 32 dp coin + 28 dp logo in
+  the toolbar; 112 dp coin + 96 dp logo on the About hero. Provides a
+  defining circular shape and a soft brand-tinted halo without
+  competing with surrounding content.
+- **About page Privacy section** still mentioned the mosque finder
+  and location permission (removed in v0.29.0). Rewritten to reflect
+  the actual current state: INTERNET + ACCESS_NETWORK_STATE
+  permissions only, plus optional POST_NOTIFICATIONS for daily-high
+  alerts, with two-host outbound allowlist enforced at the OkHttp
+  layer.
+
+### Changed
+- **`fastlane/metadata/android/en-US/full_description.txt`** rewritten
+  for v0.29.x reality. Was claiming "seven verified providers"
+  (we now ship up to twelve) and "every ~hour" refresh (it's every
+  15 minutes). Added the new gold/silver tracking section, the
+  daily-high default-on detail, the welcome tour, the 3.4 MB APK
+  story, and the AOSP/GrapheneOS compatibility note.
+- **README** refreshed for v0.29.1 baseline: latest-release callout
+  with the broken-versions warning, accurate provider count, "ABI
+  splits are now functionally identical" note (no native code in
+  v0.29.x), security/privacy section now reflects the OkHttp
+  allowlist enforcement and two-host outbound, fastlane and missing
+  dirs corrected in the repo-layout tree.
+- `NotificationPrefs.dailyHighEnabled` getter default `false` → `true`.
+  Existing installs that explicitly turned the toggle off keep their
+  `false` (SharedPreferences only consults the default for absent keys).
+
+---
+
 ## [0.29.1] — 2026-05-08
 
 ### Fixed
@@ -572,6 +630,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.2
 [0.29.1]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.1
 [0.29.0]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.0
 [0.28.2]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.28.2

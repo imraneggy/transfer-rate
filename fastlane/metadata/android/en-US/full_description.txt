@@ -1,27 +1,37 @@
-Transfer Rate is a free, open-source, ad-free comparison tool for UAE-to-India money transfer rates.
+Transfer Rate is a free, open-source, ad-free comparison tool for sending money from the UAE to India.
 
-It shows live AED → INR rates from seven verified providers — Wise, Aspora, Remitly, Al Ansari Exchange, GCC Exchange, Index Exchange, and a Google Finance mid-market reference — so you can instantly see which provider gives you the most rupees for your dirhams.
+It shows live AED → INR rates from up to twelve UAE remittance providers — Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, Ahalia, Federal Exchange, GCC Exchange, Index Exchange, Lari, LuLu — alongside the Google Finance mid-market rate so you can instantly see which provider gives you the most rupees for your dirhams, and exactly how much markup each one charges over the wholesale benchmark.
+
+It also tracks live gold and silver rates for both sides of the corridor — UAE (Khaleej Times) and India (LiveChennai) — with 24K and 22K gold per gram and per 8 g, silver per gram and per kilogram, plus a 30-day history sheet for each metal.
 
 Features:
-• Live rates refreshed every ~hour via a public GitHub Actions cron pipeline
-• Mid-market reference rate at the top so every provider's value is visible at a glance
+• Live remittance rates refreshed every 15 minutes via a public GitHub Actions cron pipeline
+• Mid-market reference rate at the top of the home screen so every provider's value is visible at a glance
 • Per-provider delta vs mid-market (+/− indicator) for honest comparison
 • "BEST" badge on the top-rated provider in real time
 • Variable send-amount slider so you see the actual receive amount for your transfer
-• 7-day rate history sparkline per provider
-• First-transfer promotional rates clearly distinguished from everyday rates (e.g. Remitly)
+• 7-day rate-history sparkline per provider
+• 30-day history sheet per provider — tap any card to open
+• Live gold and silver tracking (UAE + India), 30-day history per metal
+• First-transfer promotional rates clearly distinguished from everyday rates (e.g. Aspora, Remitly)
+• Daily-high status-bar alerts (default ON, opt-out one tap in About)
+• "Refresh" button that triggers a fresh upstream scrape on demand
+• Welcome tour on first launch — skim once, dismiss, never see it again
 • Dark mode with manual toggle (System / Light / Dark)
-• Pull-to-refresh
 • Stale-while-revalidate cache for instant cold start
-• Automatic background refresh while the app is closed (WorkManager, low-power)
-• Clean, minimalist design
+• Automatic background refresh while the app is closed (WorkManager, low-power, unmetered networks only)
+• Clean, minimalist design — typography by Manrope and Space Grotesk (OFL 1.1)
 
 Privacy:
-• Permissions: INTERNET only (plus notifications, only if you opt in to daily-high alerts)
-• Outbound connections allowlisted at the application layer to two public hosts: GitHub Pages (rates JSON) and the Cloudflare Worker (refresh dispatch)
-• No analytics, no telemetry, no advertising, no account
+• Permissions: INTERNET and ACCESS_NETWORK_STATE only, plus POST_NOTIFICATIONS if you keep daily-high alerts enabled
+• Outbound HTTPS allowlisted at the application layer to two public hosts: GitHub Pages (rates JSON) and the Cloudflare Worker (refresh dispatch). Anything else is blocked at the OkHttp layer
+• No analytics, no telemetry, no advertising, no account, no Google Play Services dependency
 • Open-source: github.com/imraneggy/transfer-rate
+
+Compact:
+• Universal APK ~3.4 MB on devices, no native dependencies
+• Works on AOSP / GrapheneOS / de-Googled phones — pure Compose, no Play Services
 
 Requires Android 14+.
 
-Disclaimer: Rates are indicative and may differ at the provider. Not financial advice. Not affiliated with any of the listed remittance providers.
+Disclaimer: Rates are indicative and may differ at the provider. Confirm at the provider's app or website before sending money. Not financial advice. Not affiliated with any of the listed remittance providers. Provider names and logos are trademarks of their respective owners, used here for nominative identification in a comparison context only.

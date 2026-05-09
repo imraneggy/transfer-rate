@@ -8,19 +8,28 @@ Public, free, ad-free, no analytics, no accounts.
 [![android-build](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> **Latest release:** see [`CHANGELOG.md`](CHANGELOG.md) for the full
-> version history; the rendered HTML report lives at
-> [`docs/CHANGELOG.html`](docs/CHANGELOG.html). End-user docs are in
-> [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
+> **Latest release: [v0.29.1](https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.1)** — universal APK ~3.4 MB.
+> See [`CHANGELOG.md`](CHANGELOG.md) for the full version history;
+> the rendered HTML report lives at [`docs/CHANGELOG.html`](docs/CHANGELOG.html).
+> End-user docs are in [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
+>
+> ⚠️ **Do not sideload v0.28.0 → v0.29.0** — those releases ship with a
+> Compose `painterResource()` regression that crashes the app on
+> launch. Fixed in v0.29.1. Older v0.27.x APKs are debug-signed (a
+> separate security issue resolved in v0.28.1+); upgrade is one-way
+> via uninstall + reinstall.
 
 ## What this is
 
-A small Android 14+ app that shows three things side-by-side, refreshed
-every 15 minutes:
+A small Android 14+ app (~3.4 MB universal APK, **zero native
+dependencies as of v0.29.x**) that shows three things side-by-side,
+refreshed every 15 minutes:
 
-1. **AED → INR remittance rates** from twelve UAE money-transfer
-   providers (Wise, Remitly, LuLu, Aspora, Careem Pay, TransferGo,
-   Ahalia, and others).
+1. **AED → INR remittance rates** from up to twelve UAE money-transfer
+   providers (Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab,
+   Ahalia, Federal Exchange, GCC Exchange, Index Exchange, Lari, LuLu).
+   App-only providers (e&, Botim, Comera, Careem Pay) appear when the
+   maintainer enters them through the manual admin UI.
 2. **The Google Finance mid-market rate** as a benchmark, so the
    provider spread is visible at a glance.
 3. **Gold & silver rates** for the UAE (Khaleej Times) and India
@@ -49,8 +58,15 @@ every 15 minutes:
 | Data pipeline | GitHub Actions (cron `*/15`) | hosted |
 | Data hosting | GitHub Pages (Fastly CDN) | static |
 | Refresh proxy | Cloudflare Worker (free tier) | hosted |
-| Distribution | Google Play (release-signed AAB) | per-ABI splits |
+| Distribution | Google Play (release-signed APK) | per-ABI splits + universal |
 | Distribution | F-Droid (reproducible from source) | metadata in `fastlane/` |
+
+> **Note on ABI splits.** From v0.29.x onward the app has zero native
+> dependencies (no `.so` files), so all ABI-split APKs are functionally
+> identical to the universal — the splits are kept for distribution
+> hygiene only. Pre-v0.29.x builds shipped MapLibre native libraries
+> per architecture, which made the splits genuinely different sizes
+> (~13–16 MB each).
 
 All Android dependency versions are pinned in
 [`android/gradle/libs.versions.toml`](android/gradle/libs.versions.toml).
@@ -172,15 +188,19 @@ transfer-rate/
 │   ├── app/                   :app module (UI, data, theme, workers)
 │   ├── settings.gradle.kts
 │   ├── build.gradle.kts
-│   └── gradle/libs.versions.toml   Pinned dependency versions
+│   ├── gradle/libs.versions.toml   Pinned dependency versions
+│   ├── keystore.properties.example       Release-signing keystore template (gitignored .properties)
+│   └── secrets.properties.example        Refresh-trigger bearer template (gitignored .properties)
 ├── infra/
-│   ├── lulu-proxy/            Residential-proxy helper for LuLu
-│   ├── lulu-residential/      Playwright-based fallback (legacy)
-│   └── refresh-worker/        Cloudflare Worker source (PAT custodian)
+│   ├── lulu-proxy/            Cloudflare Worker — bearer for LuLu's public rate API
+│   └── lulu-residential/      Self-hosted fallback runner for LuLu (legacy)
+├── fastlane/
+│   └── metadata/android/en-US/    Play Store + F-Droid listing copy
 ├── .github/workflows/
 │   ├── scrape.yml             Cron */15, runs scrapers, deploys Pages
+│   ├── scrape-lulu-residential.yml   Self-hosted runner for LuLu fallback
 │   ├── android-build.yml      Builds + signs APKs on tag push
-│   ├── changelog.yml          Regenerates docs/CHANGELOG.html on tag push
+│   ├── changelog.yml          Validates CHANGELOG sync on tag push
 │   └── test.yml               Python scraper unit tests
 └── docs/
     ├── ARCHITECTURE.md        Two-plane design, failure model, schema
@@ -190,6 +210,13 @@ transfer-rate/
     ├── CHANGELOG.html         Rendered version history (auto-generated)
     └── report.html            Hand-curated technical narrative
 ```
+
+> **Refresh-trigger Worker is not in this repo.** The Cloudflare Worker
+> that holds the GitHub PAT and dispatches the scrape workflow on
+> Refresh-button taps (`transfer-rate-refresh.imranbatchait.workers.dev`)
+> lives only in the Cloudflare dashboard — it's not checked in. Only
+> the lighter `infra/lulu-proxy/` Worker (which holds public LuLu
+> credentials) ships here.
 
 ## Documentation map
 
@@ -223,7 +250,6 @@ full operating instructions.
 ### Run scrapers locally
 
 ```bash
-cd transfer-rate
 python -m venv .venv
 source .venv/bin/activate           # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -241,25 +267,55 @@ cd android
 ./gradlew :app:installDebug       # to a connected Android 14+ device
 ```
 
+To enable the Refresh-button → upstream-scrape feature in a local debug
+build, copy `android/secrets.properties.example` to
+`android/secrets.properties` and paste the bearer secret you maintain
+in the Cloudflare Worker (variable name `SHARED_SECRET` Cloudflare-side,
+`REFRESH_TRIGGER_SECRET` build-side; values must match). Without the
+file the feature degrades gracefully — the button becomes a silent
+no-op, the 15-minute cron continues regardless.
+
 ### Deploy
 
-Push to `main`. The `scrape` workflow runs on schedule and after every push
-to `scrapers/`. The `pages` workflow republishes whenever `public/` changes.
-Set up GitHub Pages once in the repo settings:
+Push to `main`. The `scrape` workflow runs on a 15-minute cron and on
+every push that touches `scrapers/`; it commits the latest `rates.json`
+to `public/` and deploys the directory to GitHub Pages in the same
+workflow (no separate `pages.yml`). Pages source is configured once in
+repo settings:
 
 ```
 Settings → Pages → Source: GitHub Actions
 ```
 
+Tag pushes (`v*.*.*`) trigger `android-build.yml`, which produces signed
+release APKs and creates a GitHub Release. The companion
+`changelog-sync` workflow fails the tag push if either `CHANGELOG.md` or
+`docs/CHANGELOG.html` is missing an entry for the new version — see the
+[release checklist](CONTRIBUTING.md#release-checklist-maintainers).
+
 ## Security & privacy
 
-* App requests only `INTERNET` permission.
-* Cleartext HTTP is forbidden by `network_security_config.xml`.
-* Connections allowed only to `imraneggy.github.io` (domain allowlist).
-* Strict TLS via OkHttp defaults; no certificate pinning (CDN cert rotation).
-* JSON is bound-checked before being shown (no NaN/inf, no stratospheric
-  rates from poisoned input).
-* No analytics, no telemetry, no crash reporting SDK.
+* **Permissions:** `INTERNET` and `ACCESS_NETWORK_STATE`. Optional
+  `POST_NOTIFICATIONS` only if the user opts into daily-high alerts.
+  No location permission since v0.29.0 (mosque finder removal).
+* **Outbound hosts allowlisted at the OkHttp layer** (real enforcement,
+  not just a `network_security_config.xml` policy hint): only
+  `imraneggy.github.io` (rates JSON) and
+  `transfer-rate-refresh.imranbatchait.workers.dev` (refresh dispatch)
+  are reachable. See `data/NetworkSecurity.kt`.
+* Cleartext HTTP forbidden by `network_security_config.xml` globally.
+* Strict TLS via OkHttp defaults; no certificate pinning (CDN cert
+  rotation makes pins brittle).
+* `rates.json` schema-validated and bound-checked before render — no
+  `NaN`/`inf`, no stratospheric rates, URL fields scheme-allowlisted to
+  `https://` only (defends against `intent://`, `app://`, `file://` in
+  a poisoned doc reaching `Intent.ACTION_VIEW`).
+* The Cloudflare Worker bearer secret is no longer hardcoded in
+  `build.gradle.kts` (since v0.28.1) — read from the
+  `REFRESH_TRIGGER_SECRET` env var (CI) or `android/secrets.properties`
+  (local), gitignored both ways.
+* No analytics, no telemetry, no crash-reporting SDK, no
+  Google Play Services dependency.
 * No data is collected, stored, or transmitted off-device.
 
 See [`SECURITY.md`](SECURITY.md), [`PRIVACY.md`](PRIVACY.md),

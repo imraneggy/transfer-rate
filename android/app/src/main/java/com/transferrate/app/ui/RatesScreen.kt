@@ -3,6 +3,9 @@ package com.transferrate.app.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -117,19 +120,35 @@ fun RatesScreen(
                     // + ⓘ leaves ~120 dp for the title which fits the
                     // logo + "Transfer Rate" cleanly.
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Use `transfer_rate_logo` (direct PNG in
-                        // drawable-nodpi) NOT `ic_splash` (a <bitmap>
-                        // XML wrapper).  painterResource() rejects
-                        // <bitmap> drawables with IllegalArgumentException.
-                        androidx.compose.foundation.Image(
-                            painter = androidx.compose.ui.res.painterResource(
-                                id = R.drawable.transfer_rate_logo,
-                            ),
-                            contentDescription = null,
-                            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-                            modifier = Modifier.size(24.dp),
-                        )
-                        Spacer(Modifier.width(8.dp))
+                        // Logo on a primaryContainer-tinted circle.  The
+                        // PNG is dark navy + teal but only ~22% opaque,
+                        // so on its own at 24 dp it visually disappears
+                        // against the toolbar's near-white surface.
+                        // The pale-indigo coin gives it a defining
+                        // shape and a low-contrast brand accent without
+                        // shouting.
+                        // Use `transfer_rate_logo` (direct PNG) NOT
+                        // `ic_splash` (a <bitmap> XML wrapper) — the
+                        // latter throws in Compose's painterResource().
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(androidx.compose.foundation.shape.CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            androidx.compose.foundation.Image(
+                                painter = androidx.compose.ui.res.painterResource(
+                                    id = R.drawable.transfer_rate_logo,
+                                ),
+                                contentDescription = null,
+                                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .padding(2.dp),
+                            )
+                        }
+                        Spacer(Modifier.width(10.dp))
                         Text(
                             stringResource(R.string.app_name),
                             fontWeight = FontWeight.SemiBold,
@@ -357,6 +376,18 @@ private fun ReadyView(
     var sheetForProvider by remember { mutableStateOf<ProviderQuote?>(null) }
     var goldSheetOpen by remember { mutableStateOf(false) }
 
+    // First-launch welcome modal — shown once until the user dismisses it.
+    // Bumped to v2 in v0.29.2 because the in-card hint became a richer
+    // ModalBottomSheet covering the full feature set; users who dismissed
+    // the v1 hint still see the v2 once.
+    val ctx0 = LocalContext.current
+    val welcomePrefs = remember {
+        ctx0.getSharedPreferences("transfer-rate", android.content.Context.MODE_PRIVATE)
+    }
+    var welcomeOpen by remember {
+        mutableStateOf(!welcomePrefs.getBoolean("welcome_dismissed_v2", false))
+    }
+
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -410,7 +441,8 @@ private fun ReadyView(
                 )
             }
         }
-        item { FirstLaunchHint() }
+        // (FirstLaunchHint card removed in v0.29.2 — replaced by the
+        // WelcomeSheet modal rendered at the bottom of this composable.)
         item {
             AmountPanel(
                 amount = state.selectedAmount,
@@ -466,62 +498,166 @@ private fun ReadyView(
             )
         }
     }
+
+    // First-launch welcome modal (v0.29.2).  Renders over the home
+    // screen on first cold start until the user taps "Got it".
+    if (welcomeOpen) {
+        WelcomeSheet(
+            onDismiss = {
+                welcomePrefs.edit().putBoolean("welcome_dismissed_v2", true).apply()
+                welcomeOpen = false
+            },
+        )
+    }
 }
 
 /**
- * First-launch onboarding hint shown above the amount panel until
- * dismissed. Persists via SharedPreferences (lightweight; no need for
- * DataStore for a single boolean).
+ * First-launch welcome sheet (v0.29.2 onward, replacing the in-list
+ * FirstLaunchHint card).  Walks new users through the app's full
+ * feature set in a single ModalBottomSheet — mid-market vs provider
+ * rates, gold/silver section, refresh button, daily-high alerts,
+ * privacy posture.  Shown once per install; dismissal is persisted in
+ * SharedPreferences (`welcome_dismissed_v2`) by the caller.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FirstLaunchHint() {
-    val ctx = LocalContext.current
-    val prefs = remember {
-        ctx.getSharedPreferences("transfer-rate", android.content.Context.MODE_PRIVATE)
-    }
-    var dismissed by rememberSaveable { mutableStateOf(prefs.getBoolean("hint_dismissed_v1", false)) }
-    if (dismissed) return
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        ),
+private fun WelcomeSheet(onDismiss: () -> Unit) {
+    val sheetState = androidx.compose.material3.rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Column(Modifier.padding(14.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 24.dp),
+        ) {
+            Text(
+                text = "Welcome to Transfer Rate",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = "A free, open-source comparison app for sending money " +
+                    "from the UAE to India. No accounts, no ads, no analytics.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(20.dp))
+
+            WelcomeBullet(
+                emoji = "💱",
+                title = "Live remittance rates",
+                body = "Up to twelve UAE→India providers compared side-by-side: " +
+                    "Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, " +
+                    "Ahalia, Federal, GCC, Index, Lari, LuLu. The provider " +
+                    "giving you the most rupees gets a BEST badge.",
+            )
+            WelcomeBullet(
+                emoji = "📊",
+                title = "Mid-market benchmark",
+                body = "The big number at the top is the wholesale interbank " +
+                    "rate (Google Finance) — every provider charges some " +
+                    "markup over it. Each card shows the markup explicitly " +
+                    "so the comparison is honest.",
+            )
+            WelcomeBullet(
+                emoji = "🪙",
+                title = "Gold & silver",
+                body = "Tap the gold/silver card on home for live UAE (Khaleej " +
+                    "Times) and India (LiveChennai) rates — 24K + 22K gold, " +
+                    "silver per gram and per kilogram, plus 30-day history.",
+            )
+            WelcomeBullet(
+                emoji = "↻",
+                title = "Refresh button",
+                body = "The refresh button in the top bar pulls fresh rates on " +
+                    "demand. The app already shows the last cron-published " +
+                    "rates within a second; truly-fresh upstream rates land " +
+                    "silently 30–45 seconds later.",
+            )
+            WelcomeBullet(
+                emoji = "🔔",
+                title = "Daily-high alerts (default ON)",
+                body = "A status-bar notification fires when a provider beats " +
+                    "today's previous best AED→INR rate. Toggle off any time " +
+                    "in About → Notifications. Permission is asked once on " +
+                    "first launch.",
+            )
+            WelcomeBullet(
+                emoji = "🔒",
+                title = "Private by design",
+                body = "Two outbound hosts only (GitHub Pages + Cloudflare " +
+                    "Worker), no telemetry, no analytics, no Google Play " +
+                    "Services. Source code on GitHub.",
+            )
+
+            Spacer(Modifier.height(20.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .clickable(onClick = onDismiss)
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "💡  Welcome",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.weight(1f),
+                    text = "Got it",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 16.sp,
                 )
-                IconButton(
-                    onClick = {
-                        prefs.edit().putBoolean("hint_dismissed_v1", true).apply()
-                        dismissed = true
-                    },
-                ) {
-                    Text(
-                        "✕",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f),
-                    )
-                }
             }
+            Spacer(Modifier.height(4.dp))
             Text(
-                text = "The big number above is the mid-market rate — the " +
-                       "wholesale benchmark every provider charges a markup on. " +
-                       "Each card below shows how much above (+) or below (−) " +
-                       "mid-market that provider is. BEST goes to whoever pays " +
-                       "you the most rupees per AED.",
+                text = "You can re-read this from the About screen any time.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+/** One row of the welcome sheet — emoji icon on the left, bold title +
+ *  description body on the right.  Matches the `SectionCard` style used
+ *  on the About page for visual consistency. */
+@Composable
+private fun WelcomeBullet(emoji: String, title: String, body: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+    ) {
+        Text(
+            text = emoji,
+            fontSize = 22.sp,
+            modifier = Modifier
+                .padding(end = 14.dp, top = 2.dp)
+                .width(32.dp),
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = body,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -4,15 +4,18 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,10 +72,23 @@ fun AboutScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
-            // Hero block: logo + name + tagline + version
+            // Hero block: logo on a colored coin + name + tagline + version.
+            // The logo PNG is dark navy + teal but only ~22% opaque, so
+            // on its own at 72 dp it sits awkwardly small against the
+            // light page background; the primaryContainer coin gives it
+            // a defining circular shape and a soft brand-tinted halo
+            // without competing for attention.
             Spacer(Modifier.height(16.dp))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                TransferRateLogo(size = 72.dp)
+                Box(
+                    modifier = Modifier
+                        .size(112.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TransferRateLogo(size = 96.dp)
+                }
             }
             Spacer(Modifier.height(14.dp))
             Text(
@@ -142,16 +159,33 @@ fun AboutScreen(onBack: () -> Unit) {
             SectionCard(title = "Privacy") {
                 Text(
                     "This app collects nothing. No analytics, no telemetry, " +
-                    "no advertising, no account, no cloud sync. Connections " +
-                    "are restricted to a single static-data host via the " +
-                    "platform's Network Security Config. Optional features " +
-                    "(location for the mosque finder, notifications for " +
-                    "daily-high alerts) only use their respective Android " +
-                    "permissions if you turn them on.",
+                    "no advertising, no account, no cloud sync.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Outbound HTTPS is allowlisted at the OkHttp layer to " +
+                    "two hosts only: GitHub Pages (rates JSON) and the " +
+                    "Cloudflare Worker that proxies the refresh button. " +
+                    "Anything else is blocked at the application layer, " +
+                    "regardless of what any future dependency tries to do.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Permissions: INTERNET (always) and ACCESS_NETWORK_STATE " +
+                    "(always). The optional POST_NOTIFICATIONS permission " +
+                    "is requested once for daily-high alerts; you can deny " +
+                    "or revoke it any time without breaking the app.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
+            Spacer(Modifier.height(12.dp))
+
+            ReshowWelcomeCard()
             Spacer(Modifier.height(12.dp))
 
             DailyHighToggleCard()
@@ -279,6 +313,38 @@ private fun DailyHighToggleCard() {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
             )
+        }
+    }
+}
+
+/**
+ * Lets the user re-trigger the first-launch welcome modal — handy for
+ * sharing the app with someone, or revisiting the feature tour.  Just
+ * clears the dismissal flag in SharedPreferences; the modal will
+ * appear next time RatesScreen is shown.
+ */
+@Composable
+private fun ReshowWelcomeCard() {
+    val ctx = LocalContext.current
+    val prefs = remember {
+        ctx.getSharedPreferences("transfer-rate", android.content.Context.MODE_PRIVATE)
+    }
+    var triggered by remember { mutableStateOf(false) }
+    SectionCard(title = "Re-show the welcome tour") {
+        Text(
+            "Forgot what a feature does? Reset the welcome modal and it'll " +
+            "appear the next time you return to the home screen.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(10.dp))
+        androidx.compose.material3.OutlinedButton(
+            onClick = {
+                prefs.edit().putBoolean("welcome_dismissed_v2", false).apply()
+                triggered = true
+            },
+        ) {
+            Text(if (triggered) "Will appear on home" else "Reset welcome tour")
         }
     }
 }

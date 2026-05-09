@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.29.1 · 2026-05-08</span>
+    <span><strong>Latest:</strong> v0.29.2 · 2026-05-09</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-29-2">v0.29.2</a><span class="date">2026-05-09</span></li>
     <li><a href="#v0-29-1">v0.29.1</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-29-0">v0.29.0</a><span class="date">2026-05-08</span></li>
     <li><a href="#v0-28-2">v0.28.2</a><span class="date">2026-05-08</span></li>
@@ -355,8 +356,63 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-29-1">
-  <h2><span class="ver">v0.29.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-29-2">
+  <h2><span class="ver">v0.29.2</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-09</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>First-launch welcome modal</strong> replacing the small
+      in-list "💡 Welcome" hint card. Opens as a
+      <code>ModalBottomSheet</code> covering six bullets — live
+      remittance rates, mid-market benchmark, gold/silver tracker,
+      refresh button, daily-high alerts, privacy posture.
+      Re-triggerable from About → "Reset welcome tour".</li>
+    <li><strong>Daily-high status-bar alerts default to ON.</strong>
+      First cold start with the toggle on triggers a one-shot
+      <code>POST_NOTIFICATIONS</code> system prompt. If denied,
+      <code>dailyHighEnabled</code> flips to false so the About switch
+      reflects reality. Never re-prompts — one polite ask only.</li>
+    <li><strong><code>docs/LOCALIZATION.md</code></strong> — multi-day
+      plan for shipping Tamil, Hindi, Malayalam in v0.30.0.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Logo visibility regression in dashboard + About page.</strong>
+      The <code>transfer_rate_logo.png</code> PNG is dark navy + teal
+      but only ~22% opaque (large transparent margins), so at 24 dp
+      (toolbar) or 72 dp (About hero) it visually disappeared against
+      the light page background. Now wrapped in a
+      <code>primaryContainer</code>-tinted circular coin: 32 dp coin +
+      28 dp logo in the toolbar; 112 dp coin + 96 dp logo on About.</li>
+    <li><strong>About page Privacy section</strong> still mentioned the
+      mosque finder + location permission (removed in v0.29.0).
+      Rewritten to reflect current state: INTERNET +
+      ACCESS_NETWORK_STATE only, plus opt-in POST_NOTIFICATIONS, with
+      two-host outbound allowlist enforced at the OkHttp layer.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong><code>fastlane/.../full_description.txt</code></strong>
+      rewritten for v0.29.x reality. Was claiming "seven verified
+      providers" (we ship up to twelve) and "every ~hour" refresh
+      (it's every 15 minutes). Added gold/silver, daily-high default-on,
+      welcome tour, 3.4 MB APK, AOSP/GrapheneOS compatibility note.</li>
+    <li><strong>README</strong> refreshed for v0.29.1 baseline:
+      latest-release callout with the broken-versions warning,
+      accurate provider count, "ABI splits are now functionally
+      identical" note, security/privacy section reflects OkHttp
+      allowlist enforcement.</li>
+    <li><code>NotificationPrefs.dailyHighEnabled</code> default
+      <code>false</code> → <code>true</code>. Existing explicit-off
+      installs keep their value.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-29-1">
+  <h2><span class="ver">v0.29.1</span></h2>
   <p class="date">2026-05-08</p>
 
   <h3 class="fixed">Fixed</h3>

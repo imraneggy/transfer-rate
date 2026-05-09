@@ -25,12 +25,31 @@ class NotificationPrefs(context: Context) {
         FILE_NAME, Context.MODE_PRIVATE,
     )
 
-    /** User-controlled opt-in. Defaults to false (no notifications until
-     *  the user explicitly enables in the About screen). */
+    /** User-controlled opt-in.  v0.29.2: default flipped to **true** —
+     *  daily-high alerts are the most useful feature in a remittance-rate
+     *  app and most users miss the toggle in About.  MainActivity does a
+     *  one-shot POST_NOTIFICATIONS permission request on first launch
+     *  when this is true; if the user denies, the flag is flipped to
+     *  false so the About toggle reflects reality.
+     *
+     *  Users who explicitly turned the toggle OFF in any prior version
+     *  keep their `false` value (SharedPreferences stores the explicit
+     *  choice; the default is only consulted when the key is absent). */
     var dailyHighEnabled: Boolean
-        get() = prefs.getBoolean(KEY_ENABLED, false)
+        get() = prefs.getBoolean(KEY_ENABLED, true)
         set(value) {
             prefs.edit().putBoolean(KEY_ENABLED, value).apply()
+        }
+
+    /** True once we've shown the system POST_NOTIFICATIONS prompt for
+     *  this install, so we don't re-prompt on every cold start (Android's
+     *  "permanently denied" path is a worse UX than a single ask).
+     *  Default false — the first cold start with [dailyHighEnabled]=true
+     *  triggers the prompt, then this flips. */
+    var permissionRequested: Boolean
+        get() = prefs.getBoolean(KEY_PERMISSION_REQUESTED, false)
+        set(value) {
+            prefs.edit().putBoolean(KEY_PERMISSION_REQUESTED, value).apply()
         }
 
     /**
@@ -86,6 +105,7 @@ class NotificationPrefs(context: Context) {
         private const val KEY_ENABLED = "daily_high_enabled"
         private const val KEY_LAST_DATE = "last_notified_date"
         private const val KEY_LAST_PEAK = "last_notified_peak"
+        private const val KEY_PERMISSION_REQUESTED = "permission_requested_v1"
 
         /** 0.005 ≈ half-a-paisa for AED→INR; below this we treat two
          *  observations as the same rate. Matches the 4-dp rounding the
