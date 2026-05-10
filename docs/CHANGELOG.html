@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.2 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.3 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-3">v0.30.3</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-2">v0.30.2</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-1">v0.30.1</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-0">v0.30.0</a><span class="date">2026-05-13</span></li>
@@ -363,8 +364,41 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-2">
-  <h2><span class="ver">v0.30.2</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-3">
+  <h2><span class="ver">v0.30.3</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Hindi (<code>hi</code>) localisation</strong> — first
+      cut, native-speaker review pending.  Same translation principles
+      as Tamil: brand names and <code>BEST</code>/<code>MANUAL</code>
+      badges stay English, toolbar chips stay compact English, body
+      and section text translate, finance/tech terms get
+      transliterated rather than fully Hindi-ised
+      (<code>mid-market</code> → <code>मिड-मार्केट</code> rather
+      than the academic <code>मध्य-बाज़ार</code>).</li>
+    <li><strong>Malayalam (<code>ml</code>) localisation</strong> —
+      first cut, native-speaker review pending.  Same principles as
+      Tamil/Hindi.  Finance terms transliterated for Kerala-NRI
+      readability (<code>mid-market</code> →
+      <code>മിഡ്-മാർക്കറ്റ്</code> rather than
+      <code>ഇടത്തരം-വിപണി</code>).</li>
+    <li>The "Language" card in About now lists all four supported
+      languages (English, தமிழ், हिन्दी, മലയാളം).</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><code>resourceConfigurations</code> ship-list expanded from
+      <code>["en", "ta"]</code> to <code>["en", "ta", "hi", "ml"]</code>.
+      Completes the UAE-India language trio for v0.30.x.  Future
+      locales follow the same opt-in pattern.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-2">
+  <h2><span class="ver">v0.30.2</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="added">Added</h3>

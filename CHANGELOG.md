@@ -15,6 +15,27 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.3] — 2026-05-13
+
+### Added
+- **Hindi (`hi`) localisation** — first cut, native-speaker review
+  pending.  Same translation principles as Tamil: brand names and
+  `BEST`/`MANUAL` badges stay English, toolbar chips stay compact
+  English, body and section text translate, finance/tech terms get
+  transliterated rather than fully Hindi-ised (`mid-market` →
+  `मिड-मार्केट` rather than the academic `मध्य-बाज़ार`).
+- **Malayalam (`ml`) localisation** — first cut, native-speaker
+  review pending.  Same principles as Tamil/Hindi.  Finance terms
+  transliterated for Kerala-NRI readability (`mid-market` →
+  `മിഡ്-മാർക്കറ്റ്` rather than `ഇടത്തരം-വിപണി`).
+- The "Language" card in About now lists all four supported
+  languages (English, தமிழ், हिन्दी, മലയാളം).
+
+### Changed
+- `resourceConfigurations` ship-list expanded from `["en", "ta"]` to
+  `["en", "ta", "hi", "ml"]`.  Completes the UAE-India language trio
+  for v0.30.x.  Future locales follow the same opt-in pattern.
+
 ## [0.30.2] — 2026-05-13
 
 ### Added

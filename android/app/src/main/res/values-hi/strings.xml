@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Hindi (hi) localisation — first cut, v0.30.3.
+
+    Same translation principles as values-ta/strings.xml:
+
+      * Brand names ("Transfer Rate", provider names like Wise, LuLu,
+        Aspora) are NOT translated — trademarks; recognised in their
+        English forms even in Hindi-speaking contexts.
+      * Currency codes (AED, INR, ₹) stay as-is.
+      * "BEST" / "MANUAL" badges stay English (translatable=false at
+        the source).
+      * Toolbar chips (AUTO/LIGHT/DARK/REFRESH) stay English for
+        compactness — icons + position make them self-evident.
+      * Body text and headings ARE translated, with one rule:
+        finance / technical terms commonly transliterated by NRIs in
+        spoken Hindi get transliterated rather than fully Hindi-ised,
+        e.g. "mid-market" → "मिड-मार्केट" rather than the literal
+        "मध्य-बाज़ार" which would feel academic.
+
+    Native-speaker review pending — please flag any phrases that read
+    awkward.  Encoding is UTF-8; Devanagari renders via Android's
+    bundled Noto Sans Devanagari fallback.
+-->
+<resources>
+    <string name="app_tagline">तुलना करें. चुनें. ज़्यादा बचाएँ.</string>
+
+    <string name="title_aed_inr">AED → INR रेट</string>
+    <string name="subtitle_amount">AED %1$s के लिए रेट</string>
+    <string name="last_updated">%1$s अपडेट हुआ</string>
+    <string name="status_stale">पिछला अच्छा रेट</string>
+    <string name="status_error">उपलब्ध नहीं</string>
+    <string name="status_investigating">जल्द आ रहा है</string>
+    <string name="action_refresh">रिफ़्रेश</string>
+    <string name="action_open_provider">प्रोवाइडर साइट खोलें</string>
+    <string name="error_loading">रेट लोड नहीं हो सका. दोबारा कोशिश करने के लिए खींचें.</string>
+    <string name="disclaimer">यहाँ दिखाए गए रेट सांकेतिक हैं; प्रोवाइडर पर थोड़ा अलग हो सकते हैं. यह वित्तीय सलाह नहीं है.</string>
+
+    <!-- Toolbar chips kept English (universal short labels). -->
+    <string name="toolbar_theme_auto">AUTO</string>
+    <string name="toolbar_theme_light">LIGHT</string>
+    <string name="toolbar_theme_dark">DARK</string>
+    <string name="toolbar_refresh">REFRESH</string>
+
+    <!-- BEST / MANUAL stay English by design. -->
+    <string name="rate_at_format">@ %1$s</string>
+    <string name="rate_vs_mid_format">%1$s मिड रेट से</string>
+    <string name="rate_equals_mid">= मिड रेट</string>
+
+    <!-- Sending input -->
+    <string name="amount_label_sending">भेजी जा रही राशि</string>
+    <string name="amount_action_set">सेट करें</string>
+
+    <!-- Mid-market header -->
+    <string name="midmarket_eyebrow">मिड-मार्केट</string>
+    <string name="midmarket_subtitle">1 AED → %1$s</string>
+
+    <!-- Gold/silver -->
+    <string name="metals_gold">सोना</string>
+    <string name="metals_silver">चाँदी</string>
+    <string name="metals_disclaimer">सार्वजनिक मार्केट डेटा से प्राप्त सांकेतिक रेट; ज्वैलर्स / एक्सचेंजों पर असल कीमत अलग हो सकती है.</string>
+
+    <!-- About screen -->
+    <string name="about_title">के बारे में</string>
+    <string name="about_section_what_is_mid">मिड-मार्केट रेट क्या है?</string>
+    <string name="about_section_what_is_best">\"BEST\" का क्या मतलब है?</string>
+    <string name="about_section_privacy">गोपनीयता</string>
+    <string name="about_section_notifications">नोटिफ़िकेशन</string>
+    <string name="about_section_target_alert">रेट-टार्गेट अलर्ट</string>
+    <string name="about_section_reshow_welcome">वेलकम टूर दोबारा दिखाएँ</string>
+    <string name="about_button_clear">साफ़ करें</string>
+    <string name="about_button_set">सेट करें</string>
+    <string name="about_target_label">टार्गेट रेट (जैसे 25.85)</string>
+    <string name="about_target_armed">सेट है: रेट ≥ %1$s होने पर सूचित करें</string>
+    <string name="about_target_invalid">25.85 जैसा कोई नंबर डालें</string>
+    <string name="about_target_out_of_range">मान्य रेंज से बाहर (15.00–40.00 के बीच होना चाहिए)</string>
+    <string name="about_target_blurb">किसी भी प्रोवाइडर का AED→INR रेट आपके टार्गेट को छूते ही स्टेटस-बार पर नोटिफ़िकेशन पाएँ. जब आपको पहले से पता हो कि किस रेट पर भेजना है और बार-बार ऐप चेक नहीं करना चाहते, तब काम आता है.</string>
+    <string name="about_reshow_blurb">भूल गए कि कोई फ़ीचर क्या करता है? वेलकम मोडल को रीसेट करें — अगली बार होम स्क्रीन पर लौटने पर वह दिखेगा.</string>
+    <string name="about_reshow_button">वेलकम टूर रीसेट करें</string>
+    <string name="about_reshow_done">होम पर दिखेगा</string>
+
+    <!-- Language picker shortcut -->
+    <string name="about_section_language">भाषा</string>
+    <string name="about_language_blurb">Transfer Rate आपके फ़ोन की भाषा अपने आप अपनाता है — समर्थित: English, தமிழ், हिन्दी, മലയാളം. अपने फ़ोन की बाकी सेटिंग बदले बिना सिर्फ़ इस ऐप की भाषा बदलने के लिए नीचे टैप करें.</string>
+    <string name="about_language_button">भाषा सेटिंग खोलें</string>
+    <string name="about_language_unavailable">इस डिवाइस पर लैंग्वेज पिकर उपलब्ध नहीं — Settings → System → Languages से फ़ोन की भाषा बदलें.</string>
+
+    <!-- Welcome modal -->
+    <string name="welcome_title">Transfer Rate में आपका स्वागत है</string>
+    <string name="welcome_subtitle">UAE से भारत पैसे भेजने के लिए मुफ़्त, ओपन-सोर्स तुलना ऐप. कोई अकाउंट नहीं, कोई विज्ञापन नहीं, कोई एनालिटिक्स नहीं.</string>
+    <string name="welcome_got_it">समझ गया</string>
+    <string name="welcome_revisit_hint">इसे आप किसी भी समय About स्क्रीन से दोबारा पढ़ सकते हैं.</string>
+    <string name="welcome_bullet_rates_title">लाइव रेमिटेंस रेट</string>
+    <string name="welcome_bullet_rates_body">UAE→India के बारह तक प्रोवाइडर साथ-साथ तुलना में: Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, Ahalia, Federal, GCC, Index, Lari, LuLu. जो आपको सबसे ज़्यादा रुपए दे, उसे BEST बैज मिलता है.</string>
+    <string name="welcome_bullet_midmarket_title">मिड-मार्केट बेंचमार्क</string>
+    <string name="welcome_bullet_midmarket_body">ऊपर का बड़ा नंबर थोक इंटरबैंक रेट है — हर प्रोवाइडर इस पर कुछ मार्क-अप लेता है. हर कार्ड मार्क-अप साफ़ दिखाता है, इसलिए तुलना ईमानदार रहती है.</string>
+    <string name="welcome_bullet_metals_title">सोना और चाँदी</string>
+    <string name="welcome_bullet_metals_body">होम पर सोना/चाँदी कार्ड पर टैप करें — UAE और भारत के लाइव रेट दिखेंगे: 24K + 22K सोना, ग्राम और किलो में चाँदी, और 30-दिन की हिस्ट्री.</string>
+    <string name="welcome_bullet_refresh_title">REFRESH बटन</string>
+    <string name="welcome_bullet_refresh_body">ऊपर के बार में REFRESH बटन तुरंत नए रेट लाता है. आख़िरी पब्लिश हुआ रेट एक सेकंड के अंदर ऐप में दिखता है; बिल्कुल-नया अपस्ट्रीम रेट 30–45 सेकंड में चुपचाप आ जाता है.</string>
+    <string name="welcome_bullet_alerts_title">रोज़ाना के पीक अलर्ट (डिफ़ॉल्ट ON)</string>
+    <string name="welcome_bullet_alerts_body">जब कोई प्रोवाइडर आज के अब तक के सबसे अच्छे AED→INR रेट को पार करता है, तब स्टेटस-बार पर नोटिफ़िकेशन आता है. About → Notifications में कभी भी OFF कर सकते हैं. पहली बार खोलने पर ही अनुमति माँगी जाती है.</string>
+    <string name="welcome_bullet_privacy_title">गोपनीयता पहले</string>
+    <string name="welcome_bullet_privacy_body">आउटबाउंड नेटवर्क ऐक्सेस ऐप्लिकेशन लेयर पर लॉक-डाउन है; कोई टेलिमेट्री नहीं, कोई एनालिटिक्स नहीं, कोई थर्ड-पार्टी SDK नहीं, कोई अकाउंट नहीं.</string>
+</resources>

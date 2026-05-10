@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Malayalam (ml) localisation — first cut, v0.30.3.
+
+    Same translation principles as values-ta/ and values-hi/:
+
+      * Brand names ("Transfer Rate", provider names) NOT translated.
+      * Currency codes (AED, INR, ₹) stay as-is.
+      * "BEST" / "MANUAL" badges stay English (translatable=false at
+        the source).
+      * Toolbar chips (AUTO/LIGHT/DARK/REFRESH) stay English for
+        compactness — icons + position make them self-evident.
+      * Body text and headings ARE translated, with one rule:
+        finance / technical terms commonly used by Kerala-NRIs in
+        spoken Malayalam are transliterated rather than fully
+        Malayalam-ised, e.g. "mid-market" → "മിഡ്-മാർക്കറ്റ്" rather
+        than the literal "ഇടത്തരം-വിപണി" which would feel academic.
+
+    Native-speaker review pending — please flag any phrases that read
+    awkward.  Encoding is UTF-8; Malayalam glyphs render via Android's
+    bundled Noto Sans Malayalam fallback.
+-->
+<resources>
+    <string name="app_tagline">താരതമ്യം ചെയ്യൂ. തിരഞ്ഞെടുക്കൂ. കൂടുതൽ ലാഭിക്കൂ.</string>
+
+    <string name="title_aed_inr">AED → INR റേറ്റ്</string>
+    <string name="subtitle_amount">AED %1$s-നുള്ള റേറ്റ്</string>
+    <string name="last_updated">%1$s അപ്ഡേറ്റ് ചെയ്തു</string>
+    <string name="status_stale">അവസാനം ലഭിച്ച റേറ്റ്</string>
+    <string name="status_error">ലഭ്യമല്ല</string>
+    <string name="status_investigating">ഉടൻ വരുന്നു</string>
+    <string name="action_refresh">പുതുക്കുക</string>
+    <string name="action_open_provider">പ്രൊവൈഡർ സൈറ്റ് തുറക്കുക</string>
+    <string name="error_loading">റേറ്റ് ലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കാൻ വലിച്ച് താഴ്ത്തുക.</string>
+    <string name="disclaimer">ഇവിടെ കാണിക്കുന്ന റേറ്റ് സൂചികമാണ്; പ്രൊവൈഡറിൽ അല്പം വ്യത്യാസമുണ്ടാകാം. ഇത് സാമ്പത്തിക ഉപദേശമല്ല.</string>
+
+    <!-- Toolbar chips kept English (universal short labels). -->
+    <string name="toolbar_theme_auto">AUTO</string>
+    <string name="toolbar_theme_light">LIGHT</string>
+    <string name="toolbar_theme_dark">DARK</string>
+    <string name="toolbar_refresh">REFRESH</string>
+
+    <!-- BEST / MANUAL stay English by design. -->
+    <string name="rate_at_format">@ %1$s</string>
+    <string name="rate_vs_mid_format">%1$s മിഡ് റേറ്റിനെ അപേക്ഷിച്ച്</string>
+    <string name="rate_equals_mid">= മിഡ് റേറ്റ്</string>
+
+    <!-- Sending input -->
+    <string name="amount_label_sending">അയക്കുന്ന തുക</string>
+    <string name="amount_action_set">സെറ്റ്</string>
+
+    <!-- Mid-market header -->
+    <string name="midmarket_eyebrow">മിഡ്-മാർക്കറ്റ്</string>
+    <string name="midmarket_subtitle">1 AED → %1$s</string>
+
+    <!-- Gold/silver -->
+    <string name="metals_gold">സ്വർണം</string>
+    <string name="metals_silver">വെള്ളി</string>
+    <string name="metals_disclaimer">പൊതു മാർക്കറ്റ് ഡാറ്റയിൽ നിന്നുള്ള സൂചിക റേറ്റ്; ജ്വല്ലറികളിലും എക്സ്ചേഞ്ചുകളിലും യഥാർത്ഥ വില വ്യത്യാസപ്പെടാം.</string>
+
+    <!-- About screen -->
+    <string name="about_title">കുറിച്ച്</string>
+    <string name="about_section_what_is_mid">മിഡ്-മാർക്കറ്റ് റേറ്റ് എന്നാൽ എന്ത്?</string>
+    <string name="about_section_what_is_best">\"BEST\" എന്നതിന്റെ അർത്ഥം?</string>
+    <string name="about_section_privacy">സ്വകാര്യത</string>
+    <string name="about_section_notifications">അറിയിപ്പുകൾ</string>
+    <string name="about_section_target_alert">റേറ്റ്-ടാർഗറ്റ് അലേർട്ട്</string>
+    <string name="about_section_reshow_welcome">വെൽക്കം ടൂർ വീണ്ടും കാണിക്കുക</string>
+    <string name="about_button_clear">മായ്ക്കുക</string>
+    <string name="about_button_set">സെറ്റ്</string>
+    <string name="about_target_label">ടാർഗറ്റ് റേറ്റ് (ഉദാ. 25.85)</string>
+    <string name="about_target_armed">സജ്ജമാണ്: റേറ്റ് ≥ %1$s ആകുമ്പോൾ അറിയിക്കും</string>
+    <string name="about_target_invalid">25.85 പോലുള്ള ഒരു സംഖ്യ നൽകുക</string>
+    <string name="about_target_out_of_range">സാധ്യമായ പരിധിക്ക് പുറത്ത് (15.00–40.00 ഇടയിൽ ആയിരിക്കണം)</string>
+    <string name="about_target_blurb">ഏതെങ്കിലും പ്രൊവൈഡറുടെ AED→INR റേറ്റ് നിങ്ങളുടെ ടാർഗറ്റിൽ എത്തുമ്പോൾ സ്റ്റാറ്റസ് ബാർ അറിയിപ്പ് ലഭിക്കും. ഏത് റേറ്റാണ് നിങ്ങൾ ആഗ്രഹിക്കുന്നതെന്ന് മുൻകൂട്ടി അറിയുകയും ആപ്പ് വീണ്ടും വീണ്ടും പരിശോധിക്കാൻ ആഗ്രഹിക്കാതിരിക്കുകയും ചെയ്യുമ്പോൾ ഉപകാരപ്രദമാണ്.</string>
+    <string name="about_reshow_blurb">ഒരു ഫീച്ചർ എന്താണ് ചെയ്യുന്നതെന്ന് മറന്നുപോയോ? വെൽക്കം മോഡൽ റീസെറ്റ് ചെയ്താൽ, അടുത്ത തവണ ഹോം സ്ക്രീനിലേക്ക് മടങ്ങുമ്പോൾ അത് വീണ്ടും കാണിക്കും.</string>
+    <string name="about_reshow_button">വെൽക്കം ടൂർ റീസെറ്റ് ചെയ്യുക</string>
+    <string name="about_reshow_done">ഹോമിൽ ദൃശ്യമാകും</string>
+
+    <!-- Language picker shortcut -->
+    <string name="about_section_language">ഭാഷ</string>
+    <string name="about_language_blurb">Transfer Rate നിങ്ങളുടെ ഫോണിന്റെ ഭാഷ സ്വയം പിന്തുടരും — പിന്തുണയ്ക്കുന്നവ: English, தமிழ், हिन्दी, മലയാളം. നിങ്ങളുടെ ഫോണിന്റെ ബാക്കി ഭാഗങ്ങൾ മാറ്റാതെ ഈ ആപ്പിന്റെ ഭാഷ മാത്രം മാറ്റാൻ താഴെ ടാപ്പുചെയ്യുക.</string>
+    <string name="about_language_button">ഭാഷാ ക്രമീകരണങ്ങൾ തുറക്കുക</string>
+    <string name="about_language_unavailable">ഈ ഉപകരണത്തിൽ ഭാഷാ പിക്കർ ലഭ്യമല്ല — Settings → System → Languages വഴി ഫോണിന്റെ ഭാഷ മാറ്റുക.</string>
+
+    <!-- Welcome modal -->
+    <string name="welcome_title">Transfer Rate-ലേക്ക് സ്വാഗതം</string>
+    <string name="welcome_subtitle">UAE-ൽ നിന്ന് ഇന്ത്യയിലേക്ക് പണം അയക്കാനുള്ള സൗജന്യ, ഓപ്പൺ-സോഴ്‌സ് താരതമ്യ ആപ്പ്. അക്കൗണ്ടുകളില്ല, പരസ്യങ്ങളില്ല, അനലിറ്റിക്സ് ഇല്ല.</string>
+    <string name="welcome_got_it">മനസ്സിലായി</string>
+    <string name="welcome_revisit_hint">ഇത് നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും About സ്ക്രീനിൽ നിന്ന് വീണ്ടും വായിക്കാം.</string>
+    <string name="welcome_bullet_rates_title">ലൈവ് റെമിറ്റൻസ് റേറ്റുകൾ</string>
+    <string name="welcome_bullet_rates_body">UAE→India പന്ത്രണ്ട് വരെ പ്രൊവൈഡർമാർ വശങ്ങളിലായി താരതമ്യം ചെയ്യപ്പെടുന്നു: Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, Ahalia, Federal, GCC, Index, Lari, LuLu. നിങ്ങൾക്ക് ഏറ്റവും കൂടുതൽ രൂപ നൽകുന്ന പ്രൊവൈഡർക്ക് BEST ബാഡ്ജ് ലഭിക്കും.</string>
+    <string name="welcome_bullet_midmarket_title">മിഡ്-മാർക്കറ്റ് ബെഞ്ച്മാർക്ക്</string>
+    <string name="welcome_bullet_midmarket_body">മുകളിലെ വലിയ സംഖ്യ മൊത്ത ഇന്റർബാങ്ക് റേറ്റാണ് — ഓരോ പ്രൊവൈഡറും ഇതിന് മുകളിൽ കുറച്ച് മാർക്ക്-അപ്പ് ഈടാക്കുന്നു. ഓരോ കാർഡും മാർക്ക്-അപ്പ് വ്യക്തമായി കാണിക്കുന്നതിനാൽ താരതമ്യം നീതിയുക്തമാണ്.</string>
+    <string name="welcome_bullet_metals_title">സ്വർണവും വെള്ളിയും</string>
+    <string name="welcome_bullet_metals_body">ഹോമിലെ സ്വർണ/വെള്ളി കാർഡ് ടാപ്പുചെയ്ത് UAE, ഇന്ത്യ ലൈവ് റേറ്റുകൾ കാണുക — 24K + 22K സ്വർണം, ഗ്രാമിനും കിലോയ്ക്കും വെള്ളി, 30-ദിവസത്തെ ചരിത്രം ഉൾപ്പെടെ.</string>
+    <string name="welcome_bullet_refresh_title">REFRESH ബട്ടൺ</string>
+    <string name="welcome_bullet_refresh_body">മുകളിലെ ബാറിലെ REFRESH ബട്ടൺ ഉടൻ പുതിയ റേറ്റുകൾ കൊണ്ടുവരും. അവസാനം പ്രസിദ്ധീകരിച്ച റേറ്റ് ഒരു സെക്കൻഡിനുള്ളിൽ ആപ്പിൽ കാണിക്കും; യഥാർത്ഥ-പുതിയ അപ്സ്ട്രീം റേറ്റ് 30–45 സെക്കൻഡിൽ നിശബ്ദമായി എത്തും.</string>
+    <string name="welcome_bullet_alerts_title">ദിവസത്തെ ഉയർന്ന അലേർട്ടുകൾ (ഡിഫോൾട്ട് ON)</string>
+    <string name="welcome_bullet_alerts_body">ഒരു പ്രൊവൈഡർ ഇന്നത്തെ മുമ്പത്തെ ഏറ്റവും മികച്ച AED→INR റേറ്റിനെ മറികടക്കുമ്പോൾ സ്റ്റാറ്റസ്-ബാർ അറിയിപ്പ് ഫയർ ചെയ്യുന്നു. About → Notifications-ൽ എപ്പോൾ വേണമെങ്കിലും ഓഫ് ചെയ്യാം. ആദ്യമായി തുറക്കുമ്പോൾ മാത്രമേ അനുമതി ചോദിക്കൂ.</string>
+    <string name="welcome_bullet_privacy_title">ഡിസൈൻ കൊണ്ട് സ്വകാര്യം</string>
+    <string name="welcome_bullet_privacy_body">പുറത്തേക്കുള്ള നെറ്റ്‌വർക്ക് ആക്സസ് ആപ്ലിക്കേഷൻ ലെയറിൽ ലോക്ക്-ഡൗൺ ചെയ്തിരിക്കുന്നു; ടെലിമെട്രി ഇല്ല, അനലിറ്റിക്സ് ഇല്ല, തേർഡ്-പാർട്ടി SDK-കൾ ഇല്ല, അക്കൗണ്ട് ഇല്ല.</string>
+</resources>
