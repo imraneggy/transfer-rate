@@ -1114,7 +1114,11 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
             "ok", "manual" -> {
                 // v0.30: received amount is the headline (the number users
                 // actually care about — "how much arrives" not "what's
-                // the rate").  Rate is now a small detail line below.
+                // the rate").  Rate stays prominent on the second line so
+                // both numbers can be read at a glance — v0.30.2 bumps it
+                // from bodySmall/muted to titleSmall/full-contrast at
+                // 16sp SemiBold so it visually competes with the headline
+                // without dethroning it (20sp Bold > 16sp SemiBold).
                 val received = if (rate != null) rate * amount else null
                 Text(
                     text = if (received != null) "$symbol %,.0f".format(received) else "—",
@@ -1130,11 +1134,14 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                 if (rate != null) {
                     Text(
                         text = "@ %.4f".format(rate),
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        softWrap = false,
                     )
                 }
                 if (rate != null && midMarket != null) {
@@ -1175,10 +1182,14 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                 if (rate != null) {
                     Text(
                         text = "@ %.4f".format(rate),
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        softWrap = false,
                     )
                 }
                 Text(

@@ -15,6 +15,24 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.2] — 2026-05-13
+
+### Added
+- **Language shortcut in About** — a "Language" card with a button
+  that deep-links into Android's per-app language picker
+  (`Settings.ACTION_APP_LOCALE_SETTINGS`).  Lets users switch the
+  app's language between English and Tamil without changing the rest
+  of their phone.  Falls back to the device-wide language settings
+  if the per-app picker is unavailable on a stripped-down OEM ROM.
+
+### Changed
+- **Rate text bumped on each provider card** — the per-AED rate
+  (`@ 25.8400`) was rendered at `bodySmall` (~12sp, muted) below the
+  bold receive amount.  Now `titleSmall` at 16sp SemiBold in the
+  full-contrast on-surface colour, so both the rupee total *and* the
+  rate are readable at a glance.  Hierarchy preserved by the typographic
+  minor-third step (20sp → 16sp → 12sp).
+
 ## [0.30.1] — 2026-05-13
 
 ### Fixed

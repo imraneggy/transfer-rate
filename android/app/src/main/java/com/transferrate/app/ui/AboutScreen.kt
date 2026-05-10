@@ -184,6 +184,9 @@ fun AboutScreen(onBack: () -> Unit) {
             }
             Spacer(Modifier.height(12.dp))
 
+            LanguageCard()
+            Spacer(Modifier.height(12.dp))
+
             ReshowWelcomeCard()
             Spacer(Modifier.height(12.dp))
 
@@ -448,6 +451,52 @@ private fun ReshowWelcomeCard() {
                 if (triggered) R.string.about_reshow_done
                 else R.string.about_reshow_button,
             ))
+        }
+    }
+}
+
+/**
+ * Shortcut into Android's per-app language picker (Settings → Apps →
+ * Transfer Rate → App language).  Available on API 33+; our minSdk is
+ * 34 so the action *should* always resolve, but a defensive
+ * resolveActivity check guards against OEM ROMs that strip the picker
+ * (a few old custom Android skins did).  When unavailable we fall back
+ * to opening the device's general language settings.
+ */
+@Composable
+private fun LanguageCard() {
+    val ctx = LocalContext.current
+    var unavailable by remember { mutableStateOf(false) }
+    SectionCard(title = stringResource(R.string.about_section_language)) {
+        Text(
+            stringResource(R.string.about_language_blurb),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(10.dp))
+        androidx.compose.material3.OutlinedButton(
+            onClick = {
+                val perApp = android.content.Intent(
+                    android.provider.Settings.ACTION_APP_LOCALE_SETTINGS,
+                    android.net.Uri.fromParts("package", ctx.packageName, null),
+                ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                val deviceWide = android.content.Intent(
+                    android.provider.Settings.ACTION_LOCALE_SETTINGS,
+                ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                runCatching { ctx.startActivity(perApp) }
+                    .recoverCatching { ctx.startActivity(deviceWide) }
+                    .onFailure { unavailable = true }
+            },
+        ) {
+            Text(stringResource(R.string.about_language_button))
+        }
+        if (unavailable) {
+            Spacer(Modifier.height(10.dp))
+            Text(
+                stringResource(R.string.about_language_unavailable),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

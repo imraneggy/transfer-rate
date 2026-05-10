@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.1 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.2 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-2">v0.30.2</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-1">v0.30.1</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-0">v0.30.0</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-29-6">v0.29.6</a><span class="date">2026-05-10</span></li>
@@ -362,8 +363,37 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-1">
-  <h2><span class="ver">v0.30.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-2">
+  <h2><span class="ver">v0.30.2</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Language shortcut in About</strong> — a "Language"
+      card with a button that deep-links into Android's per-app
+      language picker
+      (<code>Settings.ACTION_APP_LOCALE_SETTINGS</code>).  Lets users
+      switch the app's language between English and Tamil without
+      changing the rest of their phone.  Falls back to the
+      device-wide language settings if the per-app picker is
+      unavailable on a stripped-down OEM ROM.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Rate text bumped on each provider card</strong> — the
+      per-AED rate (<code>@ 25.8400</code>) was rendered at
+      <code>bodySmall</code> (~12sp, muted) below the bold receive
+      amount.  Now <code>titleSmall</code> at 16sp SemiBold in the
+      full-contrast on-surface colour, so both the rupee total
+      <em>and</em> the rate are readable at a glance.  Hierarchy
+      preserved by the typographic minor-third step (20sp → 16sp →
+      12sp).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-1">
+  <h2><span class="ver">v0.30.1</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="fixed">Fixed</h3>
