@@ -495,42 +495,64 @@ def fetch_uae_silver() -> SilverSide:
     Dubai bullion shops typically charge a small premium (~3-5%) over
     spot. Source field labels this honestly so users know what they're
     looking at.
+
+    v0.29.6: 3-attempt retry with exponential backoff.  Production
+    saw transient DNS failures ("Name or service not known") on the
+    GHA runner intermittently; a single attempt was too fragile.
+    Each attempt also has its own 8s socket timeout, so worst-case
+    total wall-time on full failure is ~8 + 2 + 8 + 4 + 8 = 30s,
+    well within the orchestrator's per-provider 25-60s budget.
+
+    TODO(v0.30): add a true second-source fallback (e.g. goldprice.org's
+    public XAU/XAG feed) so we survive prolonged outages of the
+    primary, not just blips.
     """
-    try:
-        with http_client() as c:
-            r = c.get(
-                XAG_API_URL,
-                headers={"Accept": "application/json"},
-                timeout=8.0,
+    import time
+
+    last_exc: Optional[Exception] = None
+    for attempt in range(3):
+        if attempt > 0:
+            # Exponential backoff: 2s, 4s.
+            time.sleep(2.0 ** attempt)
+        try:
+            with http_client() as c:
+                r = c.get(
+                    XAG_API_URL,
+                    headers={"Accept": "application/json"},
+                    timeout=8.0,
+                )
+                r.raise_for_status()
+                data = r.json()
+
+            spot_usd_oz = float(data.get("price", 0.0))
+            if not 1.0 <= spot_usd_oz <= 1_000.0:
+                raise RuntimeError(f"Spot silver out of range: {spot_usd_oz}")
+
+            per_g_aed = (spot_usd_oz / GRAMS_PER_TROY_OZ) * AED_PER_USD
+            # Round to 2 decimal places — silver per gram in retail
+            # rarely has more precision than that.
+            per_g_aed = round(per_g_aed, 2)
+
+            return SilverSide(
+                currency="AED",
+                per_g=per_g_aed,
+                source="Spot (gold-api.com → AED peg)",
+                source_url=XAG_API_URL,
+                status="ok",
             )
-            r.raise_for_status()
-            data = r.json()
+        except Exception as exc:
+            last_exc = exc
+            # Continue to next attempt; the loop's sleep handles backoff.
 
-        spot_usd_oz = float(data.get("price", 0.0))
-        if not 1.0 <= spot_usd_oz <= 1_000.0:
-            raise RuntimeError(f"Spot silver out of range: {spot_usd_oz}")
-
-        per_g_aed = (spot_usd_oz / GRAMS_PER_TROY_OZ) * AED_PER_USD
-        # Round to 2 decimal places — silver per gram in retail rarely
-        # has more precision than that.
-        per_g_aed = round(per_g_aed, 2)
-
-        return SilverSide(
-            currency="AED",
-            per_g=per_g_aed,
-            source="Spot (gold-api.com → AED peg)",
-            source_url=XAG_API_URL,
-            status="ok",
-        )
-    except Exception as exc:
-        return SilverSide(
-            currency="AED",
-            per_g=None,
-            source="Spot (gold-api.com → AED peg)",
-            source_url=XAG_API_URL,
-            status="error",
-            note=f"{type(exc).__name__}: {exc}",
-        )
+    # All 3 attempts failed — return error with the last exception's text.
+    return SilverSide(
+        currency="AED",
+        per_g=None,
+        source="Spot (gold-api.com → AED peg)",
+        source_url=XAG_API_URL,
+        status="error",
+        note=f"3-attempt retry failed; last: {type(last_exc).__name__}: {last_exc}",
+    )
 
 
 # =====================================================================

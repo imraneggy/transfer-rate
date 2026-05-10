@@ -47,10 +47,10 @@ L = {
     "onBackground":         "#1F2F41",
     "surface":              "#FFFFFF",
     "onSurface":            "#1F2F41",
-    "surfaceVariant":       "#E2EAF3",
-    "onSurfaceVariant":     "#4A6684",
-    "outline":              "#8EB1D2",   # used only as divider stroke; no longer text
-    "outlineVariant":       "#C2D7EE",
+    "surfaceVariant":       "#D1DDE9",   # v0.29.6 deepened L=87 -> L=82
+    "onSurfaceVariant":     "#435F7C",   # v0.29.6 deepened L=50 -> L=47
+    "outline":              "#7BA3C6",   # v0.29.6 deepened L=72 -> L=66
+    "outlineVariant":       "#B3CCE5",
 }
 
 # Dark scheme — v0.29.3

@@ -57,10 +57,14 @@ fun GoldHeader(
 ) {
     val goldOk = gold.uae.status == "ok" && gold.india.status == "ok"
 
-    val silverOk = gold.uaeSilver?.status == "ok"
-        && gold.indiaSilver?.status == "ok"
-        && gold.uaeSilver?.perG != null
-        && gold.indiaSilver?.perG != null
+    // v0.29.6: silver section shows whenever EITHER side has a value.
+    // Previous all-or-nothing gate threw away India silver (10-day
+    // history, working) on days when UAE silver's spot-XAG fetch
+    // transiently failed (DNS / gold-api.com hiccup, no fallback
+    // because UAE silver has no daily history to reuse).
+    val uaeSilverOk = gold.uaeSilver?.status == "ok" && gold.uaeSilver?.perG != null
+    val indiaSilverOk = gold.indiaSilver?.status == "ok" && gold.indiaSilver?.perG != null
+    val silverOk = uaeSilverOk || indiaSilverOk
 
     val metals = LocalMetalColors.current
 

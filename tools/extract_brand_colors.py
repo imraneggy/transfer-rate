@@ -135,13 +135,13 @@ def extract_for(logo_path: Path) -> tuple[str, str, str]:
     brand_rgb = tuple(centroids[pick])
 
     raw_hex = hex_of(brand_rgb)
-    # Light tint: brand colour mixed 22% into pure white.  Lighter than
-    # the previous v0.29.3 hand-picked tints (which were ~28%) so
-    # onSurface text stays APCA-legible on average.
-    light_hex = mix_into(brand_rgb, (255, 255, 255), frac=0.22)
-    # Dark tint: brand colour mixed 32% into the dark surface (#1F2F41,
-    # the app's surface in dark mode) so the tint pops against the
-    # darker bg without overpowering.
+    # v0.29.6: bumped light-mode mix 22% -> 32% so the BEST card
+    # actually looks tinted in light mode (was so pale you could barely
+    # tell which provider had won).  Still keeps onSurface text
+    # APCA-legible — verified by tools/validate_color_palette.py.
+    light_hex = mix_into(brand_rgb, (255, 255, 255), frac=0.32)
+    # Dark tint unchanged at 45% mix into the dark surface — already
+    # had enough presence in dark mode.
     dark_hex = mix_into(brand_rgb, (0x1F, 0x2F, 0x41), frac=0.45)
     return raw_hex, light_hex, dark_hex
 

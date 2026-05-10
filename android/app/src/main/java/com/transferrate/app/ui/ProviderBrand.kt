@@ -34,18 +34,18 @@ import androidx.compose.ui.graphics.luminance
 internal fun bestCardTintFor(providerId: String): Color {
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     return when (providerId.lowercase()) {
-        "ahalia"               -> if (isDark) Color(0xFF12345D) else Color(0xFFC7D4E3)  // brand #023B7F
-        "al_ansari"            -> if (isDark) Color(0xFF182E53) else Color(0xFFCBD1DE)  // brand #112C69
-        "al_dahab"             -> if (isDark) Color(0xFF126239) else Color(0xFFC7EAD1)  // brand #02A12F
-        "aspora"               -> if (isDark) Color(0xFF372A74) else Color(0xFFDACFEE)  // brand #5523B2
-        "federal_exchange"     -> if (isDark) Color(0xFF7B5D3A) else Color(0xFFFBE8D2)  // brand #EC9532
-        "gcc_exchange"         -> if (isDark) Color(0xFF126448) else Color(0xFFC7EBD9)  // brand #02A451
-        "index_exchange"       -> if (isDark) Color(0xFF837C35) else Color(0xFFFEF7CF)  // brand #FDDA26
-        "lari"                 -> if (isDark) Color(0xFF7F5A38) else Color(0xFFFDE6D1)  // brand #F58E2C
-        "lulu"                 -> if (isDark) Color(0xFF1A678C) else Color(0xFFCBEDFA)  // brand #15ABE7
-        "remitly"              -> if (isDark) Color(0xFF213449) else Color(0xFFCFD4D9)  // brand #243954
-        "transfergo"           -> if (isDark) Color(0xFF847724) else Color(0xFFFFF5C7)  // brand #FFD000
-        "wise"                 -> if (isDark) Color(0xFF153124) else Color(0xFFC9D2C7)  // brand #083500
+        "ahalia"               -> if (isDark) Color(0xFF12345D) else Color(0xFFAEC0D6)  // brand #023B7F
+        "al_ansari"            -> if (isDark) Color(0xFF182E53) else Color(0xFFB3BBCF)  // brand #112C69
+        "al_dahab"             -> if (isDark) Color(0xFF126239) else Color(0xFFAEE1BC)  // brand #02A12F
+        "aspora"               -> if (isDark) Color(0xFF372A74) else Color(0xFFC9B9E6)  // brand #5523B2
+        "federal_exchange"     -> if (isDark) Color(0xFF7B5D3A) else Color(0xFFF9DDBD)  // brand #EC9532
+        "gcc_exchange"         -> if (isDark) Color(0xFF126448) else Color(0xFFAEE2C7)  // brand #02A451
+        "index_exchange"       -> if (isDark) Color(0xFF837C35) else Color(0xFFFEF3B9)  // brand #FDDA26
+        "lari"                 -> if (isDark) Color(0xFF7F5A38) else Color(0xFFFCDBBB)  // brand #F58E2C
+        "lulu"                 -> if (isDark) Color(0xFF1A678C) else Color(0xFFB4E4F7)  // brand #15ABE7
+        "remitly"              -> if (isDark) Color(0xFF213449) else Color(0xFFB9C0C8)  // brand #243954
+        "transfergo"           -> if (isDark) Color(0xFF847724) else Color(0xFFFFF0AD)  // brand #FFD000
+        "wise"                 -> if (isDark) Color(0xFF153124) else Color(0xFFB0BEAE)  // brand #083500
         // Fallback: prior dual-tone indigo (used when a provider is
         // newly registered without a bundled logo PNG).
         else                  -> if (isDark) Color(0xFF241776) else Color(0xFFA3ACFF)

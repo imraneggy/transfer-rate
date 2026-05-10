@@ -13,10 +13,10 @@ Programmatic APCA contrast scoring + visual swatches for every text-on-backgroun
 |---------|------|----|----|-----------|--------|
 | Body text on bg | `#1F2F41` (onSurface) | `#F6F9FC` (background) | +96 | 60 | PASS |
 | Body text on card surface | `#1F2F41` (onSurface) | `#FFFFFF` (surface) | +100 | 60 | PASS |
-| Body text on card variant | `#1F2F41` (onSurface) | `#E2EAF3` (surfaceVariant) | +87 | 60 | PASS |
-| Secondary text on bg | `#4A6684` (onSurfaceVariant) | `#F6F9FC` (background) | +76 | 60 | PASS |
-| Secondary text on card | `#4A6684` (onSurfaceVariant) | `#FFFFFF` (surface) | +80 | 60 | PASS |
-| Secondary text on card variant | `#4A6684` (onSurfaceVariant) | `#E2EAF3` (surfaceVariant) | +67 | 60 | PASS |
+| Body text on card variant | `#1F2F41` (onSurface) | `#D1DDE9` (surfaceVariant) | +79 | 60 | PASS |
+| Secondary text on bg | `#435F7C` (onSurfaceVariant) | `#F6F9FC` (background) | +79 | 60 | PASS |
+| Secondary text on card | `#435F7C` (onSurfaceVariant) | `#FFFFFF` (surface) | +83 | 60 | PASS |
+| Secondary text on card variant | `#435F7C` (onSurfaceVariant) | `#D1DDE9` (surfaceVariant) | +62 | 60 | PASS |
 | Button label on primary | `#FFFFFF` (onPrimary) | `#6F73FF` (primary) | -70 | 60 | PASS |
 | Chip label on primary container | `#241776` (onPrimaryContainer) | `#CDD9FF` (primaryContainer) | +79 | 60 | PASS |
 | Selected chip on primary | `#FFFFFF` (onPrimary) | `#6F73FF` (primary) | -70 | 60 | PASS |

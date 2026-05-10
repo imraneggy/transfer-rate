@@ -1,8 +1,16 @@
 package com.transferrate.app.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -12,10 +20,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,21 +28,31 @@ import androidx.compose.ui.unit.sp
  * Compact line chart for showing rate movement over time.
  *
  * Auto-scales to the local min/max of the data so small movements are
- * still visible. Renders nothing if there's only one data point.
+ * still visible.  Renders nothing if there's only one data point.
  *
- * **v0.29.4: optional value labels.** When `showLabels = true`, three
- * numeric labels are drawn — at the **min** point (just below the
- * trough), the **max** point (just above the peak), and the **last**
- * point (next to the highlight dot, prefixed with the rate value).
+ * **v0.29.6: caption-row labels.** Earlier versions tried to label
+ * min/max/last directly on the curve, but the on-canvas labels overlap
+ * the line, clip on edges, and read like accidents.  The professional
+ * pattern (Robinhood, Bloomberg, TradingView's compact mode) is a
+ * small text row below the chart with high / low / now values.  This
+ * keeps the chart shape clean and makes the values explicitly readable
+ * as a summary, not a guess-from-position.
+ *
+ * When `showLabels = true`, the composable renders:
+ *
+ *     <Canvas with line + fill + last-point dot>
+ *     <Row: "↑ 25.84   ↓ 25.71   • 25.78">
+ *
  * Caller passes a formatter so the same Sparkline composable can render
  * "25.78", "₹ 7,950", "AED 312", etc.
  *
  * @param values    ordered list of rates (oldest first)
  * @param color     line color; pass theme-aware color from caller
  * @param modifier  sets size — typically `Modifier.fillMaxWidth().height(40.dp)`
- *                  (or 64.dp when [showLabels] is true so the labels have room)
- * @param showLabels render min/max/last value labels along the curve
- * @param formatter  how to format each numeric value (defaults to "%.4f")
+ *                  for a label-less chart, or 64.dp+ when [showLabels]=true
+ *                  so the caption row has room
+ * @param showLabels render high/low/now caption row below the chart
+ * @param formatter  how to format each numeric value (default `%.4f`)
  */
 @Composable
 fun Sparkline(
@@ -50,13 +64,45 @@ fun Sparkline(
 ) {
     if (values.size < 2) return
 
-    val textMeasurer = rememberTextMeasurer()
-    val labelStyle = TextStyle(
-        fontSize = 9.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface,
-    )
+    if (!showLabels) {
+        // Just the chart — no caption.
+        SparklineCanvas(values = values, color = color, modifier = modifier)
+        return
+    }
 
+    // With labels: stack the canvas on top of a small caption row.  The
+    // canvas takes most of the height (chart needs room to read); the
+    // caption is a fixed 18 dp.
+    Column(modifier = modifier) {
+        SparklineCanvas(
+            values = values,
+            color = color,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        )
+        Spacer(Modifier.height(2.dp))
+        SparklineCaption(
+            high = values.max(),
+            low = values.min(),
+            last = values.last(),
+            color = color,
+            formatter = formatter,
+        )
+    }
+}
+
+
+/**
+ * The actual line + fill + dot.  Pulled out so the wrapper can place
+ * a caption below without making the canvas have to know about it.
+ */
+@Composable
+private fun SparklineCanvas(
+    values: List<Double>,
+    color: Color,
+    modifier: Modifier,
+) {
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
@@ -66,25 +112,17 @@ fun Sparkline(
         val max = values.max()
         val range = (max - min).coerceAtLeast(0.0001)
 
-        // Reserve more vertical room when labels are on so they don't
-        // clip the chart edges or each other.
-        val padTop = if (showLabels) 14f else 6f
-        val padBottom = if (showLabels) 14f else 4f
+        // Inset so the line doesn't kiss the edges and the highlight
+        // dot has room to live without clipping.
+        val padTop = 6f
+        val padBottom = 4f
         val plotH = (h - padTop - padBottom).coerceAtLeast(1f)
 
-        // Compute (x, y) for each point so we can reuse positions for
-        // both the line path and the label placements.
-        val points = values.mapIndexed { i, v ->
+        val linePath = Path()
+        values.forEachIndexed { i, v ->
             val x = i.toFloat() / (values.size - 1) * w
             val y = padTop + plotH - ((v - min) / range * plotH).toFloat()
-            Offset(x, y)
-        }
-
-        // ---- Line path ---------------------------------------------------
-        val linePath = Path().apply {
-            points.forEachIndexed { i, p ->
-                if (i == 0) moveTo(p.x, p.y) else lineTo(p.x, p.y)
-            }
+            if (i == 0) linePath.moveTo(x, y) else linePath.lineTo(x, y)
         }
 
         val fillPath = Path().apply {
@@ -117,60 +155,71 @@ fun Sparkline(
             ),
         )
 
-        // ---- Highlight dot at "now" --------------------------------------
-        val last = points.last()
-        drawCircle(color.copy(alpha = 0.22f), radius = 7.0f, center = last)
-        drawCircle(color, radius = 4.0f, center = last)
+        // Highlight dot at "now"
+        val lastX = w
+        val lastY = padTop + plotH - ((values.last() - min) / range * plotH).toFloat()
+        drawCircle(
+            color = color.copy(alpha = 0.22f),
+            radius = 7.0f,
+            center = Offset(lastX, lastY),
+        )
+        drawCircle(
+            color = color,
+            radius = 4.0f,
+            center = Offset(lastX, lastY),
+        )
+    }
+}
 
-        // ---- Value labels (v0.29.4) --------------------------------------
-        if (!showLabels) return@Canvas
 
-        // Find the first occurrence of the min and max so labels land
-        // on a real data point (matters when the series has multiple
-        // tied extrema — e.g. a flat segment that hits the max twice).
-        val minIdx = values.indexOf(min)
-        val maxIdx = values.indexOf(max)
-        val lastIdx = values.lastIndex
+/**
+ * One-line summary row showing high / low / now under the sparkline.
+ *
+ * Format: "↑ 25.8400   ↓ 25.7100   • 25.7800"
+ *
+ * Spaced evenly across the row width so values align across stacked
+ * sparklines (e.g. when 24K and 22K trends sit one above the other,
+ * the digits line up vertically).
+ */
+@Composable
+private fun SparklineCaption(
+    high: Double,
+    low: Double,
+    last: Double,
+    color: Color,
+    formatter: (Double) -> String,
+) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        CaptionStat(label = "↑", value = formatter(high), labelColor = muted)
+        CaptionStat(label = "↓", value = formatter(low), labelColor = muted)
+        CaptionStat(label = "•", value = formatter(last), labelColor = color)
+    }
+}
 
-        // Draw a label at a point.  Side ("above" / "below") is chosen
-        // by the caller because peaks want labels above the curve and
-        // troughs want them below; otherwise the label sits on top of
-        // the chart line.
-        fun drawLabelAt(idx: Int, side: String) {
-            val p = points[idx]
-            val text = formatter(values[idx])
-            val layout = textMeasurer.measure(
-                text = AnnotatedString(text),
-                style = labelStyle,
-            )
-            val tw = layout.size.width.toFloat()
-            val th = layout.size.height.toFloat()
-            // Horizontal: clamp so the label doesn't run past the canvas
-            // (matters for max/min landing at index 0 or lastIdx).
-            val labelX = (p.x - tw / 2f).coerceIn(0f, w - tw)
-            val labelY = if (side == "above") {
-                (p.y - th - 2f).coerceAtLeast(0f)
-            } else {
-                (p.y + 2f).coerceAtMost(h - th)
-            }
-            drawText(
-                textLayoutResult = layout,
-                topLeft = Offset(labelX, labelY),
-            )
-        }
 
-        // Special-case: if min and max are both extremes of a tiny range
-        // (essentially flat), don't double-label — one is enough.
-        val flat = (max - min) < (max * 0.0005)  // <0.05% range = "flat"
-        if (!flat) {
-            drawLabelAt(maxIdx, side = "above")
-            drawLabelAt(minIdx, side = "below")
-        }
-        // Last value always rendered; if it coincides with min or max
-        // index we'd draw twice, but the second draw is just a redraw
-        // of the same text in the same place — visually invisible.
-        if (lastIdx != minIdx && lastIdx != maxIdx) {
-            drawLabelAt(lastIdx, side = "above")
-        }
+@Composable
+private fun CaptionStat(label: String, value: String, labelColor: Color) {
+    Row {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 10.sp,
+            color = labelColor,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(Modifier.width(3.dp))
+        Text(
+            text = value,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontFeatureSettings = "tnum",
+            ),
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }

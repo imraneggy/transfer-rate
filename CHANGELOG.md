@@ -15,6 +15,46 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.29.6] — 2026-05-10
+
+### Fixed
+- **Silver vanished from the gold/silver module** when UAE silver
+  scraper transiently failed. The Kotlin `silverAvailable` gate
+  required BOTH UAE and India sides to be `status: ok` — so a single
+  DNS hiccup on the UAE-side spot-XAG fetch threw away the working
+  India silver (with 10-day history). Softened to per-side: render
+  whichever sides are available, with `—` placeholders for the
+  missing one. Applies to both the home `GoldHeader` card and the
+  `GoldHistorySheet` popup.
+- **Trend-line value placement** — moved from on-curve labels (which
+  overlapped the line, clipped on edges, and looked accidental) to a
+  small caption row below the chart in the form `↑ 25.84   ↓ 25.71
+  • 25.78`. Robinhood / Bloomberg / TradingView pattern. Sparkline
+  shape stays clean; values are read as a summary, not guessed from
+  position.
+- **Light mode still felt washed** despite v0.29.3's primary lift —
+  diagnosis: every surface was at L≥87, no visual depth between
+  paper-bg, cards, and accents. Deepened `surfaceVariant` L=87 → L=82
+  (`#E2EAF3` → `#D1DDE9`) so cards visibly pop. `outline` L=72 → L=66
+  for stronger card edges. `outlineVariant` L=85 → L=80 for divider
+  presence. `onSurfaceVariant` L=50 → L=47 to clear APCA Body 60 on
+  the new darker surfaceVariant. **All 26 text/bg pairs still pass
+  APCA** in both light and dark modes (verified via
+  `tools/validate_color_palette.py`).
+- **BEST card brand tint intensity** boosted: light-mode mix from 22%
+  → 32% into white, so the winning provider's brand colour actually
+  reads instead of looking milky-pale. Re-ran
+  `tools/extract_brand_colors.py --write` to regenerate
+  `ProviderBrand.kt`.
+- **UAE silver scraper resilience** — added 3-attempt retry with
+  exponential backoff (2s, 4s) on the gold-api.com fetch. Production
+  was failing on transient DNS resolution errors that cleared within
+  seconds; one-shot was too fragile. TODO(v0.30.0): add a true
+  second-source fallback (e.g. goldprice.org's public XAU/XAG feed)
+  for prolonged outages.
+
+---
+
 ## [0.29.5] — 2026-05-10
 
 ### Fixed
@@ -754,6 +794,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+[0.29.6]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.6
 [0.29.5]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.5
 [0.29.4]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.4
 [0.29.3]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.3

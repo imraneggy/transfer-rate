@@ -80,10 +80,10 @@ private val LightColors = lightColorScheme(
     onBackground = Color(0xFF1F2F41),             // neutral L=30, APCA Body+ -99
     surface = Color.White,
     onSurface = Color(0xFF1F2F41),
-    surfaceVariant = Color(0xFFE2EAF3),           // neutral L=87 (was L=92 — more depth vs paper bg)
-    onSurfaceVariant = Color(0xFF4A6684),         // neutral L=50, APCA Body -78
-    outline = Color(0xFF8EB1D2),                  // neutral L=72 (was L=80 — visible card edges)
-    outlineVariant = Color(0xFFC2D7EE),           // neutral L=85 (was L=90 — divider presence)
+    surfaceVariant = Color(0xFFD1DDE9),           // neutral L=82 (v0.29.6: deepened from L=87 — light mode still felt washed; cards now visibly lift off the paper bg)
+    onSurfaceVariant = Color(0xFF435F7C),         // neutral L=47 (v0.29.6: deepened L=50 -> L=47 to clear APCA Body 60 on the new darker surfaceVariant)
+    outline = Color(0xFF7BA3C6),                  // neutral L=66 (v0.29.6: deepened from L=72 for stronger card edges)
+    outlineVariant = Color(0xFFB3CCE5),           // neutral L=80 (v0.29.6: deepened from L=85)
     error = Color(0xFFBB0412),                    // negative L=50
     onError = Color.White,
     errorContainer = Color(0xFFFFD3C7),           // negative L=95

@@ -99,10 +99,14 @@ fun GoldHistorySheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val historySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val silverAvailable = gold.uaeSilver?.status == "ok"
-        && gold.indiaSilver?.status == "ok"
-        && gold.uaeSilver?.perG != null
-        && gold.indiaSilver?.perG != null
+    // v0.29.6: silver section shows whenever EITHER side has a value.
+    // Previous all-or-nothing gate threw away India silver (10-day
+    // history, working) on days when UAE silver's spot-XAG fetch
+    // transiently failed.  We render whatever is available; the
+    // missing side shows "—" placeholders.
+    val uaeSilverOk = gold.uaeSilver?.status == "ok" && gold.uaeSilver?.perG != null
+    val indiaSilverOk = gold.indiaSilver?.status == "ok" && gold.indiaSilver?.perG != null
+    val silverAvailable = uaeSilverOk || indiaSilverOk
 
     var selectedCarat by remember { mutableStateOf("24K") }
     var fullHistoryOpen by remember { mutableStateOf(false) }
