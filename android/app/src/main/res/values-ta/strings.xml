@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Tamil (ta) localisation — first cut, v0.30.0.
+
+    Translation principles for this file:
+
+      * Brand names ("Transfer Rate", provider names like Wise, LuLu,
+        Aspora) are NOT translated — they're trademarks and people
+        recognise them by their English forms even in Tamil contexts.
+      * Currency codes (AED, INR, ₹) stay as-is — Tamil numerals are
+        not used for financial UI in modern UAE-Indian usage.
+      * "BEST" / "MANUAL" badges stay English — they're 4-letter
+        universal markers and any Tamil equivalent is longer.
+      * Toolbar chips (AUTO/LIGHT/DARK/REFRESH) stay English for
+        compactness — the icons + position make them self-evident.
+      * Body text and headings ARE translated, with one rule: financial
+        / technical terms commonly used by UAE-Indians in spoken Tamil
+        get transliterated rather than fully Tamil-ised, e.g.
+        "mid-market" → "மிட்-மார்க்கெட்" rather than the literal
+        "சந்தை சராசரி" which would feel academic.
+
+    Native-speaker review pending — please flag any phrases that read
+    awkward.  Encoding is UTF-8; Indic characters render via Android's
+    bundled Noto Sans Tamil fallback (no extra fonts shipped in v0.30).
+-->
+<resources>
+    <string name="app_tagline">ஒப்பிடுங்கள். தேர்வு செய்யுங்கள். அதிகம் சேமியுங்கள்.</string>
+
+    <string name="title_aed_inr">AED → INR ரேட்</string>
+    <string name="subtitle_amount">AED %1$s-க்கான ரேட்</string>
+    <string name="last_updated">%1$s புதுப்பிக்கப்பட்டது</string>
+    <string name="status_stale">கடைசியாக கிடைத்த ரேட்</string>
+    <string name="status_error">கிடைக்கவில்லை</string>
+    <string name="status_investigating">விரைவில்</string>
+    <string name="action_refresh">புதுப்பி</string>
+    <string name="action_open_provider">வழங்குநர் தளத்தைத் திற</string>
+    <string name="error_loading">ரேட் ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்க இழுக்கவும்.</string>
+    <string name="disclaimer">இங்குக் காட்டப்படும் ரேட் குறிப்பிடப்படுவை மட்டுமே; வழங்குநரிடம் சற்றே மாறுபடலாம். இது நிதி ஆலோசனை அல்ல.</string>
+
+    <!-- Toolbar chips kept English (universal short labels). -->
+    <string name="toolbar_theme_auto">AUTO</string>
+    <string name="toolbar_theme_light">LIGHT</string>
+    <string name="toolbar_theme_dark">DARK</string>
+    <string name="toolbar_refresh">REFRESH</string>
+
+    <!-- BEST / MANUAL stay English by design. -->
+    <string name="rate_at_format">@ %1$s</string>
+    <string name="rate_vs_mid_format">%1$s மிட் ரேட் ஒப்பீட்டில்</string>
+    <string name="rate_equals_mid">= மிட் ரேட்</string>
+
+    <!-- Sending input -->
+    <string name="amount_label_sending">அனுப்பும் தொகை</string>
+    <string name="amount_action_set">அமை</string>
+
+    <!-- Mid-market header -->
+    <string name="midmarket_eyebrow">மிட்-மார்க்கெட்</string>
+    <string name="midmarket_subtitle">1 AED → %1$s</string>
+
+    <!-- Gold/silver -->
+    <string name="metals_gold">தங்கம்</string>
+    <string name="metals_silver">வெள்ளி</string>
+    <string name="metals_disclaimer">பொது சந்தை தரவுகளில் இருந்து பெறப்பட்ட குறிப்பிடப்படும் ரேட்; நகைக்கடைகள் / எக்சேஞ்சுகளில் உண்மையான விலை வேறுபடலாம்.</string>
+
+    <!-- About screen -->
+    <string name="about_title">பற்றி</string>
+    <string name="about_section_what_is_mid">மிட்-மார்க்கெட் ரேட் என்றால் என்ன?</string>
+    <string name="about_section_what_is_best">\"BEST\" என்றால் என்ன?</string>
+    <string name="about_section_privacy">தனியுரிமை</string>
+    <string name="about_section_notifications">அறிவிப்புகள்</string>
+    <string name="about_section_target_alert">ரேட் இலக்கு எச்சரிக்கை</string>
+    <string name="about_section_reshow_welcome">வரவேற்பு சுற்றுப்பயணத்தை மீண்டும் காட்டு</string>
+    <string name="about_button_clear">அழி</string>
+    <string name="about_button_set">அமை</string>
+    <string name="about_target_label">இலக்கு ரேட் (உதா: 25.85)</string>
+    <string name="about_target_armed">தயார் நிலையில்: ரேட் ≥ %1$s ஆனதும் அறிவிப்பு வரும்</string>
+    <string name="about_target_invalid">25.85 போன்ற எண் உள்ளிடவும்</string>
+    <string name="about_target_out_of_range">சாத்தியமில்லாத வரம்பு (15.00–40.00 க்குள் இருக்க வேண்டும்)</string>
+    <string name="about_target_blurb">எந்த வழங்குநரின் AED→INR ரேட் உங்கள் இலக்கைத் தொடும் அந்த நொடியே ஸ்டேட்டஸ் பாரில் அறிவிப்பு பெறுங்கள். அனுப்பும் முன் என்ன ரேட் வேண்டும் என்று உங்களுக்குத் தெரியும்போதும், ஆப்பை மீண்டும் மீண்டும் பார்க்க விரும்பாதபோதும் பயனுள்ளது.</string>
+    <string name="about_reshow_blurb">ஒரு அம்சம் என்ன செய்கிறது என்பதை மறந்துவிட்டீர்களா? வரவேற்பு மோடலை மீட்டமைத்தால், அடுத்த முறை முகப்பு திரைக்குத் திரும்பும்போது அது தோன்றும்.</string>
+    <string name="about_reshow_button">வரவேற்பு சுற்றுப்பயணத்தை மீட்டமை</string>
+    <string name="about_reshow_done">முகப்பில் தோன்றும்</string>
+
+    <!-- Welcome modal -->
+    <string name="welcome_title">Transfer Rate-க்கு வரவேற்கிறோம்</string>
+    <string name="welcome_subtitle">UAE-இல் இருந்து இந்தியாவிற்கு பணம் அனுப்புவதற்கான இலவச, ஓப்பன்-சோர்ஸ் ஒப்பீட்டு ஆப். கணக்குகள் இல்லை, விளம்பரங்கள் இல்லை, அனலிடிக்ஸ் இல்லை.</string>
+    <string name="welcome_got_it">புரிந்தது</string>
+    <string name="welcome_revisit_hint">இதை எப்போது வேண்டுமானாலும் About திரையில் மீண்டும் படிக்கலாம்.</string>
+    <string name="welcome_bullet_rates_title">நேரடி ரெமிட்டன்ஸ் ரேட்</string>
+    <string name="welcome_bullet_rates_body">UAE→India வழங்குநர்கள் பன்னிரண்டு வரை அருகருகே ஒப்பிடப்படுகின்றன: Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, Ahalia, Federal, GCC, Index, Lari, LuLu. அதிக ரூபாய் தரும் வழங்குநருக்கு BEST பேட்ஜ் வழங்கப்படும்.</string>
+    <string name="welcome_bullet_midmarket_title">மிட்-மார்க்கெட் அளவுகோல்</string>
+    <string name="welcome_bullet_midmarket_body">மேலே உள்ள பெரிய எண் மொத்த இடைவங்கி ரேட் — ஒவ்வொரு வழங்குநரும் இதன் மீது சில மார்க்-அப் வசூலிக்கின்றனர். ஒவ்வொரு கார்டும் மார்க்-அப்பை வெளிப்படையாகக் காட்டுவதால் ஒப்பீடு நேர்மையாக இருக்கிறது.</string>
+    <string name="welcome_bullet_metals_title">தங்கம் &amp; வெள்ளி</string>
+    <string name="welcome_bullet_metals_body">முகப்பில் உள்ள தங்கம்/வெள்ளி கார்டை தட்டினால் UAE மற்றும் இந்திய நேரடி ரேட் தெரியும் — 24K + 22K தங்கம், கிராம் மற்றும் கிலோக்கு வெள்ளி, மேலும் 30-நாள் வரலாறு.</string>
+    <string name="welcome_bullet_refresh_title">REFRESH பட்டன்</string>
+    <string name="welcome_bullet_refresh_body">மேல் பட்டியில் உள்ள REFRESH பட்டன் உடனடியாக புதிய ரேட்களைப் பெறும். கடைசியாக வெளியிடப்பட்ட ரேட் ஆப்பில் ஒரு வினாடிக்குள் தோன்றும்; உண்மையில்-புதிய ரேட் 30–45 வினாடிகளில் அமைதியாக வரும்.</string>
+    <string name="welcome_bullet_alerts_title">தினசரி உச்ச அறிவிப்புகள் (இயல்பாக ON)</string>
+    <string name="welcome_bullet_alerts_body">இன்று-வரையிலான சிறந்த AED→INR ரேட்டை ஒரு வழங்குநர் தாண்டினால் ஸ்டேட்டஸ் பார் அறிவிப்பு வரும். About → Notifications-இல் எப்போது வேண்டுமானாலும் OFF செய்யலாம். முதல் முறை திறக்கும்போது மட்டும் அனுமதி கேட்கப்படும்.</string>
+    <string name="welcome_bullet_privacy_title">தனியுரிமை அடிப்படையில்</string>
+    <string name="welcome_bullet_privacy_body">வெளியீடு நெட்வொர்க் அணுகல் அப்ளிகேஷன் லேயரில் கட்டுப்படுத்தப்பட்டுள்ளது; எந்த டெலிமெட்ரியும் இல்லை, அனலிடிக்ஸ் இல்லை, மூன்றாம் தரப்பு SDK-கள் இல்லை, கணக்கு இல்லை.</string>
+</resources>

@@ -52,6 +52,63 @@ class NotificationPrefs(context: Context) {
             prefs.edit().putBoolean(KEY_PERMISSION_REQUESTED, value).apply()
         }
 
+    /** v0.30: custom rate-target alert.  When non-null, the periodic
+     *  prefetch worker fires a notification on the first scrape where
+     *  the best AED→INR rate >= this target.  Per-day dedup so users
+     *  aren't spammed if the rate hovers above target all afternoon.
+     *
+     *  Stored as a Float to fit cleanly in SharedPreferences (Double
+     *  isn't a primitive there); the small precision loss is fine — we
+     *  only compare to 4 decimal places of rate data anyway. */
+    var customAlertTargetInr: Double?
+        get() {
+            val v = prefs.getFloat(KEY_TARGET_INR, Float.NaN)
+            return if (v.isNaN()) null else v.toDouble()
+        }
+        set(value) {
+            val edit = prefs.edit()
+            if (value == null) {
+                edit.remove(KEY_TARGET_INR)
+            } else {
+                edit.putFloat(KEY_TARGET_INR, value.toFloat())
+            }
+            edit.apply()
+        }
+
+    /**
+     * Should the worker fire a custom-target notification right now?
+     *
+     * Returns true on the first observation in the current local-day
+     * where `currentBest >= customAlertTargetInr`, and atomically
+     * records that we've notified for THIS target on THIS day so the
+     * same observation can't trigger again.  A target change resets the
+     * dedup so the user can lower their target mid-day and immediately
+     * see a notification if the new target is already met.
+     */
+    fun shouldNotifyCustomTargetAndRecord(
+        currentBest: Double,
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): Boolean {
+        val target = customAlertTargetInr ?: return false
+        if (currentBest < target - EPSILON) return false  // not yet met
+
+        val today = LocalDate.now(zone).toString()
+        val recordedDate = prefs.getString(KEY_TARGET_LAST_DATE, null)
+        val recordedTarget = prefs.getFloat(KEY_TARGET_LAST_NOTIFIED, Float.NaN)
+
+        // Already notified today FOR THIS TARGET — don't re-fire.
+        if (recordedDate == today && !recordedTarget.isNaN()
+            && kotlin.math.abs(recordedTarget.toDouble() - target) < EPSILON) {
+            return false
+        }
+
+        prefs.edit()
+            .putString(KEY_TARGET_LAST_DATE, today)
+            .putFloat(KEY_TARGET_LAST_NOTIFIED, target.toFloat())
+            .apply()
+        return true
+    }
+
     /**
      * Decide whether to fire a notification for [candidate] (the live
      * "best now" rate) and, if yes, atomically record the new high so
@@ -106,6 +163,9 @@ class NotificationPrefs(context: Context) {
         private const val KEY_LAST_DATE = "last_notified_date"
         private const val KEY_LAST_PEAK = "last_notified_peak"
         private const val KEY_PERMISSION_REQUESTED = "permission_requested_v1"
+        private const val KEY_TARGET_INR = "custom_target_inr"
+        private const val KEY_TARGET_LAST_DATE = "custom_target_last_date"
+        private const val KEY_TARGET_LAST_NOTIFIED = "custom_target_last_notified"
 
         /** 0.005 ≈ half-a-paisa for AED→INR; below this we treat two
          *  observations as the same rate. Matches the 4-dp rounding the

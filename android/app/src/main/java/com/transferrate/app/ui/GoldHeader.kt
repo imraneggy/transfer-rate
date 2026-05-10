@@ -19,6 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.transferrate.app.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,7 +83,7 @@ fun GoldHeader(
         if (!goldOk) {
             Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
                 Text(
-                    "GOLD",
+                    stringResource(R.string.metals_gold),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
@@ -118,7 +120,7 @@ fun GoldHeader(
                     Text("🪙", fontSize = 13.sp, maxLines = 1)
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        "GOLD",
+                        stringResource(R.string.metals_gold),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.0.sp,
@@ -167,7 +169,7 @@ fun GoldHeader(
                              color = metals.silverAccent, maxLines = 1)
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "SILVER",
+                            stringResource(R.string.metals_silver),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.0.sp,

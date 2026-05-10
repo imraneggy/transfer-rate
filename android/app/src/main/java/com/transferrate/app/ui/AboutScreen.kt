@@ -40,11 +40,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.transferrate.app.BuildConfig
+import com.transferrate.app.R
 import com.transferrate.app.data.NotificationCenter
 import com.transferrate.app.data.NotificationPrefs
 
@@ -55,7 +57,7 @@ fun AboutScreen(onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("About", fontWeight = FontWeight.SemiBold) },
+                title = { Text(stringResource(R.string.about_title), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) { Text("←", fontSize = 22.sp) }
                 },
@@ -90,7 +92,7 @@ fun AboutScreen(onBack: () -> Unit) {
             }
             Spacer(Modifier.height(14.dp))
             Text(
-                "Transfer Rate",
+                stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
@@ -98,7 +100,7 @@ fun AboutScreen(onBack: () -> Unit) {
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                androidx.compose.ui.res.stringResource(com.transferrate.app.R.string.app_tagline),
+                stringResource(R.string.app_tagline),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -114,7 +116,7 @@ fun AboutScreen(onBack: () -> Unit) {
             )
             Spacer(Modifier.height(24.dp))
 
-            SectionCard(title = "What is mid-market rate?") {
+            SectionCard(title = stringResource(R.string.about_section_what_is_mid)) {
                 Text(
                     "The mid-market (or 'interbank') rate is the wholesale " +
                     "midpoint between the buy and sell prices in the global " +
@@ -136,7 +138,7 @@ fun AboutScreen(onBack: () -> Unit) {
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionCard(title = "What does \"BEST\" mean?") {
+            SectionCard(title = stringResource(R.string.about_section_what_is_best)) {
                 Text(
                     "Among the providers with verified live rates, the one " +
                     "giving you the most rupees per AED. Updated each refresh.",
@@ -154,7 +156,7 @@ fun AboutScreen(onBack: () -> Unit) {
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionCard(title = "Privacy") {
+            SectionCard(title = stringResource(R.string.about_section_privacy)) {
                 Text(
                     "This app collects nothing. No analytics, no telemetry, " +
                     "no advertising, no account, no cloud sync.",
@@ -186,6 +188,9 @@ fun AboutScreen(onBack: () -> Unit) {
             Spacer(Modifier.height(12.dp))
 
             DailyHighToggleCard()
+            Spacer(Modifier.height(12.dp))
+
+            CustomTargetAlertCard()
             Spacer(Modifier.height(12.dp))
 
             // Privacy is the only outbound link — and even that is a
@@ -257,7 +262,7 @@ private fun DailyHighToggleCard() {
         }
     }
 
-    SectionCard(title = "Notifications") {
+    SectionCard(title = stringResource(R.string.about_section_notifications)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -315,6 +320,105 @@ private fun DailyHighToggleCard() {
 }
 
 /**
+ * Custom rate-target alert (v0.30).
+ *
+ * Lets the user say "ping me when AED→INR ≥ 25.85" so they can act on
+ * a peak without having to open the app to check.  Independent of the
+ * daily-high toggle — those are two different alert flavours:
+ *
+ *   * daily-high: "tell me whenever today's previous best is beaten"
+ *     (~few notifications/day; surfaces upward momentum)
+ *   * custom target: "tell me when rate hits MY threshold" (one
+ *     notification/day max per target; converts watching into action)
+ *
+ * Per-day dedup is handled by NotificationPrefs.  Empty input clears
+ * the target (disables the alert).  Sane bounds (15.0..40.0 covers
+ * any plausible AED→INR rate for the next decade).
+ */
+@Composable
+private fun CustomTargetAlertCard() {
+    val ctx = LocalContext.current
+    val prefs = remember { NotificationPrefs(ctx) }
+    val initial = prefs.customAlertTargetInr?.let { "%.2f".format(it) } ?: ""
+    var fieldText by remember { mutableStateOf(initial) }
+    var savedTarget by remember { mutableStateOf(prefs.customAlertTargetInr) }
+    var inputError by remember { mutableStateOf<String?>(null) }
+
+    val errInvalid = stringResource(R.string.about_target_invalid)
+    val errOutOfRange = stringResource(R.string.about_target_out_of_range)
+    SectionCard(title = stringResource(R.string.about_section_target_alert)) {
+        Text(
+            stringResource(R.string.about_target_blurb),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.height(10.dp))
+
+        // Show whether a target is currently armed.
+        savedTarget?.let { t ->
+            Text(
+                stringResource(R.string.about_target_armed, "%.2f".format(t)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            androidx.compose.material3.OutlinedTextField(
+                value = fieldText,
+                onValueChange = {
+                    fieldText = it
+                    inputError = null
+                },
+                label = { Text(stringResource(R.string.about_target_label)) },
+                singleLine = true,
+                isError = inputError != null,
+                supportingText = inputError?.let { { Text(it) } },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
+                ),
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(8.dp))
+            androidx.compose.material3.Button(
+                onClick = {
+                    val text = fieldText.trim()
+                    if (text.isEmpty()) {
+                        prefs.customAlertTargetInr = null
+                        savedTarget = null
+                        inputError = null
+                        return@Button
+                    }
+                    val n = text.toDoubleOrNull()
+                    if (n == null) {
+                        inputError = errInvalid
+                        return@Button
+                    }
+                    if (n !in 15.0..40.0) {
+                        inputError = errOutOfRange
+                        return@Button
+                    }
+                    prefs.customAlertTargetInr = n
+                    savedTarget = n
+                    inputError = null
+                    fieldText = "%.2f".format(n)
+                },
+            ) {
+                Text(stringResource(
+                    if (fieldText.isBlank()) R.string.about_button_clear
+                    else R.string.about_button_set,
+                ))
+            }
+        }
+    }
+}
+
+/**
  * Lets the user re-trigger the first-launch welcome modal — handy for
  * sharing the app with someone, or revisiting the feature tour.  Just
  * clears the dismissal flag in SharedPreferences; the modal will
@@ -327,10 +431,9 @@ private fun ReshowWelcomeCard() {
         ctx.getSharedPreferences("transfer-rate", android.content.Context.MODE_PRIVATE)
     }
     var triggered by remember { mutableStateOf(false) }
-    SectionCard(title = "Re-show the welcome tour") {
+    SectionCard(title = stringResource(R.string.about_section_reshow_welcome)) {
         Text(
-            "Forgot what a feature does? Reset the welcome modal and it'll " +
-            "appear the next time you return to the home screen.",
+            stringResource(R.string.about_reshow_blurb),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -341,7 +444,10 @@ private fun ReshowWelcomeCard() {
                 triggered = true
             },
         ) {
-            Text(if (triggered) "Will appear on home" else "Reset welcome tour")
+            Text(stringResource(
+                if (triggered) R.string.about_reshow_done
+                else R.string.about_reshow_button,
+            ))
         }
     }
 }

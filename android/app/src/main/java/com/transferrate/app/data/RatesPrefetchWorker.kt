@@ -51,7 +51,6 @@ class RatesPrefetchWorker(
         // never affects the worker's primary cache-refresh job.
         runCatching {
             val prefs = NotificationPrefs(applicationContext)
-            if (!prefs.dailyHighEnabled) return@runCatching
 
             val doc = fetched.getOrNull() ?: return@runCatching
             val currentBest = pickCurrentBest(doc, corridor = "INR")
@@ -60,15 +59,35 @@ class RatesPrefetchWorker(
             val rate = currentBest.effectiveRate ?: currentBest.rate
             ?: return@runCatching
 
-            if (prefs.shouldNotifyAndRecord(rate)) {
-                val info = CURRENCIES["INR"]
+            val info = CURRENCIES["INR"]
+            val symbol = info?.symbol ?: "₹"
+
+            // 1) Daily-high notification (existing behaviour).
+            if (prefs.dailyHighEnabled && prefs.shouldNotifyAndRecord(rate)) {
                 NotificationCenter.postDailyHigh(
                     context = applicationContext,
                     providerName = currentBest.providerName,
                     rate = rate,
                     currencyCode = "INR",
-                    currencySymbol = info?.symbol ?: "₹",
+                    currencySymbol = symbol,
                 )
+            }
+
+            // 2) v0.30: custom rate-target notification.  Independent of
+            // the daily-high toggle — a user might want target alerts
+            // without the noisy "every new high" stream, or vice versa.
+            if (prefs.shouldNotifyCustomTargetAndRecord(rate)) {
+                val target = prefs.customAlertTargetInr
+                if (target != null) {
+                    NotificationCenter.postCustomTargetHit(
+                        context = applicationContext,
+                        providerName = currentBest.providerName,
+                        rate = rate,
+                        target = target,
+                        currencyCode = "INR",
+                        currencySymbol = symbol,
+                    )
+                }
             }
         }
 

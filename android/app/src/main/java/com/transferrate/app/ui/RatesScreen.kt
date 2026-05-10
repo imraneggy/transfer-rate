@@ -163,9 +163,9 @@ fun RatesScreen(
                     // 360dp screens; the glyph is still tappable and
                     // its content description is read aloud).
                     val themeLabel = when (themeMode) {
-                        ThemeMode.System -> "AUTO"
-                        ThemeMode.Light  -> "LIGHT"
-                        ThemeMode.Dark   -> "DARK"
+                        ThemeMode.System -> stringResource(R.string.toolbar_theme_auto)
+                        ThemeMode.Light  -> stringResource(R.string.toolbar_theme_light)
+                        ThemeMode.Dark   -> stringResource(R.string.toolbar_theme_dark)
                     }
                     ToolbarChip(
                         label = themeLabel,
@@ -173,7 +173,7 @@ fun RatesScreen(
                         onClick = onCycleThemeMode,
                     )
                     ToolbarChip(
-                        label = "REFRESH",
+                        label = stringResource(R.string.toolbar_refresh),
                         contentDescription = "Refresh rates",
                         onClick = { vm.refresh() },
                     )
@@ -534,15 +534,14 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
                 .padding(bottom = 24.dp),
         ) {
             Text(
-                text = "Welcome to Transfer Rate",
+                text = stringResource(R.string.welcome_title),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "A free, open-source comparison app for sending money " +
-                    "from the UAE to India. No accounts, no ads, no analytics.",
+                text = stringResource(R.string.welcome_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -550,49 +549,33 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
 
             WelcomeBullet(
                 emoji = "💱",
-                title = "Live remittance rates",
-                body = "Up to twelve UAE→India providers compared side-by-side: " +
-                    "Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, " +
-                    "Ahalia, Federal, GCC, Index, Lari, LuLu. The provider " +
-                    "giving you the most rupees gets a BEST badge.",
+                title = stringResource(R.string.welcome_bullet_rates_title),
+                body = stringResource(R.string.welcome_bullet_rates_body),
             )
             WelcomeBullet(
                 emoji = "📊",
-                title = "Mid-market benchmark",
-                body = "The big number at the top is the wholesale interbank " +
-                    "rate — every provider charges some markup over it. Each " +
-                    "card shows the markup explicitly so the comparison is " +
-                    "honest.",
+                title = stringResource(R.string.welcome_bullet_midmarket_title),
+                body = stringResource(R.string.welcome_bullet_midmarket_body),
             )
             WelcomeBullet(
                 emoji = "🪙",
-                title = "Gold & silver",
-                body = "Tap the gold/silver card on home for live UAE and " +
-                    "India rates — 24K + 22K gold, silver per gram and per " +
-                    "kilogram, plus 30-day history.",
+                title = stringResource(R.string.welcome_bullet_metals_title),
+                body = stringResource(R.string.welcome_bullet_metals_body),
             )
             WelcomeBullet(
                 emoji = "↻",
-                title = "Refresh button",
-                body = "The refresh button in the top bar pulls fresh rates on " +
-                    "demand. The app already shows the last cron-published " +
-                    "rates within a second; truly-fresh upstream rates land " +
-                    "silently 30–45 seconds later.",
+                title = stringResource(R.string.welcome_bullet_refresh_title),
+                body = stringResource(R.string.welcome_bullet_refresh_body),
             )
             WelcomeBullet(
                 emoji = "🔔",
-                title = "Daily-high alerts (default ON)",
-                body = "A status-bar notification fires when a provider beats " +
-                    "today's previous best AED→INR rate. Toggle off any time " +
-                    "in About → Notifications. Permission is asked once on " +
-                    "first launch.",
+                title = stringResource(R.string.welcome_bullet_alerts_title),
+                body = stringResource(R.string.welcome_bullet_alerts_body),
             )
             WelcomeBullet(
                 emoji = "🔒",
-                title = "Private by design",
-                body = "Outbound network access is locked down at the " +
-                    "application layer; no telemetry, no analytics, no " +
-                    "third-party SDKs, no account.",
+                title = stringResource(R.string.welcome_bullet_privacy_title),
+                body = stringResource(R.string.welcome_bullet_privacy_body),
             )
 
             Spacer(Modifier.height(20.dp))
@@ -606,7 +589,7 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Got it",
+                    text = stringResource(R.string.welcome_got_it),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -615,7 +598,7 @@ private fun WelcomeSheet(onDismiss: () -> Unit) {
             }
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "You can re-read this from the About screen any time.",
+                text = stringResource(R.string.welcome_revisit_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -707,7 +690,7 @@ private fun MidMarketHeader(
             // Eyebrow label — primary-coloured to retain brand pop
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "MID-MARKET",
+                    stringResource(R.string.midmarket_eyebrow),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
@@ -759,7 +742,7 @@ private fun MidMarketHeader(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = "Updated ${relativeTime(completedAt)}",
+                text = stringResource(R.string.last_updated, relativeTime(completedAt)),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -865,7 +848,7 @@ private fun AmountPanel(
         OutlinedTextField(
             value = fieldValue,
             onValueChange = { fieldValue = it },
-            label = { Text("Sending") },
+            label = { Text(stringResource(R.string.amount_label_sending)) },
             prefix = { Text("AED ") },
             trailingIcon = {
                 androidx.compose.material3.TextButton(
@@ -876,7 +859,7 @@ private fun AmountPanel(
                     modifier = Modifier.padding(end = 4.dp),
                 ) {
                     Text(
-                        "Set",
+                        stringResource(R.string.amount_action_set),
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -1027,9 +1010,9 @@ private fun ProviderCard(
                     val sub = p.deliveryEstimate
                         ?: when (p.status) {
                             "ok" -> ""
-                            "stale" -> "Last good rate"
-                            "investigating" -> "Coming soon"
-                            else -> "Unavailable"
+                            "stale" -> stringResource(R.string.status_stale)
+                            "investigating" -> stringResource(R.string.status_investigating)
+                            else -> stringResource(R.string.status_error)
                         }
                     if (sub.isNotEmpty()) {
                         Text(
@@ -1048,12 +1031,11 @@ private fun ProviderCard(
                     }
                 }
                 Spacer(Modifier.width(8.dp))
-                RateView(p, midMarket = midMarket)
-            }
-            val rate = p.effectiveRate ?: p.rate
-            if ((p.status == "ok" || p.status == "manual") && rate != null) {
-                Spacer(Modifier.height(8.dp))
-                ReceiveLine(rate = rate, amount = amount, quoteCode = p.quote)
+                // v0.30: receive-amount as headline.  RateView now takes
+                // `amount` so the right column can render "₹ 77,460" big
+                // (the number users actually care about) instead of the
+                // raw rate.  Rate stays available as a small detail line.
+                RateView(p, midMarket = midMarket, amount = amount)
             }
             // Sparkline of past rates (last 7 days). Only render when we
             // have at least 2 history points; one point is just a dot.
@@ -1078,30 +1060,6 @@ private fun ProviderCard(
     }
 }
 
-@Composable
-private fun ReceiveLine(rate: Double, amount: Double, quoteCode: String) {
-    val received = rate * amount
-    val sym = CURRENCIES[quoteCode]?.symbol ?: ""
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "You receive",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = "$sym " + "%,.2f".format(received),
-            style = MaterialTheme.typography.titleSmall.copy(
-                fontFeatureSettings = "tnum",
-            ),
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
 
 @Composable
 private fun BestBadge() {
@@ -1117,7 +1075,7 @@ private fun BestBadge() {
         // "BES + T" wrapping bug seen on narrow phones when the
         // provider-name column was long enough to crush the badge.
         Text(
-            text = "BEST",
+            text = stringResource(R.string.badge_best),
             color = MaterialTheme.colorScheme.onSecondary,
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
@@ -1139,7 +1097,7 @@ private fun ManualBadge() {
             .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
         Text(
-            text = "MANUAL",
+            text = stringResource(R.string.badge_manual),
             color = MaterialTheme.colorScheme.tertiary,
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
@@ -1151,61 +1109,81 @@ private fun ManualBadge() {
 }
 
 @Composable
-private fun RateView(p: ProviderQuote, midMarket: Double?) {
+private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
     val rate = p.effectiveRate ?: p.rate
     val symbol = CURRENCIES[p.quote]?.symbol ?: ""
     Column(horizontalAlignment = Alignment.End) {
         when (p.status) {
             "ok", "manual" -> {
+                // v0.30: received amount is the headline (the number users
+                // actually care about — "how much arrives" not "what's
+                // the rate").  Rate is now a small detail line below.
+                val received = if (rate != null) rate * amount else null
                 Text(
-                    text = if (rate != null) "%.4f".format(rate) else "—",
+                    text = if (received != null) "$symbol %,.0f".format(received) else "—",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontFeatureSettings = "tnum",
                     ),
+                    maxLines = 1,
+                    softWrap = false,
                 )
+                if (rate != null) {
+                    Text(
+                        text = "@ %.4f".format(rate),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFeatureSettings = "tnum",
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
                 if (rate != null && midMarket != null) {
                     val delta = rate - midMarket
-                    // Pick colors that adapt to current theme — hardcoded dark
-                    // green/red lose contrast in dark mode. Compute the
-                    // active mode from the background luminance (works
-                    // whether the user is on system, light, or dark via
-                    // our manual toggle).
                     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
                     val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
                     val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
                     val (label, color) = when {
                         delta > 0.001  -> "+%.4f".format(delta) to positive
                         delta < -0.001 -> "%.4f".format(delta) to negative
-                        else -> "= mid-market" to MaterialTheme.colorScheme.outline
+                        else -> stringResource(R.string.rate_equals_mid) to
+                            MaterialTheme.colorScheme.onSurfaceVariant
                     }
+                    val display = if (delta > 0.001 || delta < -0.001) {
+                        stringResource(R.string.rate_vs_mid_format, label)
+                    } else label
                     Text(
-                        text = "$label vs mid-market",
+                        text = display,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
                         color = color,
                         fontWeight = FontWeight.Medium,
                     )
-                } else {
-                    Text(
-                        "$symbol per AED",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
             "stale" -> {
+                val received = if (rate != null) rate * amount else null
                 Text(
-                    text = if (rate != null) "%.4f".format(rate) else "—",
+                    text = if (received != null) "$symbol %,.0f".format(received) else "—",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontFeatureSettings = "tnum",
                     ),
                 )
+                if (rate != null) {
+                    Text(
+                        text = "@ %.4f".format(rate),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFeatureSettings = "tnum",
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 Text(
                     "stale",
                     style = MaterialTheme.typography.bodySmall,

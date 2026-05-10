@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Transfer Rate</string>
+    <!--
+        Brand constants — never translate.  These are trademark / app
+        identity strings that should read identically in every locale.
+    -->
+    <string name="app_name" translatable="false">Transfer Rate</string>
     <string name="app_tagline">Compare. Choose. Save more.</string>
+
+    <!--
+        Status / state strings used across the dashboard.  Some have
+        printf-style placeholders (%1$s, etc.) that the locale-specific
+        translation must preserve in the same order.
+    -->
     <string name="title_aed_inr">AED → INR rates</string>
     <string name="subtitle_amount">Quote for AED %1$s</string>
     <string name="last_updated">Updated %1$s</string>
@@ -12,4 +22,67 @@
     <string name="action_open_provider">Open provider site</string>
     <string name="error_loading">Couldn\'t load rates. Pull to retry.</string>
     <string name="disclaimer">Rates are indicative and may differ at the provider. Not financial advice.</string>
+
+    <!-- Toolbar chip labels — kept short on purpose (4–6 chars); can be transliterated rather than translated. -->
+    <string name="toolbar_theme_auto">AUTO</string>
+    <string name="toolbar_theme_light">LIGHT</string>
+    <string name="toolbar_theme_dark">DARK</string>
+    <string name="toolbar_refresh">REFRESH</string>
+
+    <!-- Provider-card labels.  Keep "BEST"/"MANUAL" as universal 4–6 letter badges. -->
+    <string name="badge_best" translatable="false">BEST</string>
+    <string name="badge_manual" translatable="false">MANUAL</string>
+    <string name="rate_at_format">@ %1$s</string>
+    <string name="rate_vs_mid_format">%1$s vs mid</string>
+    <string name="rate_equals_mid">= mid</string>
+
+    <!-- Sending input -->
+    <string name="amount_label_sending">Sending</string>
+    <string name="amount_action_set">Set</string>
+
+    <!-- Mid-market header -->
+    <string name="midmarket_eyebrow">MID-MARKET</string>
+    <string name="midmarket_subtitle">1 AED → %1$s</string>
+
+    <!-- Gold/silver -->
+    <string name="metals_gold">GOLD</string>
+    <string name="metals_silver">SILVER</string>
+    <string name="metals_disclaimer">Indicative rates from public market data; actual prices at jewellers and exchanges may differ.</string>
+
+    <!-- About screen -->
+    <string name="about_title">About</string>
+    <string name="about_section_what_is_mid">What is mid-market rate?</string>
+    <string name="about_section_what_is_best">What does \"BEST\" mean?</string>
+    <string name="about_section_privacy">Privacy</string>
+    <string name="about_section_notifications">Notifications</string>
+    <string name="about_section_target_alert">Rate-target alert</string>
+    <string name="about_section_reshow_welcome">Re-show the welcome tour</string>
+    <string name="about_button_clear">Clear</string>
+    <string name="about_button_set">Set</string>
+    <string name="about_target_label">Target rate (e.g. 25.85)</string>
+    <string name="about_target_armed">Currently armed: notify when rate ≥ %1$s</string>
+    <string name="about_target_invalid">Enter a number like 25.85</string>
+    <string name="about_target_out_of_range">Out of plausible range (15.00–40.00)</string>
+    <string name="about_target_blurb">Get a status-bar notification the moment any provider\'s AED→INR rate hits your target. Useful when you know what rate you\'d want before sending and don\'t want to keep re-checking the app.</string>
+    <string name="about_reshow_blurb">Forgot what a feature does? Reset the welcome modal and it\'ll appear the next time you return to the home screen.</string>
+    <string name="about_reshow_button">Reset welcome tour</string>
+    <string name="about_reshow_done">Will appear on home</string>
+
+    <!-- Welcome modal -->
+    <string name="welcome_title">Welcome to Transfer Rate</string>
+    <string name="welcome_subtitle">A free, open-source comparison app for sending money from the UAE to India. No accounts, no ads, no analytics.</string>
+    <string name="welcome_got_it">Got it</string>
+    <string name="welcome_revisit_hint">You can re-read this from the About screen any time.</string>
+    <string name="welcome_bullet_rates_title">Live remittance rates</string>
+    <string name="welcome_bullet_rates_body">Up to twelve UAE→India providers compared side-by-side: Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab, Ahalia, Federal, GCC, Index, Lari, LuLu. The provider giving you the most rupees gets a BEST badge.</string>
+    <string name="welcome_bullet_midmarket_title">Mid-market benchmark</string>
+    <string name="welcome_bullet_midmarket_body">The big number at the top is the wholesale interbank rate — every provider charges some markup over it. Each card shows the markup explicitly so the comparison is honest.</string>
+    <string name="welcome_bullet_metals_title">Gold &amp; silver</string>
+    <string name="welcome_bullet_metals_body">Tap the gold/silver card on home for live UAE and India rates — 24K + 22K gold, silver per gram and per kilogram, plus 30-day history.</string>
+    <string name="welcome_bullet_refresh_title">Refresh button</string>
+    <string name="welcome_bullet_refresh_body">The refresh button in the top bar pulls fresh rates on demand. The app already shows the last cron-published rates within a second; truly-fresh upstream rates land silently 30–45 seconds later.</string>
+    <string name="welcome_bullet_alerts_title">Daily-high alerts (default ON)</string>
+    <string name="welcome_bullet_alerts_body">A status-bar notification fires when a provider beats today\'s previous best AED→INR rate. Toggle off any time in About → Notifications. Permission is asked once on first launch.</string>
+    <string name="welcome_bullet_privacy_title">Private by design</string>
+    <string name="welcome_bullet_privacy_body">Outbound network access is locked down at the application layer; no telemetry, no analytics, no third-party SDKs, no account.</string>
 </resources>

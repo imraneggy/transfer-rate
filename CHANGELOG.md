@@ -15,6 +15,36 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.0] — 2026-05-13
+
+### Added
+- **Receive-amount as the headline figure** on each provider card.
+  Visual hierarchy flipped: the rupee amount the user actually receives
+  (`₹ 25,840`) is now the bold headline; the per-AED rate (`@ 25.8400`)
+  becomes the small detail line below. Reflects what users actually
+  optimise for — *"how much arrives"*, not *"what's the rate"*.
+- **Custom rate-target alert** in About → Rate-target alert. Set a
+  threshold like `25.85` and the next time any provider's AED→INR rate
+  hits or exceeds it, the status bar fires a one-tap notification.
+  Independent of the daily-high toggle (a user can want target alerts
+  without the noisier "every new high" stream, or vice versa). Per-day
+  dedup keyed on (target, local date) so the same target only pings
+  once per day. Sane bounds 15.00–40.00.
+- **Tamil (`ta`) localisation** — first cut, native-speaker review
+  pending. Externalised ~70 user-facing strings into
+  `res/values/strings.xml` and added `res/values-ta/strings.xml` with
+  Tamil translations. Brand names (`Transfer Rate`, provider names) and
+  badge tokens (`BEST`, `MANUAL`) stay English by design (trademarks +
+  universal 4-letter markers); body and section text translate, with
+  finance/tech terms transliterated rather than fully Tamilised
+  (`mid-market` → `மிட்-மார்க்கெட்` rather than the academic
+  `சந்தை சராசரி`). UAE-Tamil-diaspora-first for the v0.30 series.
+
+### Changed
+- `resourceConfigurations` ship-list expanded from `["en"]` to
+  `["en", "ta"]`; future locales (Hindi, Malayalam) follow the same
+  pattern.
+
 ## [0.29.6] — 2026-05-10
 
 ### Fixed

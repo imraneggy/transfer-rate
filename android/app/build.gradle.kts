@@ -19,11 +19,15 @@ android {
         targetSdk = 34
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 49
-        versionName = "0.29.6"
+        versionCode = 50
+        versionName = "0.30.0"
 
 
-        resourceConfigurations += listOf("en")
+        // Locales whose resource folders are bundled into the APK.  Any
+        // values-XX/ that isn't listed here is stripped at build time —
+        // ship-list semantics, not a hint.  v0.30 adds Tamil ("ta") for
+        // the UAE-Tamil diaspora; pending native-speaker review on copy.
+        resourceConfigurations += listOf("en", "ta")
 
         // Cloudflare Worker that proxies a workflow_dispatch to the
         // scrape workflow.  The Worker holds the GitHub PAT in its

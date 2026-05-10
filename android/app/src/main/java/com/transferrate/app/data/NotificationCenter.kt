@@ -38,6 +38,7 @@ object NotificationCenter {
      *  rather than stacking — most users want "what's the best right
      *  now", not a chronological audit log in their shade. */
     private const val NOTIFICATION_ID_DAILY_HIGH = 1001
+    private const val NOTIFICATION_ID_CUSTOM_TARGET = 1002
 
     /** Register (or re-register; idempotent) the daily-high channel. */
     fun ensureChannel(context: Context) {
@@ -136,6 +137,81 @@ object NotificationCenter {
         } catch (_: SecurityException) {
             // Permission revoked between checkSelfPermission and
             // notify(). Race is rare; just bail.
+            false
+        }
+    }
+
+    /**
+     * Post the custom rate-target notification (v0.30).
+     *
+     * Fired by [RatesPrefetchWorker] when the user has set a target via
+     * About → Notifications → "Notify when rate ≥ X" and the current
+     * best AED→INR rate has crossed it.  Per-day dedup is handled by
+     * [NotificationPrefs.shouldNotifyCustomTargetAndRecord].
+     *
+     * Uses the same daily-high channel since the runtime UX (status-bar
+     * alert at IMPORTANCE_DEFAULT) is identical from the user's
+     * perspective; only the body copy differs.  Returns true on
+     * successful post, false if POST_NOTIFICATIONS is not granted.
+     */
+    fun postCustomTargetHit(
+        context: Context,
+        providerName: String,
+        rate: Double,
+        target: Double,
+        currencyCode: String,
+        currencySymbol: String,
+    ): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted = ContextCompat.checkSelfPermission(
+                context, "android.permission.POST_NOTIFICATIONS",
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return false
+        }
+        ensureChannel(context)
+
+        val launchIntent = Intent().apply {
+            setClassName(context, "com.transferrate.app.MainActivity")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        val pending = PendingIntent.getActivity(
+            context,
+            1,                              // distinct request code per notification kind
+            launchIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+
+        val title = "Target hit — AED→$currencyCode"
+        val short = String.format(
+            Locale.US,
+            "%s%.2f hit (target %s%.2f). %s leads — tap to send.",
+            currencySymbol, rate, currencySymbol, target, providerName,
+        )
+        val long = String.format(
+            Locale.US,
+            "Your alert target of %s%.2f for AED→%s has been reached. " +
+                "%s is offering %s%.2f right now — tap to compare and lock in.",
+            currencySymbol, target, currencyCode,
+            providerName, currencySymbol, rate,
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_DAILY_HIGH)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
+            .setContentTitle(title)
+            .setContentText(short)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(long))
+            .setContentIntent(pending)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(false)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+            .build()
+
+        return try {
+            NotificationManagerCompat.from(context)
+                .notify(NOTIFICATION_ID_CUSTOM_TARGET, notification)
+            true
+        } catch (_: SecurityException) {
             false
         }
     }

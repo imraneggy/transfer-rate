@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.29.6 · 2026-05-10</span>
+    <span><strong>Latest:</strong> v0.30.0 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-0">v0.30.0</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-29-6">v0.29.6</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-5">v0.29.5</a><span class="date">2026-05-10</span></li>
     <li><a href="#v0-29-4">v0.29.4</a><span class="date">2026-05-10</span></li>
@@ -360,8 +361,46 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-29-6">
-  <h2><span class="ver">v0.29.6</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-0">
+  <h2><span class="ver">v0.30.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Receive-amount as the headline figure</strong> on each
+      provider card. Visual hierarchy flipped: the rupee amount the user
+      actually receives (<code>₹ 25,840</code>) is now the bold headline;
+      the per-AED rate (<code>@ 25.8400</code>) becomes a small detail
+      line below. Reflects what users actually optimise for —
+      <em>"how much arrives"</em>, not <em>"what's the rate"</em>.</li>
+    <li><strong>Custom rate-target alert</strong> — set a target like
+      <code>25.85</code> in About → Rate-target alert and the next time
+      any provider's AED→INR rate crosses it, a status-bar notification
+      fires. Independent of the daily-high toggle (different alert
+      flavours: daily-high tracks momentum, target alerts convert
+      watching into action). Per-day dedup keyed on (target, local
+      date). Sane bounds 15.00–40.00.</li>
+    <li><strong>Tamil (<code>ta</code>) localisation</strong> — first
+      cut, native-speaker review pending. Externalised ~70 user-facing
+      strings into <code>res/values/strings.xml</code> and added
+      <code>res/values-ta/strings.xml</code>. Brand names and the
+      <code>BEST</code>/<code>MANUAL</code> badges stay English by
+      design; body and section text translate, with finance/tech terms
+      transliterated rather than fully Tamilised. UAE-Tamil-diaspora-
+      first for the v0.30 series; Hindi and Malayalam follow on the
+      same pattern.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><code>resourceConfigurations</code> ship-list expanded from
+      <code>["en"]</code> to <code>["en", "ta"]</code>. Future locales
+      (Hindi, Malayalam) follow the same opt-in pattern.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-29-6">
+  <h2><span class="ver">v0.29.6</span></h2>
   <p class="date">2026-05-10</p>
 
   <h3 class="fixed">Fixed</h3>
