@@ -15,6 +15,22 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.4] — 2026-05-13
+
+### Fixed
+- **Per-app language picker now actually opens** — v0.30.2 added the
+  in-app "Language" card with a button that fired
+  `Settings.ACTION_APP_LOCALE_SETTINGS`, but Android 13+ requires
+  apps to declare which locales they support via
+  `android:localeConfig` in the manifest *plus* a corresponding
+  `res/xml/locales_config.xml` file.  Without that declaration the
+  picker either doesn't show at all or opens an empty page that
+  appears to do nothing — which is what users saw on v0.30.2 and
+  v0.30.3.  Added `xml/locales_config.xml` listing en/ta/hi/ml and
+  wired it into the `<application>` tag.  The "Open language
+  settings" button now correctly takes the user to a list with
+  English, Tamil, Hindi, Malayalam.
+
 ## [0.30.3] — 2026-05-13
 
 ### Added

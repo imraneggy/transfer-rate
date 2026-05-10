@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.3 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.4 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-4">v0.30.4</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-3">v0.30.3</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-2">v0.30.2</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-1">v0.30.1</a><span class="date">2026-05-13</span></li>
@@ -364,8 +365,31 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-3">
-  <h2><span class="ver">v0.30.3</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-4">
+  <h2><span class="ver">v0.30.4</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Per-app language picker now actually opens</strong>
+      — v0.30.2 added the in-app "Language" card with a button that
+      fired <code>Settings.ACTION_APP_LOCALE_SETTINGS</code>, but
+      Android 13+ requires apps to declare which locales they
+      support via <code>android:localeConfig</code> in the manifest
+      <em>plus</em> a corresponding
+      <code>res/xml/locales_config.xml</code> file.  Without that
+      declaration the picker either doesn't show at all or opens an
+      empty page that appears to do nothing — which is what users
+      saw on v0.30.2 and v0.30.3.  Added
+      <code>xml/locales_config.xml</code> listing en/ta/hi/ml and
+      wired it into the <code>&lt;application&gt;</code> tag.  The
+      "Open language settings" button now correctly takes the user
+      to a list with English, Tamil, Hindi, Malayalam.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-3">
+  <h2><span class="ver">v0.30.3</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="added">Added</h3>

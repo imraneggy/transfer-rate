@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Locales declared as supported by Transfer Rate.
+
+    Required by Android 13+ for the per-app language picker
+    (Settings.ACTION_APP_LOCALE_SETTINGS) to show the language list.
+    Without this file + the android:localeConfig attribute on
+    <application> in AndroidManifest.xml, tapping "Open language
+    settings" inside the app opens an empty Settings page that does
+    not let the user switch language.
+
+    Must match the resourceConfigurations list in build.gradle.kts and
+    the values-XX/ folders that ship under res/.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en"/>
+    <locale android:name="ta"/>
+    <locale android:name="hi"/>
+    <locale android:name="ml"/>
+</locale-config>
