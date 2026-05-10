@@ -15,6 +15,20 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.1] — 2026-05-13
+
+### Fixed
+- **CI build broke on `v0.30.0` tag** — a leftover private
+  `stringResource(id: Int)` shim in `RatesScreen.kt` shadowed the real
+  `androidx.compose.ui.res.stringResource` overloads, so the new
+  format-arg call sites added in v0.30.0 (`R.string.last_updated`,
+  `R.string.rate_vs_mid_format`) failed compilation with
+  *"Too many arguments for 'fun stringResource(id: Int): String'"*.
+  Removed the shim and imported the real function directly so both
+  the single-arg and `vararg formatArgs` overloads resolve. No
+  user-visible change; v0.30.1 is the buildable equivalent of
+  v0.30.0.
+
 ## [0.30.0] — 2026-05-13
 
 ### Added

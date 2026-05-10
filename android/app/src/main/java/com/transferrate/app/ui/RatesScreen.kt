@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -241,10 +242,6 @@ private fun relativeTime(iso: String): String {
         iso
     }
 }
-
-@Composable
-private fun stringResource(id: Int): String =
-    androidx.compose.ui.res.stringResource(id)
 
 /**
  * Compact text chip used in the top app bar for the theme toggle and
