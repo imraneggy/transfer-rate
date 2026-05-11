@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.5 · 2026-05-14</span>
+    <span><strong>Latest:</strong> v0.30.6 · 2026-05-14</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-6">v0.30.6</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-5">v0.30.5</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-4">v0.30.4</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-3">v0.30.3</a><span class="date">2026-05-13</span></li>
@@ -366,8 +367,42 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-5">
-  <h2><span class="ver">v0.30.5</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-6">
+  <h2><span class="ver">v0.30.6</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-14</p>
+
+  <h3 class="changed">Removed</h3>
+  <ul>
+    <li><strong>LuLu Exchange dropped from the provider list.</strong>
+      Their F5 BIG-IP WAF blocks every datacenter IP we tested —
+      GitHub Actions runners, Cloudflare Workers, AWS, Azure, OVH.
+      The only path that worked was a self-hosted runner on a
+      residential IP, and the operational overhead of keeping that
+      runner online wasn't worth one provider out of twelve.  The
+      remaining eleven providers cover the same UAE→India corridor.
+      History preserved in <code>infra/lulu-proxy/</code> and
+      <code>infra/lulu-residential/</code>; re-adding is one line
+      in <code>scrapers/run_all.py</code> if you find a working
+      cloud path in the future.</li>
+    <li><code>scrapers/lulu.py</code>,
+      <code>scrapers/lulu_browser.py</code>,
+      <code>scrapers/lulu_inject.py</code> removed.</li>
+    <li><code>.github/workflows/scrape-lulu-residential.yml</code>
+      renamed to <code>.yml.disabled</code> — preserves the
+      workflow definition without letting it fire on the half-hourly
+      cron.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Welcome modal copy updated in en/ta/hi/ml: "Up to twelve
+      UAE→India providers" → "Up to eleven", and
+      <code>LuLu</code> removed from the bullet's provider list.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-5">
+  <h2><span class="ver">v0.30.5</span></h2>
   <p class="date">2026-05-14</p>
 
   <h3 class="changed">Changed</h3>

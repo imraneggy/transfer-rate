@@ -57,7 +57,6 @@ from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
 from .transfergo import TransferGoProvider
 from .index_exchange import IndexExchangeProvider
-from .lulu import LuluProvider
 from .ahalia import AhaliaProvider
 from .al_ansari import AlAnsariProvider
 from .al_dahab import AlDahabProvider
@@ -69,29 +68,20 @@ from .gold import fetch_gold, GoldHistoryPoint
 
 # Display order. Mid-market first (extracted to header), then real providers.
 # Stubs for app-only services (Botim, Comera, e&) and providers without
-# discovered public APIs (LuLu, Al Ansari, GCC, etc.) are intentionally
+# discovered public APIs (Al Fardan, Sharaf, Habib, etc.) are intentionally
 # NOT in this list — they would just clutter the UI with "estimated"
 # placeholders. To re-add a stub, import it from scrapers/<name>.py and
 # include it below.
+#
+# LuLu was dropped in v0.30.6 — their F5 BIG-IP WAF blocks every datacenter
+# IP we tried (GitHub Actions, Cloudflare Workers, AWS, Azure, etc).  The
+# only reliable path was a self-hosted runner on a residential IP, and the
+# operational overhead of keeping that runner online outweighed having
+# 1 of 12 providers.  See infra/lulu-proxy/README.md and
+# infra/lulu-residential/README.md for the historical context.
 def _build_providers() -> List[BaseProvider]:
-    """Construct the provider list, choosing the right LuLu strategy
-    for the current environment.
-
-    LuLu's rate API runs on TCP port 9443 which GitHub Actions runners
-    block. We support three strategies, in priority order:
-
-      1. LULU_PROXY_URL set -> use the cheap HTTP scraper via the
-         configured Cloudflare Worker (infra/lulu-proxy/). Best.
-      2. LULU_USE_BROWSER=1 set -> use the headless-Chromium scraper
-         (scrapers/lulu_browser.py). Adds ~10 s per run but works
-         without any external infra.
-      3. Neither set -> omit LuLu entirely so the app doesn't render
-         a permanent error card.
-
-    LuLu always sits at index 5 (right after TransferGo) so the UI
-    order is stable regardless of which strategy is in use.
-    """
-    providers: List[BaseProvider] = [
+    """Construct the provider list."""
+    return [
         MidMarketProvider(),
         WiseProvider(),
         AsporaProvider(),
@@ -105,18 +95,6 @@ def _build_providers() -> List[BaseProvider]:
         IndexExchangeProvider(),
         LariProvider(),
     ]
-
-    proxy_url = (os.environ.get("LULU_PROXY_URL") or "").strip()
-    use_browser = (os.environ.get("LULU_USE_BROWSER") or "").strip().lower() in (
-        "1", "true", "yes",
-    )
-    if proxy_url:
-        providers.insert(5, LuluProvider())
-    elif use_browser:
-        # Lazy import — Playwright is a heavy optional dep.
-        from .lulu_browser import LuluBrowserProvider
-        providers.insert(5, LuluBrowserProvider())
-    return providers
 
 
 PROVIDERS: List[BaseProvider] = _build_providers()

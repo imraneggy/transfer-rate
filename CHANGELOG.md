@@ -15,6 +15,32 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.6] — 2026-05-14
+
+### Removed
+- **LuLu Exchange dropped from the provider list.**  Their F5 BIG-IP
+  WAF blocks every datacenter IP we tested — GitHub Actions runners,
+  Cloudflare Workers, AWS, Azure, OVH.  The only path that worked
+  was a self-hosted runner on a residential IP (`scrape-lulu-
+  residential.yml`), and the operational overhead of keeping that
+  runner online wasn't worth one provider out of twelve.  The
+  remaining eleven providers cover the same UAE→India corridor.
+  History preserved in `infra/lulu-proxy/` and
+  `infra/lulu-residential/` for future revisitors; if you find a
+  cloud path that bypasses LuLu's WAF, the scraper interface is
+  unchanged and re-adding takes one line in
+  `scrapers/run_all.py`.
+- `scrapers/lulu.py`, `scrapers/lulu_browser.py`,
+  `scrapers/lulu_inject.py` removed.
+- `.github/workflows/scrape-lulu-residential.yml` renamed to
+  `.yml.disabled` — preserves the workflow definition without
+  letting it fire on the half-hourly cron.
+
+### Changed
+- Welcome modal copy updated in en/ta/hi/ml: "Up to twelve
+  UAE→India providers" → "Up to eleven", and `LuLu` removed
+  from the bullet's provider list.
+
 ## [0.30.5] — 2026-05-14
 
 ### Changed
