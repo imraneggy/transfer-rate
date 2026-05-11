@@ -118,20 +118,13 @@ fun AboutScreen(onBack: () -> Unit) {
 
             SectionCard(title = stringResource(R.string.about_section_what_is_mid)) {
                 Text(
-                    "The mid-market (or 'interbank') rate is the wholesale " +
-                    "midpoint between the buy and sell prices in the global " +
-                    "currency market. It is the most objective benchmark — " +
-                    "every remittance provider charges some markup or fee " +
-                    "on top.",
+                    stringResource(R.string.about_midmarket_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "We pull it from public financial-data sources, with " +
-                    "automatic fallbacks if the primary is unavailable. The " +
-                    "rate is refreshed alongside provider rates on the " +
-                    "regular cycle.",
+                    stringResource(R.string.about_midmarket_body_sources),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -140,16 +133,13 @@ fun AboutScreen(onBack: () -> Unit) {
 
             SectionCard(title = stringResource(R.string.about_section_what_is_best)) {
                 Text(
-                    "Among the providers with verified live rates, the one " +
-                    "giving you the most rupees per AED. Updated each refresh.",
+                    stringResource(R.string.about_best_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Each card also shows '+0.02 vs mid-market' or '−0.05' so " +
-                    "you can see at a glance how each provider compares to the " +
-                    "objective benchmark.",
+                    stringResource(R.string.about_best_body_delta),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -158,26 +148,19 @@ fun AboutScreen(onBack: () -> Unit) {
 
             SectionCard(title = stringResource(R.string.about_section_privacy)) {
                 Text(
-                    "This app collects nothing. No analytics, no telemetry, " +
-                    "no advertising, no account, no cloud sync.",
+                    stringResource(R.string.about_privacy_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Outbound network access is allowlisted at the " +
-                    "application layer to a small set of public data hosts " +
-                    "needed for rate updates. Anything else is blocked " +
-                    "regardless of what any future dependency tries to do.",
+                    stringResource(R.string.about_privacy_body_network),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Permissions: INTERNET and ACCESS_NETWORK_STATE for the " +
-                    "rate fetch. The optional POST_NOTIFICATIONS permission " +
-                    "is requested once for daily-high alerts; you can deny " +
-                    "or revoke it any time without breaking the app.",
+                    stringResource(R.string.about_privacy_body_permissions),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -202,19 +185,14 @@ fun AboutScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(24.dp))
             Text(
-                "Rates shown are indicative and may differ at the provider. " +
-                "Confirm at the provider's app or website before sending money. " +
-                "Not financial advice. Not affiliated with any of the listed " +
-                "remittance providers. Provider names and logos are trademarks " +
-                "of their respective owners, used here for nominative " +
-                "identification in a comparison context only.",
+                stringResource(R.string.about_footer_disclaimer),
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "Released under the MIT License.",
+                stringResource(R.string.about_footer_license),
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -272,15 +250,14 @@ private fun DailyHighToggleCard() {
         ) {
             Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
                 Text(
-                    "Daily high alert",
+                    stringResource(R.string.about_dailyhigh_title),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    "Status-bar alert when a provider beats today's previous " +
-                        "best AED→INR rate. At most a few notifications per day.",
+                    stringResource(R.string.about_dailyhigh_body),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -312,9 +289,7 @@ private fun DailyHighToggleCard() {
         if (permissionPreviouslyDenied) {
             Spacer(Modifier.height(10.dp))
             Text(
-                "Permission was declined. To enable, open Android " +
-                    "Settings → Apps → Transfer Rate → Notifications, " +
-                    "allow them, then return here and toggle on.",
+                stringResource(R.string.about_permission_denied_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

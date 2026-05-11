@@ -31,8 +31,10 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.transferrate.app.R
 import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.HistoryPoint
 import com.transferrate.app.data.ProviderQuote
@@ -102,7 +104,7 @@ fun ProviderHistorySheet(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        "Rate history (last 10 days)",
+                        stringResource(R.string.history_title),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -171,7 +173,7 @@ fun ProviderHistorySheet(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        "No history yet for this provider — check back tomorrow.",
+                        stringResource(R.string.history_empty),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -179,7 +181,7 @@ fun ProviderHistorySheet(
                 }
             } else {
                 Text(
-                    "Date · Time",
+                    stringResource(R.string.history_col_header),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold,
@@ -225,7 +227,7 @@ fun ProviderHistorySheet(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                 ) {
                     Text(
-                        text = "Visit ${provider.providerName} ↗",
+                        text = stringResource(R.string.provider_visit_format, provider.providerName),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,

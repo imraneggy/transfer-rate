@@ -15,6 +15,38 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.5] — 2026-05-14
+
+### Changed
+- **Provider-card hierarchy re-flipped: rate on top, ₹ amount below.**
+  v0.30.0 had made the rupee total the headline; user feedback
+  was that in practice you scan the *rate* column first to compare
+  providers and only check the rupee total once you've picked the
+  winner.  So the layout now reads:
+    `25.8400`   (20sp Bold, full contrast)
+    `₹ 25,840`  (16sp SemiBold, full contrast)
+    `+0.0123 vs mid`  (12sp colored)
+  The `@` prefix on the rate is dropped at headline size — bare
+  number reads cleaner without the inline-context marker.
+
+### Fixed
+- **About page now fully localised in ta/hi/ml.**  v0.30.0–0.30.4
+  shipped the section titles and the new Language / Target-alert
+  cards translated, but the long-form body paragraphs (mid-market
+  explainer, "what is BEST", privacy block, footer disclaimer +
+  license line, daily-high body + permission-denied hint) were
+  still hardcoded English.  Externalised all 11 paragraphs into
+  `about_*_body*` keys and translated into Tamil, Hindi, Malayalam.
+- **Provider-history popup now fully localised in ta/hi/ml.**  The
+  "Rate history (last 10 days)" header, "No history yet…"
+  empty-state copy, "Date · Time" column header, and "Visit X ↗"
+  CTA were still hardcoded English.  Added `history_*` and
+  `provider_visit_format` keys + ta/hi/ml translations.
+
+### Deferred
+- Gold/silver history sheet body text — much larger and lower
+  daily usage; scheduled for v0.30.6.
+
 ## [0.30.4] — 2026-05-13
 
 ### Fixed

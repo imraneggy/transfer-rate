@@ -1112,16 +1112,16 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
     Column(horizontalAlignment = Alignment.End) {
         when (p.status) {
             "ok", "manual" -> {
-                // v0.30: received amount is the headline (the number users
-                // actually care about — "how much arrives" not "what's
-                // the rate").  Rate stays prominent on the second line so
-                // both numbers can be read at a glance — v0.30.2 bumps it
-                // from bodySmall/muted to titleSmall/full-contrast at
-                // 16sp SemiBold so it visually competes with the headline
-                // without dethroning it (20sp Bold > 16sp SemiBold).
+                // v0.30.5: rate is the headline again (top), received
+                // amount sits below at 16sp SemiBold full-contrast.  v0.30.0
+                // had flipped this (₹ amount on top) but in practice users
+                // scan the rate first to compare providers, then check
+                // "for my AED, how many ₹?" once they've picked the winner.
+                // So: 1) rate big (the comparison axis), 2) ₹ amount the
+                // immediate consequence, 3) vs-mid the tertiary context.
                 val received = if (rate != null) rate * amount else null
                 Text(
-                    text = if (received != null) "$symbol %,.0f".format(received) else "—",
+                    text = if (rate != null) "%.4f".format(rate) else "—",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -1131,9 +1131,9 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                     maxLines = 1,
                     softWrap = false,
                 )
-                if (rate != null) {
+                if (received != null) {
                     Text(
-                        text = "@ %.4f".format(rate),
+                        text = "$symbol %,.0f".format(received),
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
@@ -1171,7 +1171,7 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
             "stale" -> {
                 val received = if (rate != null) rate * amount else null
                 Text(
-                    text = if (received != null) "$symbol %,.0f".format(received) else "—",
+                    text = if (rate != null) "%.4f".format(rate) else "—",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
@@ -1179,9 +1179,9 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                         fontFeatureSettings = "tnum",
                     ),
                 )
-                if (rate != null) {
+                if (received != null) {
                     Text(
-                        text = "@ %.4f".format(rate),
+                        text = "$symbol %,.0f".format(received),
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),

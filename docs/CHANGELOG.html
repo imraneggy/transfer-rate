@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.4 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.5 · 2026-05-14</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-5">v0.30.5</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-4">v0.30.4</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-3">v0.30.3</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-2">v0.30.2</a><span class="date">2026-05-13</span></li>
@@ -365,8 +366,50 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-4">
-  <h2><span class="ver">v0.30.4</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-5">
+  <h2><span class="ver">v0.30.5</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-14</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Provider-card hierarchy re-flipped: rate on top, ₹
+      amount below.</strong>  v0.30.0 had made the rupee total the
+      headline; user feedback was that in practice you scan the
+      <em>rate</em> column first to compare providers and only check
+      the rupee total once you've picked the winner.  Layout now reads
+      <code>25.8400</code> (20sp Bold) → <code>₹ 25,840</code> (16sp
+      SemiBold) → <code>+0.0123 vs mid</code> (12sp colored).  The
+      <code>@</code> prefix on the rate is dropped at headline size.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>About page now fully localised in ta/hi/ml.</strong>
+      v0.30.0–0.30.4 shipped the section titles and the new Language
+      / Target-alert cards translated, but the long-form body
+      paragraphs (mid-market explainer, "what is BEST", privacy
+      block, footer disclaimer + license line, daily-high body +
+      permission-denied hint) were still hardcoded English.
+      Externalised all 11 paragraphs into <code>about_*_body*</code>
+      keys and translated into Tamil, Hindi, Malayalam.</li>
+    <li><strong>Provider-history popup now fully localised in
+      ta/hi/ml.</strong>  The "Rate history (last 10 days)" header,
+      "No history yet…" empty-state copy, "Date · Time" column
+      header, and "Visit X ↗" CTA were still hardcoded English.
+      Added <code>history_*</code> and
+      <code>provider_visit_format</code> keys + ta/hi/ml
+      translations.</li>
+  </ul>
+
+  <h3 class="changed">Deferred</h3>
+  <ul>
+    <li>Gold/silver history sheet body text — much larger and
+      lower daily usage; scheduled for v0.30.6.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-4">
+  <h2><span class="ver">v0.30.4</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="fixed">Fixed</h3>

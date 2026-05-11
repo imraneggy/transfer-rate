@@ -68,6 +68,26 @@
     <string name="about_reshow_button">Reset welcome tour</string>
     <string name="about_reshow_done">Will appear on home</string>
 
+    <!-- About-page body paragraphs -->
+    <string name="about_midmarket_body">The mid-market (or \'interbank\') rate is the wholesale midpoint between the buy and sell prices in the global currency market. It is the most objective benchmark — every remittance provider charges some markup or fee on top.</string>
+    <string name="about_midmarket_body_sources">We pull it from public financial-data sources, with automatic fallbacks if the primary is unavailable. The rate is refreshed alongside provider rates on the regular cycle.</string>
+    <string name="about_best_body">Among the providers with verified live rates, the one giving you the most rupees per AED. Updated each refresh.</string>
+    <string name="about_best_body_delta">Each card also shows \'+0.02 vs mid-market\' or \'−0.05\' so you can see at a glance how each provider compares to the objective benchmark.</string>
+    <string name="about_privacy_body">This app collects nothing. No analytics, no telemetry, no advertising, no account, no cloud sync.</string>
+    <string name="about_privacy_body_network">Outbound network access is allowlisted at the application layer to a small set of public data hosts needed for rate updates. Anything else is blocked regardless of what any future dependency tries to do.</string>
+    <string name="about_privacy_body_permissions">Permissions: INTERNET and ACCESS_NETWORK_STATE for the rate fetch. The optional POST_NOTIFICATIONS permission is requested once for daily-high alerts; you can deny or revoke it any time without breaking the app.</string>
+    <string name="about_footer_disclaimer">Rates shown are indicative and may differ at the provider. Confirm at the provider\'s app or website before sending money. Not financial advice. Not affiliated with any of the listed remittance providers. Provider names and logos are trademarks of their respective owners, used here for nominative identification in a comparison context only.</string>
+    <string name="about_footer_license">Released under the MIT License.</string>
+    <string name="about_dailyhigh_title">Daily high alert</string>
+    <string name="about_dailyhigh_body">Status-bar alert when a provider beats today\'s previous best AED→INR rate. At most a few notifications per day.</string>
+    <string name="about_permission_denied_hint">Permission was declined. To enable, open Android Settings → Apps → Transfer Rate → Notifications, allow them, then return here and toggle on.</string>
+
+    <!-- Provider-history popup sheet -->
+    <string name="history_title">Rate history (last 10 days)</string>
+    <string name="history_empty">No history yet for this provider — check back tomorrow.</string>
+    <string name="history_col_header">Date · Time</string>
+    <string name="provider_visit_format">Visit %1$s ↗</string>
+
     <!-- Language picker shortcut -->
     <string name="about_section_language">Language</string>
     <string name="about_language_blurb">Transfer Rate follows your phone\'s language automatically — supported: English, Tamil, Hindi, Malayalam. Tap below to switch this app\'s language without changing the rest of your phone.</string>

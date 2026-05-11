@@ -79,6 +79,26 @@
     <string name="about_reshow_button">वेलकम टूर रीसेट करें</string>
     <string name="about_reshow_done">होम पर दिखेगा</string>
 
+    <!-- About-page body paragraphs -->
+    <string name="about_midmarket_body">मिड-मार्केट (या \'इंटरबैंक\') रेट वैश्विक मुद्रा बाज़ार में खरीद और बिक्री कीमतों के बीच का थोक मध्य-बिंदु है. यह सबसे वस्तुनिष्ठ बेंचमार्क है — हर रेमिटेंस प्रोवाइडर इस पर कुछ मार्क-अप या फ़ीस लेता है.</string>
+    <string name="about_midmarket_body_sources">हम इसे सार्वजनिक वित्तीय-डेटा स्रोतों से लाते हैं, और प्राइमरी अनुपलब्ध होने पर ऑटोमैटिक फ़ॉलबैक मौजूद हैं. यह रेट प्रोवाइडर रेट्स के साथ नियमित साइकल पर रिफ़्रेश होता है.</string>
+    <string name="about_best_body">वेरीफ़ाइड लाइव रेट वाले प्रोवाइडर्स में से, जो आपको प्रति AED सबसे ज़्यादा रुपए दे. हर रिफ़्रेश पर अपडेट होता है.</string>
+    <string name="about_best_body_delta">हर कार्ड \'+0.02 vs mid-market\' या \'−0.05\' भी दिखाता है, ताकि आप एक नज़र में देख सकें कि कौन-सा प्रोवाइडर वस्तुनिष्ठ बेंचमार्क से कैसे तुलना करता है.</string>
+    <string name="about_privacy_body">यह ऐप कुछ भी इकट्ठा नहीं करता. कोई एनालिटिक्स नहीं, कोई टेलिमेट्री नहीं, कोई विज्ञापन नहीं, कोई अकाउंट नहीं, कोई क्लाउड सिंक नहीं.</string>
+    <string name="about_privacy_body_network">आउटबाउंड नेटवर्क ऐक्सेस ऐप्लिकेशन लेयर पर सिर्फ़ रेट अपडेट के लिए ज़रूरी कुछ सार्वजनिक डेटा होस्ट तक सीमित है. बाकी सब कुछ — कोई भी फ़्यूचर डिपेंडेंसी कुछ भी करने की कोशिश करे — ब्लॉक है.</string>
+    <string name="about_privacy_body_permissions">अनुमतियाँ: रेट फ़ेच के लिए INTERNET और ACCESS_NETWORK_STATE. डेली-हाई अलर्ट के लिए वैकल्पिक POST_NOTIFICATIONS अनुमति एक बार माँगी जाती है; आप ऐप तोड़े बिना कभी भी मना कर सकते हैं या वापस ले सकते हैं.</string>
+    <string name="about_footer_disclaimer">यहाँ दिखाए गए रेट सांकेतिक हैं और प्रोवाइडर पर अलग हो सकते हैं. पैसे भेजने से पहले प्रोवाइडर के ऐप या वेबसाइट पर पुष्टि करें. यह वित्तीय सलाह नहीं है. सूचीबद्ध किसी भी रेमिटेंस प्रोवाइडर से संबद्ध नहीं. प्रोवाइडर नाम और लोगो उनके संबंधित मालिकों के ट्रेडमार्क हैं, यहाँ केवल तुलना संदर्भ में पहचान के लिए उपयोग किए गए हैं.</string>
+    <string name="about_footer_license">MIT लाइसेंस के तहत जारी.</string>
+    <string name="about_dailyhigh_title">डेली हाई अलर्ट</string>
+    <string name="about_dailyhigh_body">जब कोई प्रोवाइडर आज के अब तक के सबसे अच्छे AED→INR रेट को पार करे, स्टेटस-बार अलर्ट. दिन में अधिकतम कुछ नोटिफ़िकेशन.</string>
+    <string name="about_permission_denied_hint">अनुमति अस्वीकार की गई. चालू करने के लिए: Android Settings → Apps → Transfer Rate → Notifications खोलें, अनुमति दें, फिर यहाँ वापस आकर टॉगल ON करें.</string>
+
+    <!-- Provider-history popup sheet -->
+    <string name="history_title">रेट हिस्ट्री (पिछले 10 दिन)</string>
+    <string name="history_empty">इस प्रोवाइडर के लिए अभी कोई हिस्ट्री नहीं — कल फिर देखें.</string>
+    <string name="history_col_header">तारीख़ · समय</string>
+    <string name="provider_visit_format">%1$s पर जाएँ ↗</string>
+
     <!-- Language picker shortcut -->
     <string name="about_section_language">भाषा</string>
     <string name="about_language_blurb">Transfer Rate आपके फ़ोन की भाषा अपने आप अपनाता है — समर्थित: English, தமிழ், हिन्दी, മലയാളം. अपने फ़ोन की बाकी सेटिंग बदले बिना सिर्फ़ इस ऐप की भाषा बदलने के लिए नीचे टैप करें.</string>
