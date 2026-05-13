@@ -119,14 +119,22 @@ fun GoldHeader(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("🪙", fontSize = 13.sp, maxLines = 1)
                     Spacer(Modifier.width(4.dp))
+                    // v0.30.7: AED unit moves from per-value prefix to the
+                    // column header so the values themselves are bare
+                    // numbers and stop clipping in the SILVER column on
+                    // 360 dp phones.  Letter-spacing dropped 1.0 → 0.6 sp
+                    // because the longer "GOLD · AED" label was running
+                    // into the 83 dp column width budget with the old
+                    // wider tracking.
                     Text(
-                        stringResource(R.string.metals_gold),
+                        stringResource(R.string.metals_gold) + " · AED",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.0.sp,
+                        letterSpacing = 0.6.sp,
                         color = metals.goldText,
                         maxLines = 1,
                         softWrap = false,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                 }
                 Spacer(Modifier.height(8.dp))
@@ -169,13 +177,14 @@ fun GoldHeader(
                              color = metals.silverAccent, maxLines = 1)
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            stringResource(R.string.metals_silver),
+                            stringResource(R.string.metals_silver) + " · AED",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.0.sp,
+                            letterSpacing = 0.6.sp,
                             color = metals.silverText,
                             maxLines = 1,
                             softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -214,7 +223,11 @@ private fun MetalRow(
     aedDecimals: Int,
     emphasis: Boolean,
 ) {
-    val aedFormat = "AED %.${aedDecimals}f"
+    // v0.30.7: AED prefix is gone — unit moved to the column header
+    // ("GOLD · AED" / "SILVER · AED").  Values render as bare numbers,
+    // freeing ~28 dp per row on 360 dp phones where the silver column
+    // previously clipped "AED 10.06" mid-glyph.
+    val aedFormat = "%.${aedDecimals}f"
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -244,6 +257,10 @@ private fun MetalRow(
             color = valueColor,
             maxLines = 1,
             softWrap = false,
+            // Defensive ellipsis — if a future locale renders digits
+            // wider (Devanagari, Tamil numerals) the value tails off
+            // with "…" instead of being chopped mid-glyph.
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontFeatureSettings = "tnum",
             ),
@@ -255,6 +272,7 @@ private fun MetalRow(
             color = accentColor.copy(alpha = 0.85f),
             maxLines = 1,
             softWrap = false,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontFeatureSettings = "tnum",
             ),

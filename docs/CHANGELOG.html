@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.6 · 2026-05-14</span>
+    <span><strong>Latest:</strong> v0.30.7 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-7">v0.30.7</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-6">v0.30.6</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-5">v0.30.5</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-4">v0.30.4</a><span class="date">2026-05-13</span></li>
@@ -367,8 +368,40 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-6">
-  <h2><span class="ver">v0.30.6</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-7">
+  <h2><span class="ver">v0.30.7</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Silver column no longer clips on 360 dp phones.</strong>
+      On narrow Android devices (Pixel 4a / Galaxy A-series / most
+      Xiaomi at the base width) the home-screen gold-vs-silver card
+      was rendering <code>AED 10.06</code> as <code>AED 10.0…</code>
+      with a half-cut digit — the silver per-gram and per-kg values,
+      plus the ₹ totals, overflowed the ~83 dp column-content budget
+      once padding was deducted.  The fix moves the AED unit out of
+      every value and into the column header
+      (<code>🪙 GOLD · AED</code> / <code>◇ SILVER · AED</code>);
+      values render as bare numbers (<code>568</code>,
+      <code>10.06</code>, <code>1006</code>), recovering ~28 dp per
+      row.  Header letter-spacing tightened from 1.0 sp → 0.6 sp to
+      fit the longer label.
+      <code>overflow = TextOverflow.Ellipsis</code> added to the
+      header label, the AED value, and the ₹ value as a defensive
+      safety net so any future locale rendering wider digits
+      (Devanagari, Tamil numerals) tails off with <code>…</code>
+      rather than being chopped mid-glyph.  ₹ glyph stays as a
+      one-rune prefix on the INR line — no change there.</li>
+    <li>No string changes; <code>metals_gold</code> /
+      <code>metals_silver</code> resources are untouched.  The
+      <code> · AED</code> suffix is appended inline because AED is
+      a currency ISO code, not user-language text.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-6">
+  <h2><span class="ver">v0.30.6</span></h2>
   <p class="date">2026-05-14</p>
 
   <h3 class="changed">Removed</h3>

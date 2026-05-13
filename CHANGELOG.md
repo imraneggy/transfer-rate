@@ -15,6 +15,30 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.7] — 2026-05-13
+
+### Fixed
+- **Silver column no longer clips on 360 dp phones.**  On narrow
+  Android devices (Pixel 4a / Galaxy A-series / most Xiaomi at the
+  base width) the home-screen gold-vs-silver card was rendering
+  `AED 10.06` as `AED 10.0…` with a half-cut digit — the silver
+  per-gram and per-kg values, plus the ₹ totals, overflowed the
+  ~83 dp column-content budget once padding was deducted.  The
+  fix moves the AED unit out of every value and into the column
+  header (`🪙 GOLD · AED` / `◇ SILVER · AED`); values render as
+  bare numbers (`568`, `10.06`, `1006`), recovering ~28 dp per
+  row.  Header letter-spacing tightened from 1.0 sp → 0.6 sp to
+  fit the longer label.  `overflow = TextOverflow.Ellipsis` added
+  to the header label, the AED value, and the ₹ value as a
+  defensive safety net so any future locale rendering wider digits
+  (Devanagari, Tamil numerals) tails off with `…` rather than
+  being chopped mid-glyph.  ₹ glyph stays as a one-rune prefix on
+  the INR line — no change there.
+- No string changes; "GOLD" / "SILVER" remain the existing
+  `metals_gold` / `metals_silver` resources.  The ` · AED`
+  suffix is appended inline because AED is a currency ISO code,
+  not user-language text.
+
 ## [0.30.6] — 2026-05-14
 
 ### Removed
