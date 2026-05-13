@@ -44,8 +44,14 @@
 
     <!-- BEST / MANUAL stay English by design. -->
     <string name="rate_at_format">@ %1$s</string>
-    <string name="rate_vs_mid_format">%1$s मिड रेट से</string>
-    <string name="rate_equals_mid">= मिड रेट</string>
+    <!--
+        v0.30.8: shortened in line with ta/ml — "vs" is universally
+        recognised by UAE-Indian Hindi speakers and frees ~30 dp on the
+        right column of provider cards (was clipping the provider name
+        in narrow-phone layouts).
+    -->
+    <string name="rate_vs_mid_format">%1$s vs मिड</string>
+    <string name="rate_equals_mid">= मिड</string>
 
     <!-- Sending input -->
     <string name="amount_label_sending">भेजी जा रही राशि</string>

@@ -45,8 +45,16 @@
 
     <!-- BEST / MANUAL stay English by design. -->
     <string name="rate_at_format">@ %1$s</string>
-    <string name="rate_vs_mid_format">%1$s மிட் ரேட் ஒப்பீட்டில்</string>
-    <string name="rate_equals_mid">= மிட் ரேட்</string>
+    <!--
+        v0.30.8: shortened from "%1$s மிட் ரேட் ஒப்பீட்டில்" / "= மிட் ரேட்"
+        which were ~28 / ~10 Tamil glyphs wide and pushed the provider-card
+        right column to ~200 dp on 360 dp phones, starving the provider-name
+        column (Aspora truncated to "A...").  UAE-Indian Tamil speakers
+        routinely code-switch the universal short marker "vs" — using it
+        here keeps the form recognisable while freeing ~70 dp.
+    -->
+    <string name="rate_vs_mid_format">%1$s vs மிட்</string>
+    <string name="rate_equals_mid">= மிட்</string>
 
     <!-- Sending input -->
     <string name="amount_label_sending">அனுப்பும் தொகை</string>

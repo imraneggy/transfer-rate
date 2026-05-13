@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.7 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.8 · 2026-05-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-8">v0.30.8</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-7">v0.30.7</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-6">v0.30.6</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-5">v0.30.5</a><span class="date">2026-05-14</span></li>
@@ -368,8 +369,67 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-7">
-  <h2><span class="ver">v0.30.7</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-8">
+  <h2><span class="ver">v0.30.8</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-13</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Tamil / Hindi / Malayalam no longer clip provider
+      names or gold-card headers.</strong>  Switching the in-app
+      language to Tamil (and to a lesser extent Malayalam) exposed
+      two cascading clips on 360 dp phones:
+      <ol>
+        <li>The verbose <code>vs mid</code> translation
+          (<code>%1$s மிட் ரேட் ஒப்பீட்டில்</code> /
+          <code>%1$s മിഡ് റേറ്റിനെ അപേക്ഷിച്ച്</code>) pushed
+          the provider-card right column to ~200 dp, starving the
+          name column to &lt;30 dp and rendering "Aspora" as
+          "A..." and "TransferGo" as "Transfe...".</li>
+        <li>The v0.30.7 <code>· AED</code> header suffix overflowed
+          in Tamil ("தங்கம் · AED") and Malayalam
+          ("സ്വർണം · AED"), tripping the safety-net ellipsis
+          ("தங்..." / "സ്വ...").</li>
+      </ol>
+      Fixes:
+      <ul>
+        <li><code>rate_vs_mid_format</code> shortened to
+          <code>%1$s vs &lt;transliterated mid&gt;</code> in ta/hi/ml.
+          "vs" is universally understood across UAE-Indian
+          code-switching speech; the <code>மிட்</code> /
+          <code>मिड</code> / <code>മിഡ്</code> transliteration of
+          "mid" matches the existing <code>midmarket_eyebrow</code>
+          convention.  Frees ~30 dp in Hindi, ~70 dp in Tamil,
+          ~80 dp in Malayalam.</li>
+        <li><code>rate_equals_mid</code> shortened similarly.</li>
+        <li><code>· AED</code> suffix on gold/silver headers
+          reverted; values stay bare numbers (AED is implicit from
+          the adjacent MID-MARKET card and the ₹ glyph on every
+          INR line).  Letter-spacing bumped 0.6 → 0.8 sp.</li>
+      </ul></li>
+    <li><strong>Provider names now allowed to wrap to 2 lines.</strong>
+      Was <code>maxLines = 1, softWrap = false</code> since v0.27 —
+      meant the fallback was a hard clip even with <code>Ellipsis</code>
+      set, because the fallback couldn't kick in when the column was
+      too narrow for the <em>first</em> character + badge.
+      <code>maxLines = 2, softWrap = true</code> is the proper
+      defense: long provider names ("Wall Street Exchange") or long
+      badges in any locale wrap onto the second line instead of
+      being chopped.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Translation principle for short comparator strings clarified
+      in the ta/hi/ml file headers: "vs" stays English on purpose;
+      it is a 2-letter universal marker that every UAE-Indian
+      remittance speaker already uses in conversation, so translating
+      it adds width without adding clarity.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-7">
+  <h2><span class="ver">v0.30.7</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="fixed">Fixed</h3>

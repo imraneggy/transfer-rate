@@ -119,18 +119,20 @@ fun GoldHeader(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("🪙", fontSize = 13.sp, maxLines = 1)
                     Spacer(Modifier.width(4.dp))
-                    // v0.30.7: AED unit moves from per-value prefix to the
-                    // column header so the values themselves are bare
-                    // numbers and stop clipping in the SILVER column on
-                    // 360 dp phones.  Letter-spacing dropped 1.0 → 0.6 sp
-                    // because the longer "GOLD · AED" label was running
-                    // into the 83 dp column width budget with the old
-                    // wider tracking.
+                    // v0.30.7 moved the AED unit from per-value prefix to a
+                    // " · AED" header suffix to recover ~28 dp per row.
+                    // v0.30.8 drops the suffix entirely — Tamil "தங்கம் ·
+                    // AED" and Malayalam "സ്വർണം · AED" overran the 83 dp
+                    // column-content budget and triggered the safety-net
+                    // ellipsis ("தங்..." / "സ്വ..." in the screenshot).
+                    // AED is now implicit from the adjacent MID-MARKET
+                    // card's "1 AED → INR" subtitle plus the ₹ glyph on
+                    // every INR line; bare numbers stay readable.
                     Text(
-                        stringResource(R.string.metals_gold) + " · AED",
+                        stringResource(R.string.metals_gold),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.6.sp,
+                        letterSpacing = 0.8.sp,
                         color = metals.goldText,
                         maxLines = 1,
                         softWrap = false,
@@ -177,10 +179,10 @@ fun GoldHeader(
                              color = metals.silverAccent, maxLines = 1)
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            stringResource(R.string.metals_silver) + " · AED",
+                            stringResource(R.string.metals_silver),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.6.sp,
+                            letterSpacing = 0.8.sp,
                             color = metals.silverText,
                             maxLines = 1,
                             softWrap = false,

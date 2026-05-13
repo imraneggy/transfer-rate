@@ -15,6 +15,54 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.8] — 2026-05-13
+
+### Fixed
+- **Tamil / Hindi / Malayalam no longer clip provider names or
+  gold-card headers.**  Switching the in-app language to Tamil (and
+  to a lesser extent Malayalam) exposed two cascading clips on
+  360 dp phones:
+    1. The verbose `vs mid` translation
+       (`%1$s மிட் ரேட் ஒப்பீட்டில்` / `%1$s മിഡ് റേറ്റിനെ
+       അപേക്ഷിച്ച്`) pushed the provider-card right column to
+       ~200 dp, starving the name column to <30 dp and rendering
+       "Aspora" as "A..." and "TransferGo" as "Transfe...".
+    2. The v0.30.7 `· AED` header suffix overflowed in Tamil
+       ("தங்கம் · AED") and Malayalam ("സ്വർണം · AED"), tripping
+       the safety-net ellipsis ("தங்..." / "സ്വ...").
+  Fixes:
+    - `rate_vs_mid_format` shortened to `%1$s vs <transliterated
+      mid>` in ta/hi/ml.  "vs" is universally understood across
+      UAE-Indian code-switching speech; the `மிட்` / `मिड` /
+      `മിഡ്` transliteration of "mid" matches the existing
+      `midmarket_eyebrow` convention.  Frees ~30 dp in Hindi,
+      ~70 dp in Tamil, ~80 dp in Malayalam — enough to keep the
+      name column comfortable.
+    - `rate_equals_mid` shortened similarly.
+    - `· AED` suffix on gold/silver headers reverted; values
+      stay bare numbers (AED is implicit from the adjacent
+      MID-MARKET card's `1 AED → INR` subtitle and the ₹ glyph
+      on every INR line).  Letter-spacing bumped 0.6 → 0.8 sp
+      back toward the v0.30.6 visual without the v0.30.6
+      truncation problem.
+- **Provider names now allowed to wrap to 2 lines.**  Was
+  `maxLines = 1, softWrap = false` since v0.27 — meant the
+  fallback was a hard clip even with `Ellipsis` set, because the
+  fallback couldn't kick in when the column was too narrow for
+  the *first* character + badge.  `maxLines = 2, softWrap = true`
+  is the proper defense: long provider names ("Wall Street
+  Exchange") or long badges in any locale wrap onto the second
+  line instead of being chopped.  Ellipsis still triggers if a
+  name overflows two lines, which should never happen in
+  practice.
+
+### Changed
+- Translation principle for short comparator strings clarified in
+  the ta/hi/ml file headers: "vs" stays English on purpose; it is
+  a 2-letter universal marker that every UAE-Indian remittance
+  speaker already uses in conversation, so translating it adds
+  width without adding clarity.
+
 ## [0.30.7] — 2026-05-13
 
 ### Fixed

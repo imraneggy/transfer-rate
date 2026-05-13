@@ -990,8 +990,17 @@ private fun ProviderCard(
                             // BEST badge even at the 1.15x font-scale cap.
                             fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            softWrap = false,
+                            // v0.30.8: was maxLines=1/softWrap=false which
+                            // forced "Aspora" → "A..." in Tamil/Malayalam
+                            // where the verbose vs-mid line pushed the
+                            // right column wide enough to leave <30 dp for
+                            // the name column on 360 dp phones.  vs-mid is
+                            // also being shortened in those locales (~70 dp
+                            // recovered) but the 2-line wrap is the proper
+                            // defense — provider names should NEVER clip,
+                            // they're the identity the user is comparing.
+                            maxLines = 2,
+                            softWrap = true,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false),
                         )

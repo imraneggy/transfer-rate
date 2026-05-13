@@ -42,8 +42,15 @@
 
     <!-- BEST / MANUAL stay English by design. -->
     <string name="rate_at_format">@ %1$s</string>
-    <string name="rate_vs_mid_format">%1$s മിഡ് റേറ്റിനെ അപേക്ഷിച്ച്</string>
-    <string name="rate_equals_mid">= മിഡ് റേറ്റ്</string>
+    <!--
+        v0.30.8: shortened from the verbose "%1$s മിഡ് റേറ്റിനെ
+        അപേക്ഷിച്ച്" which was the worst offender (~30 glyphs wide) and
+        was the primary cause of the provider-name clip on 360 dp phones
+        in Malayalam.  "vs" is widely understood across UAE-Indian
+        Malayalam speakers; keeps the comparator while freeing ~80 dp.
+    -->
+    <string name="rate_vs_mid_format">%1$s vs മിഡ്</string>
+    <string name="rate_equals_mid">= മിഡ്</string>
 
     <!-- Sending input -->
     <string name="amount_label_sending">അയക്കുന്ന തുക</string>
