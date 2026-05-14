@@ -15,6 +15,62 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.31.0] — 2026-05-14
+
+### Added
+- **Share-best-rate button.**  New share icon in the top app bar
+  composes a plain-text summary of today's BEST provider rate
+  and fires Android's `ACTION_SEND` chooser so the user can
+  forward it to WhatsApp / SMS / email / Telegram / anything
+  else that accepts text.  Payload (en):
+
+      🏆 Today's best AED→INR rate
+
+      26.0900 via Aspora
+      You'd get ₹78,270 for AED 3,000
+      Mid-market: 26.0851
+
+      Compare 11 UAE→India providers: https://imraneggy.github.io/transfer-rate/
+
+  Strings are split into small chunks (`share_title`,
+  `share_rate_via_format`, `share_amount_format`,
+  `share_midmarket_format`, `share_footer_format`) so translators
+  can re-order phrases naturally instead of wrestling positional
+  args inside one mega-format.  Translated for en/ta/hi/ml; URL
+  is `translatable="false"` (the static GitHub Pages URL is
+  language-agnostic).
+- **7-day trend arrow on each provider card.**  Compares today's
+  rate against the rolling 7-day average from the same history
+  data the inline sparkline already consumes:
+    - `▲` (green) when today's rate is &gt; 0.1% above the 7-day
+      avg — the corridor is moving in the user's favor at this
+      provider
+    - `▼` (red) when &gt; 0.1% below — provider is offering a
+      worse rate than its own recent baseline
+    - no glyph (no visual noise) when within the 0.1% flat band
+  Threshold matches the existing vs-mid threshold so the two
+  indicators are mutually-consistent: a ▲ here roughly
+  corresponds in magnitude to a visible "+0.0xxx vs mid" line.
+  Glyph renders at 14 sp inline before the 20 sp rate digits,
+  baseline-aligned; colour palette reuses the existing
+  positive/negative pair from the vs-mid line (no new theme
+  entries).  Only rendered when at least 2 history points are
+  available — same gate the sparkline uses.
+
+### Changed
+- Toolbar action row layout: SHARE is an icon (not a chip)
+  because adding a fourth labeled chip would push the title past
+  the ellipsis threshold on 360 dp phones in Tamil / Malayalam
+  (already tight at 2 chips + 1 icon since v0.30.0).  Share is
+  disabled while the app is in `Loading` / `Failed` state and
+  re-enables the moment a Ready state arrives.
+- `RateView` composable signature now takes `history: List<Double>`
+  so the trend arrow can compute the 7-day average without
+  re-fetching.  `isDark` / `positive` / `negative` palette
+  decisions moved to the outer function scope (was redeclared
+  inside the vs-mid block) so the trend arrow and the vs-mid
+  line share one palette decision per card.
+
 ## [0.30.9] — 2026-05-14
 
 ### Added

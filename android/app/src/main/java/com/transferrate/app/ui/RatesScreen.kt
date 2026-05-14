@@ -178,6 +178,32 @@ fun RatesScreen(
                         contentDescription = "Refresh rates",
                         onClick = { vm.refresh() },
                     )
+                    // v0.31.0: share-best-rate icon.  Composes a short
+                    // plain-text payload of today's BEST provider rate +
+                    // the AED→INR amount and fires ACTION_SEND through
+                    // the system chooser (WhatsApp / SMS / email / etc.).
+                    // Icon-only because a fourth labeled chip would push
+                    // the title past the ellipsis threshold on 360 dp
+                    // phones in Tamil/Malayalam (already tight at 2
+                    // chips + 1 icon).  Disabled when state isn't Ready.
+                    val context = LocalContext.current
+                    val currentState = state
+                    IconButton(
+                        onClick = {
+                            if (currentState is RatesUiState.Ready) {
+                                shareBestRate(context, currentState)
+                            }
+                        },
+                        enabled = currentState is RatesUiState.Ready,
+                    ) {
+                        androidx.compose.material3.Icon(
+                            painter = androidx.compose.ui.res.painterResource(
+                                id = R.drawable.ic_share,
+                            ),
+                            contentDescription = "Share today's best rate",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                     IconButton(onClick = onShowAbout) {
                         androidx.compose.material3.Icon(
                             painter = androidx.compose.ui.res.painterResource(
@@ -224,6 +250,85 @@ fun RatesScreen(
  * compare the displayed rate to live sources like Google. They can see
  * at a glance how stale the data is and decide whether to refresh.
  */
+/**
+ * Compose a one-message summary of today's best provider rate and fire
+ * Android's ACTION_SEND chooser so the user can forward it to WhatsApp,
+ * SMS, email, or any other text-receiving app.  v0.31.0.
+ *
+ * Payload structure (en):
+ *
+ *   🏆 Today's best AED→INR rate
+ *
+ *   26.0900 via Aspora
+ *   You'd get ₹78,270 for AED 3,000
+ *   Mid-market: 26.0851
+ *
+ *   Compare 11 UAE→India providers: https://imraneggy.github.io/transfer-rate/
+ *
+ * Strings are split into small chunks so translators can re-order phrases
+ * naturally rather than wrestling positional args inside one mega-format.
+ */
+private fun shareBestRate(
+    context: android.content.Context,
+    state: RatesUiState.Ready,
+) {
+    val selected = state.selectedCurrency
+    val info = CURRENCIES[selected] ?: return
+    val visible = state.visibleQuotes
+    // First (sortedBy rate-desc) provider with a usable rate.
+    val best = visible.firstOrNull {
+        (it.status == "ok" || it.status == "manual") &&
+            (it.effectiveRate ?: it.rate) != null
+    } ?: return
+    val bestRate = best.effectiveRate ?: best.rate ?: return
+    val amount = state.selectedAmount
+    val received = bestRate * amount
+    val midMarket = state.midMarketRate
+
+    val rateStr = "%.4f".format(bestRate)
+    val receivedStr = "${info.symbol} %,.0f".format(received)
+    val amountStr = "%,.0f".format(amount)
+    val midStr = midMarket?.let { "%.4f".format(it) }
+    val url = context.getString(R.string.share_url)
+
+    val payload = buildString {
+        append("🏆 ")
+        appendLine(context.getString(R.string.share_title))
+        appendLine()
+        appendLine(context.getString(
+            R.string.share_rate_via_format, rateStr, best.providerName,
+        ))
+        appendLine(context.getString(
+            R.string.share_amount_format, receivedStr, amountStr,
+        ))
+        if (midStr != null) {
+            appendLine(context.getString(R.string.share_midmarket_format, midStr))
+        }
+        appendLine()
+        append(context.getString(R.string.share_footer_format, visible.size, url))
+    }
+
+    val sendIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(android.content.Intent.EXTRA_TEXT, payload)
+    }
+    val chooserTitle = context.getString(R.string.share_chooser_title)
+    val chooser = android.content.Intent.createChooser(sendIntent, chooserTitle).apply {
+        // FLAG_ACTIVITY_NEW_TASK required when context isn't an Activity
+        // (e.g. system overlays).  Safe to set unconditionally here —
+        // Android resolves correctly either way.
+        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    try {
+        context.startActivity(chooser)
+    } catch (_: android.content.ActivityNotFoundException) {
+        // No app installed that can receive text/plain — extremely rare
+        // (every Android device has at least Messages / Gmail).  Swallow
+        // silently rather than crash; the user can retry after installing
+        // a target app.
+    }
+}
+
 private fun relativeTime(iso: String): String {
     return try {
         val instant = Instant.parse(iso)
@@ -1041,7 +1146,10 @@ private fun ProviderCard(
                 // `amount` so the right column can render "₹ 77,460" big
                 // (the number users actually care about) instead of the
                 // raw rate.  Rate stays available as a small detail line.
-                RateView(p, midMarket = midMarket, amount = amount)
+                // v0.31: also threads `history` into RateView so the
+                // rate can carry a ▲/▼ trend arrow comparing today's
+                // rate against the rolling 7-day average.
+                RateView(p, midMarket = midMarket, amount = amount, history = history)
             }
             // Sparkline of past rates (last 7 days). Only render when we
             // have at least 2 history points; one point is just a dot.
@@ -1115,9 +1223,37 @@ private fun ManualBadge() {
 }
 
 @Composable
-private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
+private fun RateView(
+    p: ProviderQuote,
+    midMarket: Double?,
+    amount: Double,
+    history: List<Double>,
+) {
     val rate = p.effectiveRate ?: p.rate
     val symbol = CURRENCIES[p.quote]?.symbol ?: ""
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
+    val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
+
+    // v0.31.0: rolling-7-day trend arrow.  Computed against the same
+    // history list the sparkline below the card already consumes.
+    // Threshold 0.1% (10 bps) matches the existing vs-mid threshold
+    // (`delta > 0.001` on a rate around 26 = ~10 bps) so the two
+    // indicators share a consistency: a ▲ here roughly corresponds in
+    // magnitude to a visible "+0.0xxx vs mid" line.  Flat values get
+    // no glyph (rather than a "▬" or similar) to avoid visual noise on
+    // the ~half of cards where the rate is currently mid-band.
+    val trendGlyph: Pair<String, Color>? = if (rate != null && history.size >= 2) {
+        val avg = history.average()
+        val delta = rate - avg
+        val threshold = avg * 0.001
+        when {
+            delta > threshold  -> "▲" to positive
+            delta < -threshold -> "▼" to negative
+            else -> null
+        }
+    } else null
+
     Column(horizontalAlignment = Alignment.End) {
         when (p.status) {
             "ok", "manual" -> {
@@ -1129,17 +1265,30 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                 // So: 1) rate big (the comparison axis), 2) ₹ amount the
                 // immediate consequence, 3) vs-mid the tertiary context.
                 val received = if (rate != null) rate * amount else null
-                Text(
-                    text = if (rate != null) "%.4f".format(rate) else "—",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFeatureSettings = "tnum",
-                    ),
-                    maxLines = 1,
-                    softWrap = false,
-                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    trendGlyph?.let { (glyph, color) ->
+                        Text(
+                            text = glyph,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = color,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
+                        Spacer(Modifier.width(4.dp))
+                    }
+                    Text(
+                        text = if (rate != null) "%.4f".format(rate) else "—",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFeatureSettings = "tnum",
+                        ),
+                        maxLines = 1,
+                        softWrap = false,
+                    )
+                }
                 if (received != null) {
                     Text(
                         text = "$symbol %,.0f".format(received),
@@ -1155,9 +1304,9 @@ private fun RateView(p: ProviderQuote, midMarket: Double?, amount: Double) {
                 }
                 if (rate != null && midMarket != null) {
                     val delta = rate - midMarket
-                    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-                    val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
-                    val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
+                    // v0.31.0: `isDark`/`positive`/`negative` moved to the
+                    // outer function scope so the trend arrow + vs-mid line
+                    // share one palette decision per card.
                     val (label, color) = when {
                         delta > 0.001  -> "+%.4f".format(delta) to positive
                         delta < -0.001 -> "%.4f".format(delta) to negative

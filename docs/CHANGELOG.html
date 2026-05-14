@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.9 · 2026-05-14</span>
+    <span><strong>Latest:</strong> v0.31.0 · 2026-05-14</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-31-0">v0.31.0</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-9">v0.30.9</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-8">v0.30.8</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-7">v0.30.7</a><span class="date">2026-05-13</span></li>
@@ -370,8 +371,53 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-9">
-  <h2><span class="ver">v0.30.9</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-31-0">
+  <h2><span class="ver">v0.31.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-14</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Share-best-rate button.</strong>  New share icon in the
+      top app bar composes a plain-text summary of today's BEST
+      provider rate and fires Android's <code>ACTION_SEND</code>
+      chooser so the user can forward it to WhatsApp / SMS / email /
+      Telegram / anything else that accepts text.  Strings split into
+      small chunks (<code>share_title</code>,
+      <code>share_rate_via_format</code>, etc.) so translators can
+      re-order phrases naturally; translated for en/ta/hi/ml.</li>
+    <li><strong>7-day trend arrow on each provider card.</strong>
+      Compares today's rate against the rolling 7-day average from
+      the same history data the inline sparkline already consumes:
+      <ul>
+        <li><code>▲</code> (green) when today's rate is &gt; 0.1%
+          above the 7-day avg</li>
+        <li><code>▼</code> (red) when &gt; 0.1% below</li>
+        <li>no glyph when within the 0.1% flat band</li>
+      </ul>
+      Threshold matches the existing vs-mid threshold so the two
+      indicators are mutually consistent.  14 sp glyph inline before
+      the 20 sp rate digits; palette reuses the existing
+      positive/negative pair (no new theme entries).</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Toolbar action row: SHARE is an icon (not a chip) so the
+      title doesn't push past the ellipsis threshold on 360 dp phones
+      in Tamil / Malayalam.  Disabled while the app is in
+      <code>Loading</code> / <code>Failed</code> state.</li>
+    <li><code>RateView</code> composable now takes
+      <code>history: List&lt;Double&gt;</code> so the trend arrow can
+      compute the 7-day average without re-fetching;
+      <code>isDark</code> / <code>positive</code> /
+      <code>negative</code> palette decisions moved to outer scope so
+      the trend arrow and the vs-mid line share one decision per
+      card.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-9">
+  <h2><span class="ver">v0.30.9</span></h2>
   <p class="date">2026-05-14</p>
 
   <h3 class="added">Added</h3>

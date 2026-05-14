@@ -135,6 +135,22 @@
     <string name="error_generic_hint">An unexpected error occurred while fetching the latest rates.</string>
     <string name="error_try_again">Try again</string>
 
+    <!--
+        Share-best-rate payload (v0.31.0).
+        The share intent composes a short text message users can forward
+        to WhatsApp / SMS / email summarising today's best AED→INR rate.
+        Strings are split into small chunks so translators can re-order
+        phrases naturally rather than wrestling with positional args.
+    -->
+    <string name="share_title">Today\'s best AED→INR rate</string>
+    <string name="share_rate_via_format">%1$s via %2$s</string>
+    <string name="share_amount_format">You\'d get %1$s for AED %2$s</string>
+    <string name="share_midmarket_format">Mid-market: %1$s</string>
+    <string name="share_footer_format">Compare %1$d UAE→India providers: %2$s</string>
+    <string name="share_chooser_title">Share rate via…</string>
+    <string name="toolbar_share">SHARE</string>
+    <string name="share_url" translatable="false">https://imraneggy.github.io/transfer-rate/</string>
+
     <!-- Welcome modal -->
     <string name="welcome_title">Welcome to Transfer Rate</string>
     <string name="welcome_subtitle">A free, open-source comparison app for sending money from the UAE to India. No accounts, no ads, no analytics.</string>
