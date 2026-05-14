@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.30.8 · 2026-05-13</span>
+    <span><strong>Latest:</strong> v0.30.9 · 2026-05-14</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-30-9">v0.30.9</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-8">v0.30.8</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-7">v0.30.7</a><span class="date">2026-05-13</span></li>
     <li><a href="#v0-30-6">v0.30.6</a><span class="date">2026-05-14</span></li>
@@ -369,8 +370,49 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-30-8">
-  <h2><span class="ver">v0.30.8</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-30-9">
+  <h2><span class="ver">v0.30.9</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-14</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Gold/silver bottom sheet fully internationalised.</strong>
+      The popup that opens when you tap the gold/silver home-screen
+      card was the last UI surface still ~90% English regardless of
+      in-app language.  Twenty-five new string keys extracted from
+      <code>GoldHistorySheet.kt</code> and translated for en/ta/hi/ml.
+      Coverage: sheet titles, sparkline headers, UAE-silver placeholders,
+      "Silver" carat chip, "30-day stats / Recent days · X" headings,
+      "High" / "Low" / "Avg" pills, empty-state messages, "View full"
+      CTA, sub-sheet title + subtitle + table headers, "Date" header,
+      "Building…" placeholder, "Rates unavailable" failure state, and
+      <code>ErrorView</code> headlines + "Try again" button.</li>
+    <li>All translations are first-cut and flagged for native-speaker
+      review at the top of each <code>values-*/strings.xml</code> file
+      (Tamil, Hindi, Malayalam).</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Country abbreviations ("UAE" / "INDIA" / "IN") and unit codes
+      (24K, 22K, 1g, 1kg, AED, ₹) stay English across all locales by
+      design — they're chart-axis-style labels, not prose.  The
+      translation principle is documented at the top of each locale
+      file.</li>
+    <li>Sources line at the bottom of the gold sheet now reuses the
+      existing <code>metals_disclaimer</code> string (already shown on
+      the home-screen gold card), eliminating duplicate hardcoded
+      English copy.</li>
+    <li>All extracted <code>Text</code> widgets gained
+      <code>overflow = TextOverflow.Ellipsis</code> so any future
+      locale with wider glyph metrics degrades gracefully rather than
+      chopping mid-character (continues the defensive sweep started in
+      v0.30.7 / v0.30.8).</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-30-8">
+  <h2><span class="ver">v0.30.8</span></h2>
   <p class="date">2026-05-13</p>
 
   <h3 class="fixed">Fixed</h3>

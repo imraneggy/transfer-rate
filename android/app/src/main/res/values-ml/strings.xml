@@ -110,6 +110,46 @@
     <string name="about_language_button">ഭാഷാ ക്രമീകരണങ്ങൾ തുറക്കുക</string>
     <string name="about_language_unavailable">ഈ ഉപകരണത്തിൽ ഭാഷാ പിക്കർ ലഭ്യമല്ല — Settings → System → Languages വഴി ഫോണിന്റെ ഭാഷ മാറ്റുക.</string>
 
+    <!--
+        Gold/silver bottom sheet — v0.30.9.
+        Region abbreviations "UAE" / "INDIA" / "IN" and unit codes
+        (24K, 22K, 1g, 1kg, AED, ₹) stay English — chart-axis labels.
+    -->
+    <string name="gold_sheet_title_both">സ്വർണം &amp; വെള്ളി · UAE vs India</string>
+    <string name="gold_sheet_title_gold_only">സ്വർണ റേറ്റ് · UAE vs India</string>
+    <string name="gold_sheet_subtitle">കഴിഞ്ഞ 30 ദിവസം, ഗ്രാമിന്</string>
+    <string name="gold_sheet_trend_24k">24K ട്രെൻഡ് (പുതിയത് വലത്ത്)</string>
+    <string name="gold_sheet_trend_22k">22K ട്രെൻഡ് (പുതിയത് വലത്ത്)</string>
+    <string name="gold_sheet_trend_silver">വെള്ളി ട്രെൻഡ് · India (പുതിയത് വലത്ത്)</string>
+    <string name="gold_sheet_uae_spot_only">സ്പോട്ട് മാത്രം</string>
+    <string name="gold_sheet_uae_spot_long">സ്പോട്ട് വില മാത്രം — ദിവസേന ചരിത്രമില്ല</string>
+    <string name="gold_sheet_carat_silver">വെള്ളി</string>
+    <string name="gold_sheet_stats_label">30-ദിന സ്ഥിതിവിവരം · %1$s</string>
+    <string name="gold_sheet_recent_label">സമീപ ദിവസങ്ങൾ · %1$s</string>
+    <string name="gold_sheet_empty_silver">വെള്ളി ചരിത്രം India-യിൽ മാത്രം (UAE തത്സമയ സ്പോട്ട് കാട്ടുന്നു).</string>
+    <string name="gold_sheet_empty_building">ചരിത്രം ഉണ്ടാകുന്നു — നാളെ വീണ്ടും നോക്കുക.</string>
+    <string name="gold_sheet_view_full_label">പൂർണ്ണ %1$d-ദിന ചരിത്രം  →</string>
+    <string name="gold_sheet_history_silver_title">വെള്ളി · %1$d-ദിന ചരിത്രം</string>
+    <string name="gold_sheet_history_carat_title">%1$s സ്വർണം · %2$d-ദിന ചരിത്രം</string>
+    <string name="gold_sheet_uae_vs_india_subtitle">UAE vs India · ഗ്രാമിന്</string>
+    <string name="gold_sheet_uae_aed">UAE (AED)</string>
+    <string name="gold_sheet_india_inr">India (₹)</string>
+    <string name="gold_sheet_date">തീയതി</string>
+    <string name="gold_sheet_high">ഉയർന്നത്</string>
+    <string name="gold_sheet_low">താഴ്ന്നത്</string>
+    <string name="gold_sheet_avg">ശരാശരി</string>
+    <string name="gold_sheet_building_short">ഉണ്ടാകുന്നു…</string>
+
+    <!-- Gold header (failure state) -->
+    <string name="gold_unavailable">റേറ്റ് ലഭ്യമല്ല</string>
+
+    <!-- Error view -->
+    <string name="error_offline_headline">റേറ്റ് ഫീഡിലേക്ക് എത്താൻ കഴിയുന്നില്ല</string>
+    <string name="error_offline_hint">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക. കാഷ്ഡ് റേറ്റുകൾ ഇതുവരെ ലഭ്യമല്ല.</string>
+    <string name="error_generic_headline">റേറ്റുകൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല</string>
+    <string name="error_generic_hint">പുതിയ റേറ്റുകൾ കൊണ്ടുവരുമ്പോൾ അപ്രതീക്ഷിത പിശക്.</string>
+    <string name="error_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+
     <!-- Welcome modal -->
     <string name="welcome_title">Transfer Rate-ലേക്ക് സ്വാഗതം</string>
     <string name="welcome_subtitle">UAE-ൽ നിന്ന് ഇന്ത്യയിലേക്ക് പണം അയക്കാനുള്ള സൗജന്യ, ഓപ്പൺ-സോഴ്‌സ് താരതമ്യ ആപ്പ്. അക്കൗണ്ടുകളില്ല, പരസ്യങ്ങളില്ല, അനലിറ്റിക്സ് ഇല്ല.</string>

@@ -310,13 +310,13 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
     val (glyph, headline, hint) = when {
         isOffline -> Triple(
             "📡",
-            "Can't reach the rate feed",
-            "Check your internet connection and tap retry. Cached rates aren't available yet.",
+            stringResource(R.string.error_offline_headline),
+            stringResource(R.string.error_offline_hint),
         )
         else -> Triple(
             "⚠",
-            "Couldn't load rates",
-            "An unexpected error occurred while fetching the latest rates.",
+            stringResource(R.string.error_generic_headline),
+            stringResource(R.string.error_generic_hint),
         )
     }
     Column(
@@ -350,7 +350,7 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
         )
         Spacer(Modifier.height(28.dp))
         androidx.compose.material3.FilledTonalButton(onClick = onRetry) {
-            Text("Try again")
+            Text(stringResource(R.string.error_try_again))
         }
     }
 }

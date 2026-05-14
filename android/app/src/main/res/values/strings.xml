@@ -94,6 +94,47 @@
     <string name="about_language_button">Open language settings</string>
     <string name="about_language_unavailable">Language picker not available on this device — change your phone\'s language in Settings → System → Languages.</string>
 
+    <!-- Gold/silver bottom sheet (v0.30.9: full i18n).
+         "UAE" / "INDIA" / "IN" abbreviations and unit codes (24K, 22K,
+         1g, 1kg, AED, ₹) stay English across all locales; they're
+         chart-axis-style labels, not prose. -->
+    <string name="gold_sheet_title_both">Gold &amp; silver · UAE vs India</string>
+    <string name="gold_sheet_title_gold_only">Gold rate · UAE vs India</string>
+    <string name="gold_sheet_subtitle">Last 30 days, per gram</string>
+    <string name="gold_sheet_trend_24k">24K trend (newest right)</string>
+    <string name="gold_sheet_trend_22k">22K trend (newest right)</string>
+    <string name="gold_sheet_trend_silver">Silver trend · India (newest right)</string>
+    <string name="gold_sheet_uae_spot_only">spot only</string>
+    <string name="gold_sheet_uae_spot_long">spot price only — no daily history</string>
+    <string name="gold_sheet_carat_silver">Silver</string>
+    <!-- "30-day stats · X" / "Recent days · X" where X is "24K", "22K",
+         or the localised gold_sheet_carat_silver. -->
+    <string name="gold_sheet_stats_label">30-day stats · %1$s</string>
+    <string name="gold_sheet_recent_label">Recent days · %1$s</string>
+    <string name="gold_sheet_empty_silver">Silver history is India-only (UAE shows live spot).</string>
+    <string name="gold_sheet_empty_building">Building history — check back tomorrow.</string>
+    <string name="gold_sheet_view_full_label">View full %1$d-day history  →</string>
+    <string name="gold_sheet_history_silver_title">Silver · %1$d-day history</string>
+    <string name="gold_sheet_history_carat_title">%1$s gold · %2$d-day history</string>
+    <string name="gold_sheet_uae_vs_india_subtitle">UAE vs India · per gram</string>
+    <string name="gold_sheet_uae_aed">UAE (AED)</string>
+    <string name="gold_sheet_india_inr">India (₹)</string>
+    <string name="gold_sheet_date">Date</string>
+    <string name="gold_sheet_high">High</string>
+    <string name="gold_sheet_low">Low</string>
+    <string name="gold_sheet_avg">Avg</string>
+    <string name="gold_sheet_building_short">Building…</string>
+
+    <!-- Gold header (failure state, home-screen card) -->
+    <string name="gold_unavailable">Rates unavailable</string>
+
+    <!-- Error view (full-screen fetch failure) -->
+    <string name="error_offline_headline">Can\'t reach the rate feed</string>
+    <string name="error_offline_hint">Check your internet connection and tap retry. Cached rates aren\'t available yet.</string>
+    <string name="error_generic_headline">Couldn\'t load rates</string>
+    <string name="error_generic_hint">An unexpected error occurred while fetching the latest rates.</string>
+    <string name="error_try_again">Try again</string>
+
     <!-- Welcome modal -->
     <string name="welcome_title">Welcome to Transfer Rate</string>
     <string name="welcome_subtitle">A free, open-source comparison app for sending money from the UAE to India. No accounts, no ads, no analytics.</string>

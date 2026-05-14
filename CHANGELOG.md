@@ -15,6 +15,55 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.30.9] — 2026-05-14
+
+### Added
+- **Gold/silver bottom sheet fully internationalised.**  The
+  popup that opens when you tap the gold/silver home-screen card
+  was the last UI surface still ~90% English regardless of
+  in-app language.  Twenty-five new string keys extracted from
+  `GoldHistorySheet.kt` and translated for en/ta/hi/ml.
+  Coverage:
+  - Sheet title (gold-only vs gold + silver variants)
+  - "Last 30 days, per gram" subtitle
+  - "24K trend" / "22K trend" / "Silver trend · India"
+    sparkline headers
+  - "spot only" / "spot price only — no daily history"
+    UAE-silver placeholders
+  - "Silver" carat-chip label (24K / 22K stay English as unit
+    codes)
+  - "30-day stats · X" / "Recent days · X" stat-table headings
+  - "High" / "Low" / "Avg" stat pills
+  - "Silver history is India-only..." / "Building history —
+    check back tomorrow." empty-state messages
+  - "View full N-day history →" call-to-action
+  - Full-history sub-sheet title and subtitle
+  - "UAE (AED)" / "India (₹)" sub-sheet table headers
+  - "Date" column header
+  - "Building…" sparkline placeholder
+  - "Rates unavailable" on the home-screen card failure state
+  - ErrorView headlines + hints + "Try again" button
+    ("Can't reach the rate feed" / "Couldn't load rates")
+- All translations are first-cut and flagged for native-speaker
+  review at the top of each `values-*/strings.xml` file (Tamil,
+  Hindi, Malayalam).
+
+### Changed
+- Country abbreviations ("UAE" / "INDIA" / "IN"), unit codes
+  (24K, 22K, 1g, 1kg, AED, ₹) stay English across all locales by
+  design — they're chart-axis-style labels, not prose.  The
+  translation principle is documented at the top of each
+  locale file.
+- Sources line at the bottom of the gold sheet now reuses the
+  existing `metals_disclaimer` string (already shown on the
+  home-screen gold card), eliminating the duplicate hardcoded
+  English copy.
+- All extracted `Text` widgets gained
+  `overflow = TextOverflow.Ellipsis` so any future locale with
+  wider glyph metrics degrades gracefully rather than chopping
+  mid-character (continues the defensive sweep started in
+  v0.30.7 / v0.30.8).
+
 ## [0.30.8] — 2026-05-13
 
 ### Fixed

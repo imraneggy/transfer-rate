@@ -93,7 +93,7 @@ fun GoldHeader(
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = "Rates unavailable",
+                    text = stringResource(R.string.gold_unavailable),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

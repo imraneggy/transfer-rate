@@ -30,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Brush
+import com.transferrate.app.R
 import com.transferrate.app.data.GoldDocument
 import com.transferrate.app.ui.theme.LocalMetalColors
 import com.transferrate.app.ui.theme.MetalColors
@@ -147,21 +149,23 @@ fun GoldHistorySheet(
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = if (silverAvailable)
-                                "Gold & silver · UAE vs India"
+                                stringResource(R.string.gold_sheet_title_both)
                             else
-                                "Gold rate · UAE vs India",
+                                stringResource(R.string.gold_sheet_title_gold_only),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                         Text(
-                            "Last 30 days, per gram",
+                            stringResource(R.string.gold_sheet_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -180,13 +184,13 @@ fun GoldHistorySheet(
             if (uaeGoldHistory.size >= 2 || indiaGoldHistory.size >= 2) {
                 item {
                     TrendRow(
-                        title = "24K trend (newest right)",
+                        title = stringResource(R.string.gold_sheet_trend_24k),
                         uaeValues = uaeGoldHistory.map { it.perG24k },
                         indiaValues = indiaGoldHistory.map { it.perG24k },
                     )
                     Spacer(Modifier.height(12.dp))
                     TrendRow(
-                        title = "22K trend (newest right)",
+                        title = stringResource(R.string.gold_sheet_trend_22k),
                         uaeValues = uaeGoldHistory.map { it.perG22k },
                         indiaValues = indiaGoldHistory.map { it.perG22k },
                     )
@@ -201,10 +205,10 @@ fun GoldHistorySheet(
                 if (indiaSilverChrono.size >= 2) {
                     item {
                         TrendRow(
-                            title = "Silver trend · India (newest right)",
+                            title = stringResource(R.string.gold_sheet_trend_silver),
                             uaeValues = emptyList(),
                             indiaValues = indiaSilverChrono.map { it.perG },
-                            uaePlaceholder = "spot only",
+                            uaePlaceholder = stringResource(R.string.gold_sheet_uae_spot_only),
                         )
                         Spacer(Modifier.height(16.dp))
                     }
@@ -223,10 +227,14 @@ fun GoldHistorySheet(
                     CaratChip("22K", selected = selectedCarat == "22K") { selectedCarat = "22K" }
                     if (silverAvailable) {
                         Spacer(Modifier.width(10.dp))
-                        // Display "Silver" but keep the internal carat key as
-                        // "Ag" — touching the data path would cascade through
-                        // ratesForCarat() and the stats / table logic.
-                        CaratChip("Silver", selected = selectedCarat == "Ag") { selectedCarat = "Ag" }
+                        // Display the localised "Silver" label but keep the
+                        // internal carat key as "Ag" — touching the data path
+                        // would cascade through ratesForCarat() and the
+                        // stats / table logic.
+                        CaratChip(
+                            stringResource(R.string.gold_sheet_carat_silver),
+                            selected = selectedCarat == "Ag",
+                        ) { selectedCarat = "Ag" }
                     }
                 }
                 Spacer(Modifier.height(14.dp))
@@ -236,16 +244,18 @@ fun GoldHistorySheet(
             val showStatsBlock = uaeSelectedRates.isNotEmpty() || indiaSelectedRates.isNotEmpty()
             if (showStatsBlock) {
                 item {
+                    val silverLabel = stringResource(R.string.gold_sheet_carat_silver)
                     Text(
-                        text = if (selectedCarat == "Ag")
-                            "30-day stats · Silver"
-                        else
-                            "30-day stats · $selectedCarat",
+                        text = stringResource(
+                            R.string.gold_sheet_stats_label,
+                            if (selectedCarat == "Ag") silverLabel else selectedCarat,
+                        ),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         softWrap = false,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                     Spacer(Modifier.height(8.dp))
 
@@ -271,11 +281,12 @@ fun GoldHistorySheet(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "spot price only — no daily history",
+                                stringResource(R.string.gold_sheet_uae_spot_long),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                softWrap = false,
+                                maxLines = 2,
+                                softWrap = true,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                             )
                         }
                         Spacer(Modifier.height(8.dp))
@@ -293,16 +304,18 @@ fun GoldHistorySheet(
 
             // 7. Recent days mini-table (5 rows) + "View full history" tap-target
             item {
+                val silverLabel = stringResource(R.string.gold_sheet_carat_silver)
                 Text(
-                    text = if (selectedCarat == "Ag")
-                        "Recent days · Silver"
-                    else
-                        "Recent days · $selectedCarat",
+                    text = stringResource(
+                        R.string.gold_sheet_recent_label,
+                        if (selectedCarat == "Ag") silverLabel else selectedCarat,
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     softWrap = false,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(6.dp))
 
@@ -316,9 +329,9 @@ fun GoldHistorySheet(
                     ) {
                         Text(
                             text = if (selectedCarat == "Ag")
-                                "Silver history is India-only (UAE shows live spot)."
+                                stringResource(R.string.gold_sheet_empty_silver)
                             else
-                                "Building history — check back tomorrow.",
+                                stringResource(R.string.gold_sheet_empty_building),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -354,24 +367,28 @@ fun GoldHistorySheet(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "View full ${allHistoryDates.size}-day history  →",
+                                text = stringResource(
+                                    R.string.gold_sheet_view_full_label,
+                                    allHistoryDates.size,
+                                ),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 maxLines = 1,
                                 softWrap = false,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                             )
                         }
                     }
                 }
             }
 
-            // 8. Source attribution footer
+            // 8. Source attribution footer (reuses the same metals_disclaimer
+            // string already shown on the home-screen gold/silver card).
             item {
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    text = "Indicative rates from public market data; " +
-                        "actual prices at jewellers and exchanges may differ.",
+                    text = stringResource(R.string.metals_disclaimer),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -451,21 +468,30 @@ private fun FullHistorySheet(
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = if (isSilver)
-                                "Silver · ${allDates.size}-day history"
+                                stringResource(
+                                    R.string.gold_sheet_history_silver_title,
+                                    allDates.size,
+                                )
                             else
-                                "$carat gold · ${allDates.size}-day history",
+                                stringResource(
+                                    R.string.gold_sheet_history_carat_title,
+                                    carat,
+                                    allDates.size,
+                                ),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1,
                             softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                         Text(
-                            text = "UAE vs India · per gram",
+                            text = stringResource(R.string.gold_sheet_uae_vs_india_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -477,8 +503,8 @@ private fun FullHistorySheet(
             // Column headers — wider currency labels because there's room
             item {
                 HistoryTableHeader(
-                    uaeLabel = "UAE (AED)",
-                    indiaLabel = "India (₹)",
+                    uaeLabel = stringResource(R.string.gold_sheet_uae_aed),
+                    indiaLabel = stringResource(R.string.gold_sheet_india_inr),
                 )
                 Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             }
@@ -491,9 +517,9 @@ private fun FullHistorySheet(
                     ) {
                         Text(
                             text = if (isSilver)
-                                "Silver history is India-only (UAE shows live spot)."
+                                stringResource(R.string.gold_sheet_empty_silver)
                             else
-                                "Building history — check back tomorrow.",
+                                stringResource(R.string.gold_sheet_empty_building),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -526,13 +552,14 @@ private fun HistoryTableHeader(uaeLabel: String, indiaLabel: String) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "Date",
+            stringResource(R.string.gold_sheet_date),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1.2f),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
         )
         Text(
             uaeLabel,
@@ -700,17 +727,17 @@ private fun StatRegionRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             StatPill(
-                label = "High",
+                label = stringResource(R.string.gold_sheet_high),
                 value = "$currencySym ${formatGold(high)}",
                 modifier = Modifier.weight(1f),
             )
             StatPill(
-                label = "Low",
+                label = stringResource(R.string.gold_sheet_low),
                 value = "$currencySym ${formatGold(low)}",
                 modifier = Modifier.weight(1f),
             )
             StatPill(
-                label = "Avg",
+                label = stringResource(R.string.gold_sheet_avg),
                 value = "$currencySym ${formatGold(avg)}",
                 modifier = Modifier.weight(1f),
             )
@@ -907,7 +934,7 @@ private fun SparkColumn(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "Building…",
+                    stringResource(R.string.gold_sheet_building_short),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
