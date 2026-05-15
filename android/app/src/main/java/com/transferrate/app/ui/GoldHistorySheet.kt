@@ -147,25 +147,25 @@ fun GoldHistorySheet(
                     Text("🪙", fontSize = 22.sp, maxLines = 1)
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(
+                        // v0.31.1: AutoSizeText so localised titles like
+                        // Tamil "தங்கம் & வெள்ளி · UAE vs India" shrink
+                        // rather than clip on narrow phones.  18 sp → 14 sp
+                        // floor leaves the title legible at worst case.
+                        AutoSizeText(
                             text = if (silverAvailable)
                                 stringResource(R.string.gold_sheet_title_both)
                             else
                                 stringResource(R.string.gold_sheet_title_gold_only),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
+                            minFontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
-                        Text(
-                            stringResource(R.string.gold_sheet_subtitle),
+                        AutoSizeText(
+                            text = stringResource(R.string.gold_sheet_subtitle),
                             style = MaterialTheme.typography.bodySmall,
+                            fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -245,17 +245,16 @@ fun GoldHistorySheet(
             if (showStatsBlock) {
                 item {
                     val silverLabel = stringResource(R.string.gold_sheet_carat_silver)
-                    Text(
+                    AutoSizeText(
                         text = stringResource(
                             R.string.gold_sheet_stats_label,
                             if (selectedCarat == "Ag") silverLabel else selectedCarat,
                         ),
                         style = MaterialTheme.typography.labelMedium,
+                        fontSize = 13.sp,
+                        minFontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                     Spacer(Modifier.height(8.dp))
 
@@ -305,17 +304,16 @@ fun GoldHistorySheet(
             // 7. Recent days mini-table (5 rows) + "View full history" tap-target
             item {
                 val silverLabel = stringResource(R.string.gold_sheet_carat_silver)
-                Text(
+                AutoSizeText(
                     text = stringResource(
                         R.string.gold_sheet_recent_label,
                         if (selectedCarat == "Ag") silverLabel else selectedCarat,
                     ),
                     style = MaterialTheme.typography.labelMedium,
+                    fontSize = 13.sp,
+                    minFontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    softWrap = false,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(6.dp))
 
@@ -366,17 +364,16 @@ fun GoldHistorySheet(
                                 .padding(vertical = 13.dp, horizontal = 14.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
+                            AutoSizeText(
                                 text = stringResource(
                                     R.string.gold_sheet_view_full_label,
                                     allHistoryDates.size,
                                 ),
                                 style = MaterialTheme.typography.labelLarge,
+                                fontSize = 14.sp,
+                                minFontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                maxLines = 1,
-                                softWrap = false,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                             )
                         }
                     }
@@ -466,7 +463,7 @@ private fun FullHistorySheet(
                     }
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(
+                        AutoSizeText(
                             text = if (isSilver)
                                 stringResource(
                                     R.string.gold_sheet_history_silver_title,
@@ -480,18 +477,14 @@ private fun FullHistorySheet(
                                 ),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
+                            minFontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
-                        Text(
+                        AutoSizeText(
                             text = stringResource(R.string.gold_sheet_uae_vs_india_subtitle),
                             style = MaterialTheme.typography.bodySmall,
+                            fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -551,36 +544,49 @@ private fun HistoryTableHeader(uaeLabel: String, indiaLabel: String) {
         Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            stringResource(R.string.gold_sheet_date),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1.2f),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            softWrap = false,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-        )
-        Text(
-            uaeLabel,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
+        // v0.31.1: AutoSizeText so locale-specific "Date" / "Date · Time" /
+        // "UAE (AED)" / "India (₹)" labels shrink to fit weight=1f/1.2f
+        // columns rather than ellipsising.  Particularly important for
+        // Malayalam ("തീയതി") and Hindi ("तारीख़") where the column
+        // header is wider than the English "Date".
+        androidx.compose.foundation.layout.Box(modifier = Modifier.weight(1.2f)) {
+            AutoSizeText(
+                text = stringResource(R.string.gold_sheet_date),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
+                minFontSize = 9.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.End,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            softWrap = false,
-        )
-        Text(
-            indiaLabel,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            AutoSizeText(
+                text = uaeLabel,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
+                minFontSize = 9.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.End,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            softWrap = false,
-        )
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            AutoSizeText(
+                text = indiaLabel,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 11.sp,
+                minFontSize = 9.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -646,13 +652,16 @@ private fun TrendRow(
     indiaValues: List<Double>,
     uaePlaceholder: String? = null,
 ) {
-    Text(
-        title,
+    // v0.31.1: AutoSizeText for the trend headers — "Silver trend ·
+    // India (newest right)" + the Malayalam equivalent are visibly
+    // wider than English "22K trend (newest right)" at 12 sp.
+    AutoSizeText(
+        text = title,
         style = MaterialTheme.typography.labelMedium,
+        fontSize = 13.sp,
+        minFontSize = 10.sp,
         color = MaterialTheme.colorScheme.onSurface,
         fontWeight = FontWeight.Bold,
-        maxLines = 1,
-        softWrap = false,
     )
     Spacer(Modifier.height(6.dp))
     Row(

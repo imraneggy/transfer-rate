@@ -146,12 +146,16 @@ fun RatesScreen(
                             )
                         }
                         Spacer(Modifier.width(10.dp))
-                        Text(
-                            stringResource(R.string.app_name),
+                        // v0.31.1: AutoSizeText so the wordmark shrinks
+                        // rather than ellipsizing to "Transfer ..." on
+                        // narrow phones in any locale.  TopAppBar's
+                        // default title style is titleLarge (~22 sp).
+                        // Min 16 sp keeps it legible alongside the logo.
+                        AutoSizeText(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 22.sp,
+                            minFontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                 },
@@ -381,14 +385,18 @@ private fun ToolbarChip(
             .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
+        // ToolbarChip labels are kept English by design (AUTO/LIGHT/
+        // DARK/REFRESH/SHARE — universal compact labels) so they don't
+        // localise.  AutoSizeText is still used here because at scaled
+        // font sizes (Android accessibility setting > 100%) "REFRESH"
+        // at 1.3× would push the chip past its budget.
+        AutoSizeText(
             text = label,
             fontSize = 11.sp,
+            minFontSize = 9.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.6.sp,
             color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
-            softWrap = false,
         )
     }
 }
@@ -789,16 +797,18 @@ private fun MidMarketHeader(
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            // Eyebrow label — primary-coloured to retain brand pop
+            // Eyebrow label — primary-coloured to retain brand pop.
+            // AutoSizeText: Tamil "மிட்-மார்க்கெட்" + Hindi "मिड-मार्केट"
+            // + Malayalam "മിഡ്-മാർക്കറ്റ്" are all wider than English
+            // "MID-MARKET" at 11 sp; shrink rather than ellipsise.
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(R.string.midmarket_eyebrow),
+                AutoSizeText(
+                    text = stringResource(R.string.midmarket_eyebrow),
                     fontSize = 11.sp,
+                    minFontSize = 8.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
                     color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    softWrap = false,
                 )
                 Spacer(Modifier.width(6.dp))
                 if (info != null) {

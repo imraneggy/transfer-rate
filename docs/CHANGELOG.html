@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.31.0 · 2026-05-14</span>
+    <span><strong>Latest:</strong> v0.31.1 · 2026-05-15</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-31-1">v0.31.1</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-31-0">v0.31.0</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-9">v0.30.9</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-8">v0.30.8</a><span class="date">2026-05-13</span></li>
@@ -371,8 +372,51 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-31-0">
-  <h2><span class="ver">v0.31.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-31-1">
+  <h2><span class="ver">v0.31.1</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-15</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong><code>AutoSizeText</code> composable</strong> — new
+      reusable utility in <code>ui/AutoSizeText.kt</code>.  Shrinks
+      the font size in steps until the text fits the available
+      width, then draws.  Hits the
+      <code>TextOverflow.Ellipsis</code> safety net only if even
+      the minimum size doesn't fit.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Tamil / Malayalam labels no longer ellipsise across
+      the app.</strong>  v0.30.9 brought full i18n to the
+      gold/silver bottom sheet but the home-screen gold card still
+      showed "தங்..." / "വെ..." because labels were rendered at a
+      fixed 10 sp that fit "GOLD" / "SILVER" but not the wider
+      non-Latin equivalents.  Static font reduction would have hurt
+      English; <code>AutoSizeText</code> hits the right size per
+      locale.  Applied at every label/chrome site app-wide: app
+      title, MID-MARKET eyebrow, toolbar chips, gold-card header
+      labels, sheet titles + subtitles, trend headers, stat
+      headings, view-full CTA, history-table column headers,
+      StatPill labels, CaratChip labels.</li>
+    <li>Numeric values and English-only unit codes (24K, 22K, 1g,
+      1kg, AED, ₹) stay as plain <code>Text</code> — their widths
+      are predictable, no benefit from auto-sizing.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>Replaced ~15 instances of
+      <code>maxLines = 1, softWrap = false, overflow = Ellipsis</code>
+      with <code>AutoSizeText</code>.  Remaining
+      <code>softWrap = false</code> sites are either numeric values
+      or fixed-English unit codes.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-31-0">
+  <h2><span class="ver">v0.31.0</span></h2>
   <p class="date">2026-05-14</p>
 
   <h3 class="added">Added</h3>

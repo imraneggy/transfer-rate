@@ -15,6 +15,48 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.31.1] — 2026-05-15
+
+### Added
+- **`AutoSizeText` composable** — new reusable utility in
+  `ui/AutoSizeText.kt`.  Shrinks the font size in steps until the
+  text fits the available width, then draws.  Hits the
+  `TextOverflow.Ellipsis` safety net only if even the minimum
+  size doesn't fit.  Implements the standard
+  `onTextLayout` → recompose-smaller pattern; typically settles
+  in 1–3 layout passes for non-Latin labels, zero for English.
+
+### Fixed
+- **Tamil / Malayalam labels no longer ellipsise across the app.**
+  v0.30.9 brought full i18n to the gold/silver bottom sheet but
+  the home-screen gold card still showed "தங்..." / "வெ..." in
+  Tamil and "സ്വർ..." / "വെ..." in Malayalam because the labels
+  were rendered at a fixed 10 sp that fit "GOLD" / "SILVER" but
+  not the wider non-Latin equivalents.  Static font reduction
+  would have hurt English; `AutoSizeText` hits the right size
+  per locale.  Applied at every label/chrome site app-wide:
+  - **Home screen**: app title "Transfer Rate", `MID-MARKET`
+    eyebrow, toolbar chips (AUTO/LIGHT/DARK/REFRESH/SHARE), gold
+    card header labels, gold-card failure-state label
+  - **Gold/silver bottom sheet**: sheet title (both + gold-only
+    variants), "Last 30 days, per gram" subtitle, all three
+    trend headers (24K / 22K / Silver · India), "30-day stats ·
+    X" / "Recent days · X" headings, "View full N-day history →"
+    CTA, sub-sheet title + subtitle, history-table column
+    headers (Date / UAE / India)
+  - **Pills**: `StatPill` labels (High / Low / Avg), `CaratChip`
+    labels (24K / 22K / Silver)
+- Numeric values and English-only unit codes (24K, 22K, 1g,
+  1kg, AED, ₹) stay as plain `Text` — their widths are
+  predictable, no benefit from auto-sizing.
+
+### Changed
+- Replaced ~15 instances of
+  `maxLines = 1, softWrap = false, overflow = Ellipsis` with
+  `AutoSizeText`.  The remaining ~30 `softWrap = false` sites
+  are either numeric values (predictable width) or fixed-English
+  unit codes (don't localise).
+
 ## [0.31.0] — 2026-05-14
 
 ### Added

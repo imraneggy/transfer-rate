@@ -82,14 +82,12 @@ fun GoldHeader(
     ) {
         if (!goldOk) {
             Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                Text(
-                    stringResource(R.string.metals_gold),
+                AutoSizeText(
+                    text = stringResource(R.string.metals_gold),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.0.sp,
                     color = metals.goldText,
-                    maxLines = 1,
-                    softWrap = false,
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
@@ -119,24 +117,21 @@ fun GoldHeader(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("🪙", fontSize = 13.sp, maxLines = 1)
                     Spacer(Modifier.width(4.dp))
-                    // v0.30.7 moved the AED unit from per-value prefix to a
-                    // " · AED" header suffix to recover ~28 dp per row.
-                    // v0.30.8 drops the suffix entirely — Tamil "தங்கம் ·
-                    // AED" and Malayalam "സ്വർണം · AED" overran the 83 dp
-                    // column-content budget and triggered the safety-net
-                    // ellipsis ("தங்..." / "സ്വ..." in the screenshot).
-                    // AED is now implicit from the adjacent MID-MARKET
-                    // card's "1 AED → INR" subtitle plus the ₹ glyph on
-                    // every INR line; bare numbers stay readable.
-                    Text(
-                        stringResource(R.string.metals_gold),
+                    // v0.31.1: AutoSizeText replaces the static 10 sp Text
+                    // because the bare metal label (even without the
+                    // " · AED" suffix) was still ellipsizing in Tamil
+                    // ("தங்..." in v0.30.8 screenshot) — Tamil "தங்கம்"
+                    // and Malayalam "സ്വർണം" use 5–6 glyphs each wider
+                    // than English "GOLD" at the same sp.  AutoSizeText
+                    // starts at 10 sp and shrinks to ~7 sp if needed so
+                    // the full label is always visible; English stays
+                    // at 10 sp because it fits.
+                    AutoSizeText(
+                        text = stringResource(R.string.metals_gold),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.8.sp,
                         color = metals.goldText,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                 }
                 Spacer(Modifier.height(8.dp))
@@ -178,15 +173,12 @@ fun GoldHeader(
                         Text("◇", fontSize = 13.sp,
                              color = metals.silverAccent, maxLines = 1)
                         Spacer(Modifier.width(4.dp))
-                        Text(
-                            stringResource(R.string.metals_silver),
+                        AutoSizeText(
+                            text = stringResource(R.string.metals_silver),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.8.sp,
                             color = metals.silverText,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -240,6 +232,10 @@ private fun MetalRow(
                     )
                     .padding(horizontal = 5.dp, vertical = 1.dp),
             ) {
+                // Row labels here are always unit codes ("24K", "22K",
+                // "1g", "1kg") — English-only, fixed-width.  Static Text
+                // is fine; AutoSizeText would be overkill since these
+                // never localise.
                 Text(
                     text = label,
                     fontSize = 9.sp,

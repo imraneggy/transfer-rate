@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Shared label + value pill used in history sheets to show
@@ -33,13 +34,16 @@ fun StatPill(label: String, value: String, modifier: Modifier = Modifier) {
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Text(
-            label,
+        // v0.31.1: AutoSizeText so localised stat labels (Tamil
+        // "அதிகம் / குறைவு / சராசரி", Malayalam "ഉയർന്നത് / താഴ്ന്നത് /
+        // ശരാശരി") shrink rather than ellipsise inside the pill.
+        AutoSizeText(
+            text = label,
             style = MaterialTheme.typography.labelSmall,
+            fontSize = 11.sp,
+            minFontSize = 9.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            softWrap = false,
             textAlign = TextAlign.Center,
         )
         Text(
@@ -66,16 +70,23 @@ fun CaratChip(label: String, selected: Boolean, onClick: () -> Unit) {
              else MaterialTheme.colorScheme.surfaceVariant
     val fg = if (selected) MaterialTheme.colorScheme.onPrimary
              else MaterialTheme.colorScheme.onSurface
-    Text(
-        text = label,
+    // v0.31.1: AutoSizeText inside the chip so localised CaratChip
+    // labels ("வெள்ளி" / "चाँदी" / "വെള്ളി" / "Silver") fit at varying
+    // widths.  24K and 22K stay at 14 sp because they're fixed unit
+    // codes; the auto-shrink only kicks in for the "Silver" chip.
+    androidx.compose.foundation.layout.Box(
         modifier = Modifier
             .background(bg, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 22.dp, vertical = 8.dp),
-        fontWeight = FontWeight.SemiBold,
-        color = fg,
-        style = MaterialTheme.typography.labelLarge,
-        maxLines = 1,
-        softWrap = false,
-    )
+    ) {
+        AutoSizeText(
+            text = label,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+            minFontSize = 11.sp,
+            color = fg,
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
 }
