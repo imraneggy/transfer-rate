@@ -6,10 +6,14 @@
       Status bar appearance differs (dark icons on dark background).
     -->
     <style name="Theme.TransferRate" parent="android:Theme.Material.NoActionBar">
-        <!-- Splash bg stays soft-gray in both modes so the white-icon
-             variant of the brand mark reads consistently; the in-app
-             theme then transitions to the dark colour scheme. -->
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- v0.32.0: windowLightStatusBar flipped to FALSE so icons
+             render LIGHT (white) on the dark / OLED-black background.
+             Previous TRUE would have left dark icons invisible on
+             pure black during the brief splash → app transition.
+             The runtime Theme.kt `isAppearanceLightStatusBars = !darkTheme`
+             already does the same thing for the Compose lifetime;
+             this XML setting matches it during cold-start splash. -->
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
         <item name="android:windowSplashScreenBackground">@color/splash_bg</item>

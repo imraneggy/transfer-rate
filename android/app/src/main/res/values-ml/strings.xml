@@ -150,6 +150,26 @@
     <string name="error_generic_hint">പുതിയ റേറ്റുകൾ കൊണ്ടുവരുമ്പോൾ അപ്രതീക്ഷിത പിശക്.</string>
     <string name="error_try_again">വീണ്ടും ശ്രമിക്കുക</string>
 
+    <!-- Relative-time phrases — v0.32.0.  Malayalam uses "one"/"other"
+         plural forms per CLDR. -->
+    <string name="time_just_now">ഇപ്പോൾ</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">1 മിനിറ്റ് മുമ്പ്</item>
+        <item quantity="other">%d മിനിറ്റ് മുമ്പ്</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">1 മണിക്കൂർ മുമ്പ്</item>
+        <item quantity="other">%d മണിക്കൂർ മുമ്പ്</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">1 ദിവസം മുമ്പ്</item>
+        <item quantity="other">%d ദിവസം മുമ്പ്</item>
+    </plurals>
+
+    <!-- Status / inline indicators on provider card right column. -->
+    <string name="status_stale_short">പഴയത്</string>
+    <string name="status_estimated">കണക്കാക്കിയത് · പരിശോധന തീർച്ചപ്പെടാത്തത്</string>
+
     <!--
         Share-best-rate payload — v0.31.0.
         Composed at runtime into a plain-text message sent via

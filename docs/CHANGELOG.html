@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.31.1 · 2026-05-15</span>
+    <span><strong>Latest:</strong> v0.32.0 · 2026-05-15</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-0">v0.32.0</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-31-1">v0.31.1</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-31-0">v0.31.0</a><span class="date">2026-05-14</span></li>
     <li><a href="#v0-30-9">v0.30.9</a><span class="date">2026-05-14</span></li>
@@ -372,8 +373,78 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-31-1">
-  <h2><span class="ver">v0.31.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-0">
+  <h2><span class="ver">v0.32.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-15</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Dark mode is now OLED-true-black system-wide.</strong>
+      Background <code>#0F1720</code> (navy) → <code>#000000</code>
+      (true black) for AMOLED power savings (~30–40% lower draw on
+      dashboard views).  Cards lifted slightly (<code>surface
+      #0E0E0E</code>, <code>variant #1A1F26</code>) to preserve
+      hierarchy.  Splash bg + status-bar tone matched in
+      <code>values-night/colors.xml</code> + <code>themes.xml</code>
+      so the cold-start transition is seamless on OLED.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong><code>relativeTime()</code> was English-only.</strong>
+      Tamil mode showed "8 minutes ago புதுப்பிக்கப்பட்டது"
+      mixed-language on the mid-market eyebrow.  Rewritten as a
+      <code>@Composable</code> using Android <code>&lt;plurals&gt;</code>
+      resources with CLDR <code>one</code>/<code>other</code> quantity
+      tags.  Translated for en/ta/hi/ml.</li>
+    <li><strong>Inline status indicators</strong> on provider cards
+      ("stale", "Estimated · awaiting verification") were hardcoded
+      English literals; extracted to <code>status_stale_short</code>
+      and <code>status_estimated</code> resources, translated for all
+      locales.</li>
+    <li><strong>Snapshot grid card titles</strong> in the gold/silver
+      bottom sheet (<code>"🪙  GOLD"</code> / <code>"◇  SILVER"</code>)
+      were hardcoded English even though the rest of the sheet was
+      i18n'd in v0.30.9.  Now uses <code>metals_gold</code> /
+      <code>metals_silver</code> resources rendered via
+      <code>AutoSizeText</code>.</li>
+    <li><strong>Splash screen text colour</strong> was hardcoded
+      navy <code>#0A1F44</code>, invisible on the new OLED-black
+      splash bg.  Splash now uses theme-aware
+      <code>MaterialTheme.colorScheme.background</code>.</li>
+    <li><strong>Mid-market "Updated …" eyebrow</strong> converted to
+      <code>AutoSizeText</code> because the localised Tamil
+      "8 நிமிடங்கள் முன்பு புதுப்பிக்கப்பட்டது" (~30 glyphs) can
+      overflow on 360 dp phones.</li>
+    <li><strong><code>"AED "</code> amount-input prefix</strong>
+      extracted to <code>amount_input_prefix</code> resource (kept
+      <code>translatable="false"</code> — AED is a currency code).</li>
+  </ul>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li>Internationalisation tooling: Android
+      <code>&lt;plurals&gt;</code> resources per locale with proper
+      <code>quantity="one"</code> / <code>quantity="other"</code>
+      tags.  Android's CLDR runtime picks the right form
+      automatically — no Kotlin-side singular/plural branching.</li>
+  </ul>
+
+  <h3 class="internal">Internal</h3>
+  <ul>
+    <li>Locale key parity verified across all four
+      <code>values-*/strings.xml</code> files.  The 4 missing keys
+      per locale are <code>translatable="false"</code> brand
+      constants (app_name, BEST/MANUAL badges, share URL).</li>
+    <li>25 <code>softWrap = false</code> sites remain — all vetted
+      as numeric values or fixed-English unit codes.  Every label
+      / chrome / user-prose site that previously could clip is
+      now <code>AutoSizeText</code>.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-31-1">
+  <h2><span class="ver">v0.31.1</span></h2>
   <p class="date">2026-05-15</p>
 
   <h3 class="added">Added</h3>

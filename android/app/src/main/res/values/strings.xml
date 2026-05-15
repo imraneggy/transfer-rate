@@ -136,6 +136,36 @@
     <string name="error_try_again">Try again</string>
 
     <!--
+        Relative-time phrases (v0.32.0 — full i18n).
+        Wired through Android's CLDR-aware <plurals> resource so each
+        locale picks the correct quantity form (one/other in Tamil,
+        Hindi, Malayalam; same in English).  Callers pass `quantity`
+        + `formatArg` — Android does the rest, no Kotlin-side
+        if-else needed.
+    -->
+    <string name="time_just_now">just now</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">1 minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">1 hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">1 day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+
+    <!--
+        Status / inline indicators visible on the provider card right
+        column (v0.32.0 — extract from hardcoded literals).
+    -->
+    <string name="status_stale_short">stale</string>
+    <string name="status_estimated">Estimated · awaiting verification</string>
+    <string name="amount_input_prefix" translatable="false">AED </string>
+
+    <!--
         Share-best-rate payload (v0.31.0).
         The share intent composes a short text message users can forward
         to WhatsApp / SMS / email summarising today's best AED→INR rate.

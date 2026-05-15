@@ -803,7 +803,12 @@ private fun MetalSnapshotCard(
     val accent    = if (isGold) metals.goldText     else metals.silverText
     val deep      = if (isGold) metals.goldDeep     else metals.silverDeep
     val outline   = if (isGold) metals.goldSurface  else metals.silverSurface
-    val title     = if (isGold) "🪙  GOLD"          else "◇  SILVER"
+    // v0.32.0: title was hardcoded "🪙  GOLD" / "◇  SILVER" — now
+    // uses the localised metals_gold / metals_silver resources so
+    // Tamil sees "🪙 தங்கம்", Hindi "🪙 सोना", Malayalam "🪙 സ്വർണം".
+    val metalName = if (isGold) stringResource(R.string.metals_gold)
+                    else stringResource(R.string.metals_silver)
+    val titleIcon = if (isGold) "🪙" else "◇"
 
     Column(
         modifier = modifier
@@ -811,14 +816,13 @@ private fun MetalSnapshotCard(
             .background(brush = Brush.verticalGradient(colors = listOf(gradStart, gradEnd)))
             .padding(12.dp),
     ) {
-        Text(
-            title,
+        AutoSizeText(
+            text = "$titleIcon  $metalName",
             fontSize = 11.sp,
+            minFontSize = 8.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.8.sp,
             color = accent,
-            maxLines = 1,
-            softWrap = false,
         )
         Spacer(Modifier.height(10.dp))
         if (isGold) {

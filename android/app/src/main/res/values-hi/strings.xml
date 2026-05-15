@@ -151,6 +151,26 @@
     <string name="error_generic_hint">नवीनतम रेट लाते समय अप्रत्याशित त्रुटि.</string>
     <string name="error_try_again">फिर कोशिश करें</string>
 
+    <!-- Relative-time phrases — v0.32.0.  Hindi uses "one"/"other"
+         plural forms per CLDR. -->
+    <string name="time_just_now">अभी-अभी</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">1 मिनट पहले</item>
+        <item quantity="other">%d मिनट पहले</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">1 घंटा पहले</item>
+        <item quantity="other">%d घंटे पहले</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">1 दिन पहले</item>
+        <item quantity="other">%d दिन पहले</item>
+    </plurals>
+
+    <!-- Status / inline indicators on provider card right column. -->
+    <string name="status_stale_short">पुराना</string>
+    <string name="status_estimated">अनुमानित · सत्यापन प्रतीक्षित</string>
+
     <!--
         Share-best-rate payload — v0.31.0.
         Composed at runtime into a plain-text message sent via

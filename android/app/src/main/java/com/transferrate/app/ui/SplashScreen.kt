@@ -4,6 +4,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -69,13 +71,17 @@ fun SplashScreen(
         label = "splash-fade",
     )
 
-    // Brand deep navy on the soft-white splash backdrop matches the
-    // primary white-bg icon variant from the v0.17 brand brief.
-    val deepNavy = Color(0xFF0A1F44)
+    // v0.32.0: text colour adapts to theme so the splash works on
+    // both the light soft-white backdrop AND the OLED-true-black dark
+    // backdrop.  Pre-v0.32 used a hardcoded #0A1F44 navy that became
+    // invisible on the new pure-black dark splash bg.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val textColor = if (isDark) Color(0xFFE0F1FF) else Color(0xFF0A1F44)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .alpha(alpha),
         contentAlignment = Alignment.Center,
     ) {
@@ -90,7 +96,7 @@ fun SplashScreen(
 
             Text(
                 text = "Transfer Rate",
-                color = deepNavy,
+                color = textColor,
                 style = MaterialTheme.typography.displaySmall.copy(
                     fontSize = 40.sp,
                 ),
@@ -100,7 +106,7 @@ fun SplashScreen(
 
             Text(
                 text = androidx.compose.ui.res.stringResource(R.string.app_tagline),
-                color = deepNavy.copy(alpha = 0.65f),
+                color = textColor.copy(alpha = 0.65f),
                 style = MaterialTheme.typography.titleSmall,
             )
 

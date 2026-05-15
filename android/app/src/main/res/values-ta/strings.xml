@@ -154,6 +154,26 @@
     <string name="error_generic_hint">சமீபத்திய ரேட்களைப் பெறும்போது எதிர்பாராத பிழை.</string>
     <string name="error_try_again">மீண்டும் முயற்சிக்கவும்</string>
 
+    <!-- Relative-time phrases — v0.32.0.  Uses CLDR plurals so Tamil's
+         "one" form (=1) and "other" form (≠1) are selected correctly. -->
+    <string name="time_just_now">இப்போதே</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">1 நிமிடம் முன்பு</item>
+        <item quantity="other">%d நிமிடங்கள் முன்பு</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">1 மணி நேரம் முன்பு</item>
+        <item quantity="other">%d மணி நேரம் முன்பு</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">1 நாள் முன்பு</item>
+        <item quantity="other">%d நாட்கள் முன்பு</item>
+    </plurals>
+
+    <!-- Status / inline indicators on provider card right column. -->
+    <string name="status_stale_short">பழைய</string>
+    <string name="status_estimated">மதிப்பீடு · சரிபார்ப்பு நிலுவையில்</string>
+
     <!--
         Share-best-rate payload — v0.31.0.
         Composed at runtime into a plain-text message sent via

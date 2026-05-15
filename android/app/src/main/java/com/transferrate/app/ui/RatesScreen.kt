@@ -333,19 +333,43 @@ private fun shareBestRate(
     }
 }
 
+/**
+ * Locale-aware relative time.
+ *
+ * v0.32.0: rewritten to use Android's <plurals> resources so each
+ * locale picks the correct quantity form per its CLDR rules.  Was
+ * previously hardcoded English regardless of in-app language, which
+ * meant Tamil users saw "8 minutes ago புதுப்பிக்கப்பட்டது"
+ * (mixed-language) and the "minutes/minute" English plural never
+ * agreed with the Tamil verb-final word order.
+ *
+ * Resources used: time_just_now (string), time_minutes_ago,
+ * time_hours_ago, time_days_ago (plurals).  Future minor improvement:
+ * use DateUtils.getRelativeTimeSpanString() — but that returns
+ * platform-specific phrasing which doesn't match the app's "X ago"
+ * idiom, and locale coverage outside of major language families is
+ * patchy.  Hand-rolled plurals are more predictable here.
+ */
+@androidx.compose.runtime.Composable
 private fun relativeTime(iso: String): String {
+    val resources = LocalContext.current.resources
     return try {
         val instant = Instant.parse(iso)
         val seconds = Duration.between(instant, Instant.now()).seconds
         when {
-            seconds < 0 -> "just now"
-            seconds < 60 -> "just now"
-            seconds < 120 -> "1 minute ago"
-            seconds < 3600 -> "${seconds / 60} minutes ago"
-            seconds < 7200 -> "1 hour ago"
-            seconds < 86400 -> "${seconds / 3600} hours ago"
-            seconds < 172800 -> "1 day ago"
-            else -> "${seconds / 86400} days ago"
+            seconds < 60 -> resources.getString(R.string.time_just_now)
+            seconds < 3600 -> {
+                val mins = (seconds / 60).toInt()
+                resources.getQuantityString(R.plurals.time_minutes_ago, mins, mins)
+            }
+            seconds < 86400 -> {
+                val hours = (seconds / 3600).toInt()
+                resources.getQuantityString(R.plurals.time_hours_ago, hours, hours)
+            }
+            else -> {
+                val days = (seconds / 86400).toInt()
+                resources.getQuantityString(R.plurals.time_days_ago, days, days)
+            }
         }
     } catch (_: DateTimeParseException) {
         iso
@@ -853,13 +877,16 @@ private fun MidMarketHeader(
 
             Spacer(Modifier.weight(1f))
 
-            Text(
+            // v0.32.0: AutoSizeText because Tamil
+            // "8 நிமிடங்கள் முன்பு புதுப்பிக்கப்பட்டது" (the now-localised
+            // relativeTime + last_updated combo) can reach ~30 glyphs
+            // which overflows the eyebrow area on 360 dp phones.
+            AutoSizeText(
                 text = stringResource(R.string.last_updated, relativeTime(completedAt)),
                 fontSize = 10.sp,
+                minFontSize = 8.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                softWrap = false,
             )
         }
     }
@@ -961,7 +988,7 @@ private fun AmountPanel(
             value = fieldValue,
             onValueChange = { fieldValue = it },
             label = { Text(stringResource(R.string.amount_label_sending)) },
-            prefix = { Text("AED ") },
+            prefix = { Text(stringResource(R.string.amount_input_prefix)) },
             trailingIcon = {
                 androidx.compose.material3.TextButton(
                     onClick = {
@@ -1361,7 +1388,7 @@ private fun RateView(
                     )
                 }
                 Text(
-                    "stale",
+                    stringResource(R.string.status_stale_short),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1382,7 +1409,7 @@ private fun RateView(
                         ),
                     )
                     Text(
-                        "Estimated · awaiting verification",
+                        stringResource(R.string.status_estimated),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.End,

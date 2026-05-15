@@ -15,6 +15,80 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.0] — 2026-05-15
+
+### Changed
+- **Dark mode is now OLED-true-black system-wide.**  Was a navy
+  stack (background `#0F1720` + surface `#1F2F41` + variant
+  `#334462`) anchored on Stripe brand navy.  Real OLED pixels
+  rendered the navy as a low-amber glow; pure `#000000`
+  turns those pixels off entirely, giving ~30–40% lower power
+  draw on AMOLED dashboards and the high-contrast floating-
+  content look modern users associate with finance apps.  Cards
+  lifted with small +brightness steps (`surface #0E0E0E`,
+  `variant #1A1F26`) so cards still pop off the background —
+  pure black-on-black loses the edge separation that makes
+  hierarchy readable.  Brand-indigo primary stays the same;
+  the bigger contrast against true black actually improves
+  APCA Lc (L=85 primary on L=0 background = Lc -90 vs the
+  previous -64 on navy).  `values-night/colors.xml` added so
+  the cold-start splash bg is also `#000000` — no white-flash
+  during splash → app transition on OLED dark mode.
+  `values-night/themes.xml` `windowLightStatusBar` flipped
+  `true → false` so status-bar icons render light on the new
+  black bg.
+
+### Fixed
+- **`relativeTime()` was returning English regardless of in-app
+  language** — "8 minutes ago புதுப்பிக்கப்பட்டது" mixed-language
+  was visible in Tamil mode for the mid-market `Updated …` line.
+  Rewritten as a `@Composable` that resolves CLDR plurals through
+  Android's `<plurals>` resource so each locale picks the correct
+  quantity form per its own rules.  New resources:
+  `time_just_now` (string) + `time_minutes_ago`,
+  `time_hours_ago`, `time_days_ago` (plurals) — translated for
+  en/ta/hi/ml with proper `one` / `other` quantity tags.
+- **Inline status indicators on the provider-card right column**
+  ("stale", "Estimated · awaiting verification") were hardcoded
+  English literals.  Extracted to `status_stale_short` and
+  `status_estimated` resources; translated for ta/hi/ml.
+- **Snapshot grid card titles in the gold/silver bottom sheet**
+  (`"🪙  GOLD"` / `"◇  SILVER"`) were hardcoded English even
+  though the rest of the sheet was internationalised in v0.30.9.
+  Now uses `metals_gold` / `metals_silver` resources and renders
+  via `AutoSizeText` so the longer Tamil/Malayalam labels fit.
+- **Splash screen text was hardcoded `Color(0xFF0A1F44)` deep
+  navy**, which would have been invisible on the new
+  OLED-black splash background.  Splash now uses theme-aware
+  `MaterialTheme.colorScheme.background` for the fill and
+  picks a light text colour when in dark mode.
+- **`Updated 8 minutes ago` eyebrow line** converted to
+  `AutoSizeText` because the localised Tamil version
+  ("8 நிமிடங்கள் முன்பு புதுப்பிக்கப்பட்டது") can reach ~30
+  glyphs and overflow on 360 dp phones.
+- **`"AED "` amount-input field prefix** was a hardcoded literal;
+  extracted to `amount_input_prefix` resource (`translatable=
+  "false"` — AED is an ISO currency code, not user-language
+  text — but the indirection lets a future locale override it
+  if needed).
+
+### Added
+- Internationalisation tooling: Android `<plurals>` resources
+  per locale with proper `quantity="one"` / `quantity="other"`
+  tags.  Android's CLDR runtime now picks the right form
+  automatically — no Kotlin-side if-singular-else branching.
+
+### Internal
+- Locale key parity verified: en 119 keys, ta/hi/ml 115 keys
+  each (the 4 deltas are `translatable="false"` brand
+  constants — `app_name`, `badge_best`, `badge_manual`,
+  `share_url` — which Android resolves to default automatically).
+- 25 `softWrap = false` sites remain in the codebase, all
+  vetted as either numeric values (predictable widths) or
+  fixed-English unit codes (don't localise).  Every label /
+  chrome / user-prose site that previously could clip has now
+  been converted to `AutoSizeText`.
+
 ## [0.31.1] — 2026-05-15
 
 ### Added
