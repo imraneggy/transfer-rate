@@ -15,6 +15,61 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.4] — 2026-05-15
+
+### Changed
+- **UAE gold now uses igold.ae as primary source** (same provider
+  that gives us UAE silver since v0.32.2).  Khaleej Times is the
+  fallback when igold is unreachable.
+
+  Why this matters: KT publishes a single-snapshot HTML page,
+  not a daily history.  Our cron-snapshotted "history" was
+  topping out at 2–3 entries (the rates we'd captured by cron
+  ticks since the last redeploy).  igold publishes ~1440 sub-day
+  observations spanning the last month — binned to one
+  last-of-day-UTC sample, that's **30 daily 24K gold prices**
+  flowing through the same JSON shape the UI already consumes.
+
+  User-visible effect: the gold/silver bottom sheet now shows
+  a full 30-day UAE gold sparkline + populated 30-day stats
+  (High/Low/Avg) + populated Recent-Days mini-table for the
+  UAE column.  Same fix as v0.32.2 did for silver, now applied
+  to gold too — completes the "all four columns have history"
+  outcome that was the original v0.23 design intent.
+
+  Karat handling: igold's API does not differentiate `purity`
+  parameter values in its output (tested: .999 and .916 return
+  identical prices).  24K comes from the API verbatim; 22K is
+  derived mathematically as 24K × 22/24 = 91.67%.  Real UAE
+  retail 22K runs ~1% above the math because of jewellery
+  making charges — the "Rates indicative" disclaimer covers
+  that gap.  Source field labels the derivation honestly:
+  `"igold.ae (Dubai bullion, 24K AED/gram; 22K derived)"`.
+
+### Fixed
+- **Defensive scale normalisation for igold's `data` array.**
+  Internal: igold's chart-data endpoint occasionally returns the
+  `data` array in milligram scale (silver ~0.009, gold ~0.5)
+  while `last_price` is consistently in gram scale.  Probably
+  an edge-cache state quirk on their CDN; reproduces
+  unpredictably (httpx vs curl behave differently for the same
+  request).  Added `_normalise_igold_scale()` which detects the
+  scale mismatch by comparing `max(data)` to `last_price` —
+  when the ratio is ~1000×, multiplies the array by 1000 to
+  bring it back to gram scale.  Either the silver or the gold
+  scraper would have silently fallen back to its KT/spot
+  fallback path when this happened; now both stay on the igold
+  primary regardless of cache state.
+
+### Internal
+- Three concurrent scraper changes (gold primary, silver
+  normalisation, fallback chains) are kept in `scrapers/gold.py`
+  rather than split into per-source files because they share
+  the same `_normalise_igold_scale` helper, the same retry
+  pattern, and write into the same `PreciousMetalsQuote`.
+  Splitting would multiply test fixtures + import paths
+  without reducing complexity.
+
 ## [0.32.3] — 2026-05-15
 
 ### Fixed

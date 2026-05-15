@@ -49,15 +49,34 @@ LC_URL = "https://www.livechennai.com/gold_silverrate.asp"
 XAG_API_URL = "https://api.gold-api.com/price/XAG"
 
 # v0.32.2: UAE silver primary source now igold.ae's public chart API.
-# Unlike the spot-price + AED-peg derivation we had before, this is
-# UAE-published AED-denominated data with a 30-day daily history —
-# fills the "spot only — no daily history" gap that's been in the
-# app since v0.23.  gold-api.com retained as a fallback when the
-# igold endpoint is unreachable so the silver column never goes dark.
+# v0.32.4: UAE gold also moves to igold.ae primary (KT only ships
+# 2 history points; igold ships 30).
+#
+# Both endpoints share the same response shape:
+#   { metal, currency, weight, last_price, min/avg/max_price,
+#     data: [[ts_ms, price], ...] }
+#
+# Quirk worth knowing: igold's chart-data endpoint sometimes returns
+# `data` array values in MILLIGRAM scale (price ~0.009 for silver,
+# ~0.5 for gold) while `last_price` is consistently in GRAM scale
+# (price ~9.0 silver, ~540 gold).  Probably an edge-cache state thing.
+# Our scrapers detect the scale by comparing data max to last_price
+# and rescale by 1000× when needed (see _normalise_igold_scale).
 IGOLD_XAG_URL = (
     "https://charts.igold.ae/api/data"
     "?metal=xag&currency=aed&period=monthly&weight=gram"
 )
+IGOLD_XAU_URL = (
+    "https://charts.igold.ae/api/data"
+    "?metal=xau&currency=aed&period=monthly&weight=gram&purity=.999"
+)
+
+# 22K = 91.67% of 24K by gold content; igold's API returns the same
+# value for any `purity` parameter (just spot price), so we derive
+# 22K mathematically from 24K.  Real UAE retail 22K runs ~1% above
+# the math (jewellery making charge baked in) but for the "indicative
+# rates" disclaimer this is honest enough.
+KARAT_22_OF_24 = 22.0 / 24.0
 
 # UAE Dirham is hard-pegged to the US Dollar at this rate since 1997.
 # We use it to convert spot-price quotes (USD-denominated) into AED.
@@ -188,8 +207,102 @@ def _parse_float(s: str) -> Optional[float]:
 # UAE gold — Khaleej Times
 # =====================================================================
 
-def fetch_uae_gold() -> GoldSide:
-    """Khaleej Times publishes a Dubai gold rates table server-side."""
+def _fetch_igold_uae_gold(history_days: int = 30) -> GoldSide:
+    """Primary UAE gold source — igold.ae chart-data API.
+
+    v0.32.4: replaces Khaleej Times as primary because KT's HTML
+    only ships TODAY's price; we were stitching a tiny "history" of
+    2-3 entries from cron snapshots which made the gold sparkline
+    sparse and the 30-day stats meaningless.  igold returns ~1440
+    sub-day data points spanning the last month — binned to one
+    last-of-day observation per UTC calendar day, that's 30 daily
+    rates flowing through the same shape the UI already consumes.
+
+    Karat handling: igold's `purity` parameter does not actually
+    differentiate output (we tested .999 vs .916 — same value),
+    so 24K comes from the API verbatim and 22K is derived
+    mathematically (24K × 22/24 = 91.67%).  Real UAE retail 22K
+    runs ~1% above the math because of jewellery making charges;
+    the global "Rates indicative" disclaimer covers that gap.
+    """
+    import time
+    from collections import OrderedDict
+
+    last_exc: Optional[Exception] = None
+    for attempt in range(3):
+        if attempt > 0:
+            time.sleep(2.0 ** attempt)
+        try:
+            with http_client() as c:
+                r = c.get(
+                    IGOLD_XAU_URL,
+                    headers={"Accept": "application/json"},
+                    timeout=10.0,
+                )
+                r.raise_for_status()
+                payload = r.json()
+
+            raw_data = payload.get("data") or []
+            if not raw_data:
+                raise RuntimeError("igold gold response has empty data array")
+
+            last_price_raw = float(payload.get("last_price") or 0.0)
+            data, _ = _normalise_igold_scale(raw_data, last_price_raw)
+
+            # Bin to one observation per UTC day (last-of-day sample).
+            per_day_24k: "OrderedDict[str, float]" = OrderedDict()
+            for ts_ms, price_f in data:
+                if not 100.0 <= price_f <= 2_000.0:
+                    continue
+                day = datetime.fromtimestamp(ts_ms / 1000.0, tz=timezone.utc) \
+                    .strftime("%Y-%m-%d")
+                per_day_24k[day] = round(price_f, 2)
+
+            if not per_day_24k:
+                raise RuntimeError("igold gold response had no plausible points")
+
+            history_sorted = sorted(per_day_24k.items())[-history_days:]
+            history = [
+                GoldHistoryPoint(
+                    date=day,
+                    per_g_24k=price_24k,
+                    per_g_22k=round(price_24k * KARAT_22_OF_24, 2),
+                )
+                for day, price_24k in history_sorted
+            ]
+
+            current_24k = round(last_price_raw or data[-1][1], 2)
+            if not 100.0 <= current_24k <= 2_000.0:
+                raise RuntimeError(f"igold gold last_price out of range: {current_24k}")
+            current_22k = round(current_24k * KARAT_22_OF_24, 2)
+
+            return GoldSide(
+                currency="AED",
+                per_g_24k=current_24k,
+                per_g_22k=current_22k,
+                source="igold.ae (Dubai bullion, 24K AED/gram; 22K derived)",
+                source_url=IGOLD_XAU_URL,
+                status="ok",
+                history=history,
+            )
+        except Exception as exc:
+            last_exc = exc
+
+    raise RuntimeError(
+        f"igold UAE gold fetch failed after 3 attempts: "
+        f"{type(last_exc).__name__}: {last_exc}"
+    )
+
+
+def _fetch_kt_uae_gold() -> GoldSide:
+    """Fallback UAE gold source — Khaleej Times HTML.
+
+    Used only when igold.ae is unreachable.  KT parses both 24K AND
+    22K from a single page (no derivation needed), but only carries
+    today's price — no daily history.  The home card stays
+    populated when igold has an outage; the bottom-sheet sparkline
+    will be sparse until igold returns.
+    """
     try:
         with http_client() as c:
             r = c.get(
@@ -222,22 +335,19 @@ def fetch_uae_gold() -> GoldSide:
                 currency="AED",
                 per_g_24k=rate_24k,
                 per_g_22k=rate_22k,
-                source="Khaleej Times",
+                source="Khaleej Times (fallback)",
                 source_url=KT_URL,
                 status="error",
                 note="Could not parse 24K/22K cells from the page",
             )
 
-        # Sanity bounds (per-gram AED): UAE gold has ranged ~150 to ~700
-        # over the last decade; outside that and we've definitely
-        # mis-parsed.
         for v in (rate_24k, rate_22k):
             if not 100.0 <= v <= 2000.0:
                 return GoldSide(
                     currency="AED",
                     per_g_24k=rate_24k,
                     per_g_22k=rate_22k,
-                    source="Khaleej Times",
+                    source="Khaleej Times (fallback)",
                     source_url=KT_URL,
                     status="error",
                     note=f"Out-of-range value: {v}",
@@ -247,7 +357,7 @@ def fetch_uae_gold() -> GoldSide:
             currency="AED",
             per_g_24k=rate_24k,
             per_g_22k=rate_22k,
-            source="Khaleej Times",
+            source="Khaleej Times (fallback)",
             source_url=KT_URL,
             status="ok",
         )
@@ -256,11 +366,25 @@ def fetch_uae_gold() -> GoldSide:
             currency="AED",
             per_g_24k=None,
             per_g_22k=None,
-            source="Khaleej Times",
+            source="Khaleej Times (fallback)",
             source_url=KT_URL,
             status="error",
             note=f"{type(exc).__name__}: {exc}",
         )
+
+
+def fetch_uae_gold() -> GoldSide:
+    """UAE gold entry point.
+
+    v0.32.4: tries igold.ae first (24K + derived 22K, 30 daily
+    history points) and falls back to Khaleej Times (24K + 22K
+    parsed natively, no history) only if igold is unreachable
+    across 3 retries.  Either path keeps the home card populated.
+    """
+    try:
+        return _fetch_igold_uae_gold()
+    except Exception:
+        return _fetch_kt_uae_gold()
 
 
 # =====================================================================
@@ -497,6 +621,41 @@ def fetch_india_silver(html: Optional[str] = None, history_days: int = 10) -> Si
 # UAE silver — spot price from gold-api.com → AED via UAE peg
 # =====================================================================
 
+def _normalise_igold_scale(
+    data: list, last_price: float
+) -> tuple[list[tuple[int, float]], float]:
+    """Detect and correct igold's intermittent milligram-vs-gram scale
+    mismatch in the `data` array.  Returns (rescaled_data, scale_factor).
+
+    igold's `last_price` is consistently in AED/gram; the `data` array
+    sometimes comes back in AED/milligram (max ~0.01 silver, ~0.6 gold).
+    When `max(data)` is ~1000× smaller than `last_price`, we multiply
+    every data point by 1000 to bring it back to gram scale.
+
+    Returns the data normalised + the scale factor applied (1.0 = no
+    change, 1000.0 = milligram scaled up).  Caller can log the factor
+    for diagnostic visibility.
+    """
+    if not data:
+        return [], 1.0
+    plausible = [
+        (int(ts), float(p))
+        for ts, p in data
+        if p is not None and float(p) > 0
+    ]
+    if not plausible:
+        return [], 1.0
+    max_data = max(p for _, p in plausible)
+    scale_factor = 1.0
+    if last_price > 0 and max_data > 0:
+        ratio = last_price / max_data
+        if 500.0 <= ratio <= 5_000.0:
+            scale_factor = 1000.0
+    if scale_factor != 1.0:
+        plausible = [(ts, p * scale_factor) for ts, p in plausible]
+    return plausible, scale_factor
+
+
 def _fetch_igold_uae_silver(history_days: int = 30) -> SilverSide:
     """Primary UAE silver source — igold.ae's public chart-data API.
 
@@ -539,36 +698,34 @@ def _fetch_igold_uae_silver(history_days: int = 30) -> SilverSide:
                 r.raise_for_status()
                 payload = r.json()
 
-            data = payload.get("data") or []
-            if not data:
+            raw_data = payload.get("data") or []
+            if not raw_data:
                 raise RuntimeError("igold response has empty data array")
+
+            # v0.32.4: normalise potential milligram-scale `data` arrays.
+            last_price_raw = float(payload.get("last_price") or 0.0)
+            data, _ = _normalise_igold_scale(raw_data, last_price_raw)
 
             # Bin to one point per UTC calendar day; take the last
             # observation of each day (closing-style sample).
             per_day: "OrderedDict[str, float]" = OrderedDict()
-            for ts_ms, price in data:
-                if price is None:
-                    continue
-                price_f = float(price)
+            for ts_ms, price_f in data:
                 if not 0.5 <= price_f <= 2_000.0:
                     continue  # ignore out-of-range outliers
                 day = datetime.fromtimestamp(ts_ms / 1000.0, tz=timezone.utc) \
                     .strftime("%Y-%m-%d")
-                per_day[day] = round(price_f, 2)  # later writes overwrite
+                per_day[day] = round(price_f, 2)
 
             if not per_day:
                 raise RuntimeError("igold response had no plausible points")
 
-            # Keep only the last `history_days` days, newest first.
             history_sorted = sorted(per_day.items())[-history_days:]
             history = [
                 SilverHistoryPoint(date=day, per_g=price)
                 for day, price in history_sorted
             ]
 
-            # Current price is the very last data point (sub-day).
-            last_price = float(payload.get("last_price") or data[-1][1])
-            current_per_g = round(last_price, 2)
+            current_per_g = round(last_price_raw or data[-1][1], 2)
             if not 0.5 <= current_per_g <= 2_000.0:
                 raise RuntimeError(f"igold last_price out of range: {current_per_g}")
 

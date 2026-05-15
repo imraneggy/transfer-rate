@@ -1,6 +1,6 @@
 # Transfer Rate — User Guide
 
-> A short tour of the app for first-time users. Last updated for **v0.32.3**.
+> A short tour of the app for first-time users. Last updated for **v0.32.4**.
 > Screenshots welcome — drop them in `docs/screenshots/` via PR.
 
 ---
@@ -153,7 +153,7 @@ Lists the app version, source code link, license, and the
 |--------|-----------------|
 | Provider rates (Wise, Remitly, etc.) | Every 15 minutes via cron |
 | Mid-market (Google Finance) | Every 15 minutes via cron |
-| Gold (UAE — Khaleej Times) | Every 15 minutes via cron |
+| Gold (UAE — igold.ae AED/gram, Khaleej Times fallback) | Every 15 minutes via cron |
 | Gold (India — LiveChennai) | Every 15 minutes via cron |
 | Silver (UAE — igold.ae AED/gram, gold-api.com fallback) | Every 15 minutes via cron |
 | Silver (India — LiveChennai) | Every 15 minutes via cron |
