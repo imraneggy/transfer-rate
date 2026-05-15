@@ -103,7 +103,10 @@
     <string name="gold_sheet_subtitle">Last 30 days, per gram</string>
     <string name="gold_sheet_trend_24k">24K trend (newest right)</string>
     <string name="gold_sheet_trend_22k">22K trend (newest right)</string>
-    <string name="gold_sheet_trend_silver">Silver trend · India (newest right)</string>
+    <!-- v0.32.3: dropped " · India" suffix — UAE silver now has history
+         too (igold.ae primary), so the trend row renders both columns
+         like the 24K/22K trends.  Phrasing matches the gold variants. -->
+    <string name="gold_sheet_trend_silver">Silver trend (newest right)</string>
     <string name="gold_sheet_uae_spot_only">spot only</string>
     <string name="gold_sheet_uae_spot_long">spot price only — no daily history</string>
     <string name="gold_sheet_carat_silver">Silver</string>
@@ -111,7 +114,12 @@
          or the localised gold_sheet_carat_silver. -->
     <string name="gold_sheet_stats_label">30-day stats · %1$s</string>
     <string name="gold_sheet_recent_label">Recent days · %1$s</string>
-    <string name="gold_sheet_empty_silver">Silver history is India-only (UAE shows live spot).</string>
+    <!-- v0.32.3: was "Silver history is India-only (UAE shows live spot)"
+         — no longer accurate since UAE silver gets daily history from
+         igold.ae now.  This message only renders when BOTH UAE +
+         India silver history are empty (igold + LiveChennai both
+         failed, very rare). -->
+    <string name="gold_sheet_empty_silver">Silver history is rebuilding — check back tomorrow.</string>
     <string name="gold_sheet_empty_building">Building history — check back tomorrow.</string>
     <string name="gold_sheet_view_full_label">View full %1$d-day history  →</string>
     <string name="gold_sheet_history_silver_title">Silver · %1$d-day history</string>

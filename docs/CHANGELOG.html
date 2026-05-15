@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.32.2 · 2026-05-15</span>
+    <span><strong>Latest:</strong> v0.32.3 · 2026-05-15</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-3">v0.32.3</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-2">v0.32.2</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-1">v0.32.1</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-0">v0.32.0</a><span class="date">2026-05-15</span></li>
@@ -375,8 +376,44 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-32-2">
-  <h2><span class="ver">v0.32.2</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-3">
+  <h2><span class="ver">v0.32.3</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-15</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>UAE silver history wasn't rendering</strong> despite
+      v0.32.2 successfully scraping it.
+      <code>GoldHistorySheet.kt::ratesForCarat</code> was forcing the
+      UAE silver list to <code>emptyList()</code> when carat=Ag — a
+      v0.23 hardcoded assumption that "UAE silver has no history,
+      ever".  v0.32.2 made that assumption obsolete but the UI hadn't
+      been told.  Result: the JSON had 30 history points, the sheet
+      still showed "spot only" placeholders.</li>
+    <li>Silver trend sparkline gate widened from
+      <code>indiaSilverChrono.size &gt;= 2</code> to either side
+      having data, so the row renders the UAE column too.</li>
+    <li>Trend header strings shortened from "Silver trend · India" to
+      just "Silver trend" — the suffix made sense in v0.23, misleading
+      now.</li>
+    <li>Empty-state message updated: "Silver history is India-only
+      (UAE shows live spot)" → "Silver history is rebuilding — check
+      back tomorrow", consistent with the gold variant.  Only shows
+      when BOTH UAE + India silver history are empty.</li>
+  </ul>
+
+  <h3 class="internal">Internal</h3>
+  <ul>
+    <li>End-to-end bug from a stale client-side assumption vs
+      updated server-side data.  When changing a data source going
+      forward, grep the client for <code>emptyList&lt;...&gt;()</code>
+      next to that field name and confirm nothing's gated on the
+      old "this is always empty" assumption.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-32-2">
+  <h2><span class="ver">v0.32.2</span></h2>
   <p class="date">2026-05-15</p>
 
   <h3 class="added">Added</h3>

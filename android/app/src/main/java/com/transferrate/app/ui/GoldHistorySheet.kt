@@ -51,9 +51,16 @@ import java.util.Locale
 private data class DatedRate(val date: String, val rate: Double)
 
 /** Unified accessor: given a carat label, return (uaeRates, indiaRates)
- *  pre-sorted newest-first.  Silver has no UAE history (spot-only) so
- *  the UAE list is empty for "Ag".  Caller should handle empty lists
- *  gracefully (no stats row, "—" placeholders in tables). */
+ *  pre-sorted newest-first.
+ *
+ *  v0.32.3: UAE silver history is now populated from the scraper
+ *  (igold.ae primary, gold-api.com fallback).  Was forced to emptyList()
+ *  in v0.23–v0.32.2 because Khaleej Times doesn't publish UAE silver
+ *  daily — that limitation is gone now that the scraper has a real
+ *  AED-denominated daily history source.  Falls back to emptyList()
+ *  only if the JSON has no `uae_silver.history` field (old rates.json
+ *  format) or the field is empty (igold + spot fallback both failed).
+ */
 private fun ratesForCarat(carat: String, gold: GoldDocument): Pair<List<DatedRate>, List<DatedRate>> {
     val uaeGold = gold.uae.history.sortedByDescending { it.date }
     val indiaGold = gold.india.history.sortedByDescending { it.date }
@@ -62,9 +69,15 @@ private fun ratesForCarat(carat: String, gold: GoldDocument): Pair<List<DatedRat
                   indiaGold.map { DatedRate(it.date, it.perG24k) }
         "22K" -> uaeGold.map { DatedRate(it.date, it.perG22k) } to
                   indiaGold.map { DatedRate(it.date, it.perG22k) }
-        "Ag"  -> emptyList<DatedRate>() to (gold.indiaSilver?.history.orEmpty()
-                  .sortedByDescending { it.date }
-                  .map { DatedRate(it.date, it.perG) })
+        "Ag"  -> {
+            val uae = gold.uaeSilver?.history.orEmpty()
+                .sortedByDescending { it.date }
+                .map { DatedRate(it.date, it.perG) }
+            val india = gold.indiaSilver?.history.orEmpty()
+                .sortedByDescending { it.date }
+                .map { DatedRate(it.date, it.perG) }
+            uae to india
+        }
         else -> emptyList<DatedRate>() to emptyList()
     }
 }
@@ -198,15 +211,21 @@ fun GoldHistorySheet(
                 }
             }
 
-            // Optional silver trend (India only — UAE silver is spot, no history)
+            // Optional silver trend.  v0.32.3: UAE silver history is
+            // now real (30 days from igold.ae) so the UAE column gets
+            // its own sparkline instead of the "spot only" placeholder.
+            // Falls back to the placeholder only when igold + the
+            // gold-api.com spot path both failed (history empty).
             if (silverAvailable) {
+                val uaeSilverChrono = gold.uaeSilver?.history.orEmpty()
+                    .sortedBy { it.date }
                 val indiaSilverChrono = gold.indiaSilver?.history.orEmpty()
                     .sortedBy { it.date }
-                if (indiaSilverChrono.size >= 2) {
+                if (uaeSilverChrono.size >= 2 || indiaSilverChrono.size >= 2) {
                     item {
                         TrendRow(
                             title = stringResource(R.string.gold_sheet_trend_silver),
-                            uaeValues = emptyList(),
+                            uaeValues = uaeSilverChrono.map { it.perG },
                             indiaValues = indiaSilverChrono.map { it.perG },
                             uaePlaceholder = stringResource(R.string.gold_sheet_uae_spot_only),
                         )

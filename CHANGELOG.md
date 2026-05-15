@@ -15,6 +15,47 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.3] — 2026-05-15
+
+### Fixed
+- **UAE silver history wasn't actually rendering** despite v0.32.2
+  successfully scraping it.  `GoldHistorySheet.kt::ratesForCarat`
+  was forcing the UAE silver list to `emptyList()` when carat=Ag
+  — a v0.23 hardcoded assumption that "UAE silver has no history,
+  ever".  v0.32.2 made that assumption obsolete (igold.ae now
+  provides 30 daily AED-per-gram observations) but the UI hadn't
+  been told.  Result: the JSON had 30 history points, the sheet
+  still showed "spot only" / `—` placeholders on the UAE column.
+
+  Fixes:
+  - `ratesForCarat("Ag")` now reads
+    `gold.uaeSilver?.history.orEmpty()` instead of hardcoded
+    `emptyList()`.
+  - Silver trend sparkline gate widened from
+    `indiaSilverChrono.size >= 2` to
+    `uaeSilverChrono.size >= 2 || indiaSilverChrono.size >= 2`
+    so the row renders whenever EITHER side has data.
+  - Trend header strings shortened from `"Silver trend · India"`
+    to just `"Silver trend"` — the " · India" suffix made sense
+    in v0.23 when only the India column had data, misleading now.
+  - Empty-state message updated: was "Silver history is
+    India-only (UAE shows live spot)" — now reads "Silver
+    history is rebuilding — check back tomorrow", consistent
+    with the gold variant.  Only shows when BOTH UAE + India
+    silver history are empty (igold + LiveChennai both failed —
+    rare).
+
+### Internal
+- Three concurrent v0.32.x patches were stale in the UI layer
+  vs the scraper layer.  v0.32.2 shipped server-side data
+  changes but kept the v0.23 client-side assumption that UAE
+  silver was spot-only — the kind of bug that's only visible
+  end-to-end on a real device with fresh data flowing through.
+  Lesson logged: when changing a data source, grep the client
+  for `emptyList<...>()` / hardcoded `null` next to that field
+  name and confirm nothing's gated on the "this is always empty"
+  assumption.
+
 ## [0.32.2] — 2026-05-15
 
 ### Added
