@@ -318,47 +318,81 @@ def _merge_uae_gold_history(
 ) -> dict:
     """Maintain a rolling UAE gold history file and fold it into `side`.
 
-    Khaleej Times only exposes today's UAE gold rate. We keep our own
-    daily series so the app can show a 30-day chart for both UAE and
-    India consistently.
+    Original v0.x design: Khaleej Times only exposes today's UAE gold
+    rate, so we kept our own daily series stitched from cron snapshots
+    so the app could show a 30-day chart.
+
+    v0.32.5 fix: as of v0.32.4 the primary scraper (igold.ae) returns
+    its own 30-day history.  This function used to BLINDLY OVERWRITE
+    side["history"] with the rolling-file content, throwing away
+    igold's 30 points and replacing them with the 2-3 cron-snapshot
+    entries that pre-dated the swap.  Now:
+
+      1. Seed the rolling dict with whatever side["history"] already
+         contains (igold's 30 days when primary works).
+      2. Layer the rolling file on top (preserves cron-snapshot
+         continuity for outage windows when igold is down).
+      3. Append today's reading.
+      4. Dedupe by date (latest in-memory wins), prune to max_days,
+         persist, fold back into side.
+
+    This way the union of "igold history + accumulated cron snapshots"
+    is what the app sees — fullness when primary works, graceful
+    degradation when primary doesn't.
     """
     from datetime import date as _date
 
-    # Load existing history (date -> {22k, 24k})
+    # 1. Seed from whatever the scraper provided (igold's 30 days when
+    #    the primary path worked; KT fallback's empty list otherwise).
     rolling: dict = {}
+    for entry in side.get("history", []) or []:
+        d = entry.get("date")
+        p22 = entry.get("per_g_22k")
+        p24 = entry.get("per_g_24k")
+        if d and p22 is not None and p24 is not None:
+            rolling[d] = {"22k": float(p22), "24k": float(p24)}
+
+    # 2. Layer the cron-snapshot rolling file on top (preserves
+    #    continuity across deploys; older entries from previous
+    #    primary-source versions stay until pruned by age).
     if history_path.exists():
         try:
             loaded = json.loads(history_path.read_text(encoding="utf-8"))
             if isinstance(loaded, dict):
                 for d, v in loaded.items():
                     if isinstance(v, dict) and "22k" in v and "24k" in v:
-                        rolling[d] = v
+                        # Don't overwrite scraper-provided values —
+                        # the scraper output is fresher (sub-day),
+                        # the rolling file is yesterday's tick.
+                        rolling.setdefault(d, v)
         except (json.JSONDecodeError, OSError):
             pass
 
-    # Append today's reading if both 22K and 24K are present
+    # 3. Append today's reading if both karats are present.
     today = _date.today().isoformat()
     if (
         side.get("status") == "ok"
         and side.get("per_g_22k") is not None
         and side.get("per_g_24k") is not None
     ):
+        # Today's value from this run wins over any pre-existing
+        # entry for today (catch the latest cron tick).
         rolling[today] = {
             "22k": float(side["per_g_22k"]),
             "24k": float(side["per_g_24k"]),
         }
 
-    # Prune to the most recent `max_days`
+    # 4. Prune to the most recent `max_days`.
     keep = sorted(rolling.keys(), reverse=True)[:max_days]
     pruned = {d: rolling[d] for d in keep}
 
-    # Persist
+    # Persist.
     history_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = history_path.with_suffix(history_path.suffix + ".tmp")
     tmp.write_text(json.dumps(pruned, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, history_path)
 
-    # Fold into the side payload (newest first)
+    # Fold into the side payload (newest first).
     side["history"] = [
         {"date": d, "per_g_22k": pruned[d]["22k"], "per_g_24k": pruned[d]["24k"]}
         for d in sorted(pruned.keys(), reverse=True)

@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.32.4 · 2026-05-15</span>
+    <span><strong>Latest:</strong> v0.32.5 · 2026-05-15</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-5">v0.32.5</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-4">v0.32.4</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-3">v0.32.3</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-2">v0.32.2</a><span class="date">2026-05-15</span></li>
@@ -377,8 +378,29 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-32-4">
-  <h2><span class="ver">v0.32.4</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-5">
+  <h2><span class="ver">v0.32.5</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-15</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>UAE gold history was being overwritten downstream of
+      v0.32.4.</strong>  The scraper successfully produced 30 history
+      points (confirmed in smoke tests) but
+      <code>scrapers/run_all.py::_merge_uae_gold_history()</code> then
+      blindly replaced <code>side["history"]</code> with whatever the
+      rolling cron-snapshot file held — which was just 2 entries from
+      before the igold swap.  Result: published <code>rates.json</code>
+      had 30-day silver history but only 2-point gold history, even
+      though both scrapers were working correctly.  Fixed by seeding
+      the rolling dict with scraper-provided history first, then
+      layering the file-based rolling entries on top so the fresher
+      scraper values win.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-32-4">
+  <h2><span class="ver">v0.32.4</span></h2>
   <p class="date">2026-05-15</p>
 
   <h3 class="changed">Changed</h3>

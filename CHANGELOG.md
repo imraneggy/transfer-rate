@@ -15,6 +15,35 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.5] — 2026-05-15
+
+### Fixed
+- **UAE gold history was being overwritten downstream of v0.32.4.**
+  The scraper successfully produced 30 history points (confirmed in
+  smoke tests) but `scrapers/run_all.py::_merge_uae_gold_history()`
+  then blindly replaced `side["history"]` with whatever the rolling
+  cron-snapshot file held — which was just 2 entries from before
+  the igold swap.  Result: published `rates.json` had 30-day silver
+  history but only 2-point gold history, even though both scrapers
+  were working correctly.
+  - Fixed by seeding the rolling dict with scraper-provided history
+    FIRST, then layering the file-based rolling entries on top
+    (using `setdefault` so the fresher scraper values win), then
+    appending today's reading, then deduping + pruning.
+  - End result: igold's 30 days seed the rolling file; the union
+    is what the app sees.  Smoke tested:
+    `Scraper: 30 points → After merge: 30 points`.
+
+### Internal
+- The `_merge_uae_gold_history` function was originally designed
+  for the v0.x KT-only era when the scraper had no history of its
+  own.  v0.32.4 made it obsolete by giving the scraper a real
+  history source, but the merge step wasn't updated to match —
+  classic "downstream pipeline didn't get the memo" bug.  The
+  pattern (scrape → merge with stored state) is still valuable
+  for graceful degradation across igold outages; just needs to
+  respect scraper-provided history rather than override it.
+
 ## [0.32.4] — 2026-05-15
 
 ### Changed
