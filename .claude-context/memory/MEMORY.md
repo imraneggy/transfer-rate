@@ -1,3 +1,4 @@
+- [Machine handover 2026-05-15](handover-2026-05-15.md) — workstation handed to org IT after v0.32.5 shipped; full context backed up to `imraneggy/transfer-rate:.claude-context/`; resume via the CONTINUATION_GUIDE.md in that dir
 - [Transfer Rate app project context](transfer-rate-project.md) — Android remittance app, Stripe Atlas v0.26 palette just shipped, scraper + Cloudflare Worker stack
 - [Wadi Alhayati Tourism site project](wadi-alhayati-project.md) — Dubai travel agency 3D landing site, Next.js 15 + R3F + GSAP + Sanity, lead-capture only via Resend + WhatsApp
 - [Mobile Multiplayer Game project](mobile-multiplayer-game-project.md) — Godot 4.6 + Nakama, iOS+Android, learning build to monetized launch; repo imraneggy/mobile-multiplayer-game
