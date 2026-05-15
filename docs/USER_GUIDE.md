@@ -1,6 +1,6 @@
 # Transfer Rate — User Guide
 
-> A short tour of the app for first-time users. Last updated for **v0.32.1**.
+> A short tour of the app for first-time users. Last updated for **v0.32.2**.
 > Screenshots welcome — drop them in `docs/screenshots/` via PR.
 
 ---
@@ -155,7 +155,7 @@ Lists the app version, source code link, license, and the
 | Mid-market (Google Finance) | Every 15 minutes via cron |
 | Gold (UAE — Khaleej Times) | Every 15 minutes via cron |
 | Gold (India — LiveChennai) | Every 15 minutes via cron |
-| Silver (UAE — gold-api.com XAG × AED peg) | Every 15 minutes via cron |
+| Silver (UAE — igold.ae AED/gram, gold-api.com fallback) | Every 15 minutes via cron |
 | Silver (India — LiveChennai) | Every 15 minutes via cron |
 | **On-demand (refresh button)** | ~30–45 seconds |
 
@@ -207,11 +207,14 @@ bullion is bought by the kilogram in practice; gold by the gram or
 tola. The sheet shows both weights so the rates ladder match how
 people actually buy each metal.
 
-**Why is UAE silver "spot only — no daily history"?** Khaleej Times
-doesn't publish a daily silver page comparable to its gold page. The
-UAE silver number is computed from the live spot XAG price (USD per
-ounce, from gold-api.com) multiplied by the AED-USD peg (3.6725) and
-converted per gram. It's accurate to the moment but has no history.
+**Where does UAE silver come from?** (v0.32.2) The app pulls
+UAE-denominated silver from `igold.ae`, a Dubai-based bullion dealer
+that publishes a 30-day daily history in AED per gram via a public
+chart-data API. If that endpoint is unreachable, the app falls back
+to the international spot XAG price (gold-api.com, USD per ounce)
+converted via the AED-USD peg (3.6725) — the fallback has no
+history, so on rare outage days you'll see the silver card without
+a sparkline.
 
 **Will you publish on the Play Store / F-Droid?** Yes — both channels
 are configured. See [`docs/PUBLISHING.md`](PUBLISHING.md).

@@ -15,6 +15,62 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.2] — 2026-05-15
+
+### Added
+- **UAE silver now has daily history.**  v0.23 through v0.32.1
+  rendered the UAE silver card with a "spot only — no daily
+  history" footnote because Khaleej Times (our UAE gold source)
+  doesn't publish a daily silver page.  v0.32.2 closes that gap
+  by switching UAE silver's primary source to
+  [`igold.ae`](https://igold.ae/gold-rate) — a Dubai-based
+  bullion dealer that publishes AED-denominated silver with a
+  30-day daily history via a public chart-data JSON API.
+
+  The new scraper (`scrapers/gold.py::_fetch_igold_uae_silver`):
+  - Pulls the monthly endpoint (~1440 sub-day points)
+  - Bins to one observation per UTC calendar day (last-of-day
+    sample, matching how LiveChennai's silver scraper records
+    its history)
+  - Returns the standard `SilverSide` shape — drop-in compatible
+    with the existing UI
+
+  User-visible effect: the gold/silver bottom sheet now shows a
+  real silver trend sparkline + 30-day high/low/avg pills + the
+  "Recent days" mini-table populates for the UAE column instead
+  of showing `—` placeholders.
+
+### Changed
+- UAE silver acquisition path: `igold.ae` is now primary,
+  `gold-api.com XAG × AED peg` retained as **fallback** when
+  igold is unreachable.  On rare outage days the silver card
+  stays populated (no blank state) but the sparkline disappears
+  until igold comes back.  Source field labels distinguish the
+  two paths ("igold.ae (Dubai bullion, AED/gram)" vs "Spot
+  (gold-api.com → AED peg, fallback)") so a user reading the
+  bottom-sheet attribution can tell which source they're
+  looking at.
+- USER_GUIDE.md FAQ updated: removed the "Why is UAE silver
+  spot only?" entry (no longer accurate); added a "Where does
+  UAE silver come from?" entry describing the primary +
+  fallback chain.
+- Data Freshness table entry updated from
+  `Silver (UAE — gold-api.com XAG × AED peg)` to
+  `Silver (UAE — igold.ae AED/gram, gold-api.com fallback)`.
+
+### Internal
+- No Android-client networking changes — `charts.igold.ae` is
+  contacted only by the scraper running in GitHub Actions; the
+  app continues to fetch the already-baked rates.json from
+  GitHub Pages, so the allowlist in
+  `NetworkSecurity.kt::ALLOWED_HOSTS` and
+  `network_security_config.xml` stays untouched.
+- UI's "spot only — no daily history" placeholder strings
+  (`gold_sheet_uae_spot_only`, `gold_sheet_uae_spot_long`) are
+  kept in resources — they remain visible only when igold
+  falls back to the spot path and there's no history to draw.
+  Graceful degradation rather than dead code.
+
 ## [0.32.1] — 2026-05-15
 
 ### Fixed

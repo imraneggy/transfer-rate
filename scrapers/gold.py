@@ -48,6 +48,17 @@ KT_URL = "https://www.khaleejtimes.com/gold-forex"
 LC_URL = "https://www.livechennai.com/gold_silverrate.asp"
 XAG_API_URL = "https://api.gold-api.com/price/XAG"
 
+# v0.32.2: UAE silver primary source now igold.ae's public chart API.
+# Unlike the spot-price + AED-peg derivation we had before, this is
+# UAE-published AED-denominated data with a 30-day daily history —
+# fills the "spot only — no daily history" gap that's been in the
+# app since v0.23.  gold-api.com retained as a fallback when the
+# igold endpoint is unreachable so the silver column never goes dark.
+IGOLD_XAG_URL = (
+    "https://charts.igold.ae/api/data"
+    "?metal=xag&currency=aed&period=monthly&weight=gram"
+)
+
 # UAE Dirham is hard-pegged to the US Dollar at this rate since 1997.
 # We use it to convert spot-price quotes (USD-denominated) into AED.
 AED_PER_USD = 3.6725
@@ -486,33 +497,110 @@ def fetch_india_silver(html: Optional[str] = None, history_days: int = 10) -> Si
 # UAE silver — spot price from gold-api.com → AED via UAE peg
 # =====================================================================
 
-def fetch_uae_silver() -> SilverSide:
-    """Khaleej Times doesn't publish UAE retail silver, so we use the
-    international spot silver price (gold-api.com — free, no auth)
-    converted via the fixed UAE Dirham/USD peg.
+def _fetch_igold_uae_silver(history_days: int = 30) -> SilverSide:
+    """Primary UAE silver source — igold.ae's public chart-data API.
 
-    The displayed value is therefore the SPOT price, not retail —
-    Dubai bullion shops typically charge a small premium (~3-5%) over
-    spot. Source field labels this honestly so users know what they're
-    looking at.
+    Returns AED-per-gram with a `history_days`-day daily history (the
+    monthly endpoint returns ~1440 data points covering the last month,
+    sampled at ~30-min intervals).  We bin to one observation per
+    calendar day by taking the LAST point of each UTC day, mirroring
+    how the LiveChennai gold/silver scraper records its history.
 
-    v0.29.6: 3-attempt retry with exponential backoff.  Production
-    saw transient DNS failures ("Name or service not known") on the
-    GHA runner intermittently; a single attempt was too fragile.
-    Each attempt also has its own 8s socket timeout, so worst-case
-    total wall-time on full failure is ~8 + 2 + 8 + 4 + 8 = 30s,
-    well within the orchestrator's per-provider 25-60s budget.
+    Why this fills a real gap: Khaleej Times — our UAE gold source —
+    doesn't publish a daily silver page.  v0.23 through v0.32.1 worked
+    around this with a spot-price + AED-peg derivation that had no
+    history at all; the home card showed "spot only" and the bottom
+    sheet showed an apologetic "no daily history" placeholder.  igold
+    is a Dubai-based bullion dealer publishing AED-denominated silver
+    with a public JSON feed designed for their own chart widget; we
+    use the same feed and shape it into the SilverSide we already use.
 
-    TODO(v0.30): add a true second-source fallback (e.g. goldprice.org's
-    public XAU/XAG feed) so we survive prolonged outages of the
-    primary, not just blips.
+    Response shape:
+        {
+          "metal":"xag", "currency":"aed", "weight":"gram",
+          "last_price": 9.30, "min_price": ..., "avg_price": ...,
+          "max_price": ..., "data": [[ts_ms, price], ...]
+        }
+    """
+    import time
+    from collections import OrderedDict
+
+    last_exc: Optional[Exception] = None
+    for attempt in range(3):
+        if attempt > 0:
+            time.sleep(2.0 ** attempt)
+        try:
+            with http_client() as c:
+                r = c.get(
+                    IGOLD_XAG_URL,
+                    headers={"Accept": "application/json"},
+                    timeout=10.0,
+                )
+                r.raise_for_status()
+                payload = r.json()
+
+            data = payload.get("data") or []
+            if not data:
+                raise RuntimeError("igold response has empty data array")
+
+            # Bin to one point per UTC calendar day; take the last
+            # observation of each day (closing-style sample).
+            per_day: "OrderedDict[str, float]" = OrderedDict()
+            for ts_ms, price in data:
+                if price is None:
+                    continue
+                price_f = float(price)
+                if not 0.5 <= price_f <= 2_000.0:
+                    continue  # ignore out-of-range outliers
+                day = datetime.fromtimestamp(ts_ms / 1000.0, tz=timezone.utc) \
+                    .strftime("%Y-%m-%d")
+                per_day[day] = round(price_f, 2)  # later writes overwrite
+
+            if not per_day:
+                raise RuntimeError("igold response had no plausible points")
+
+            # Keep only the last `history_days` days, newest first.
+            history_sorted = sorted(per_day.items())[-history_days:]
+            history = [
+                SilverHistoryPoint(date=day, per_g=price)
+                for day, price in history_sorted
+            ]
+
+            # Current price is the very last data point (sub-day).
+            last_price = float(payload.get("last_price") or data[-1][1])
+            current_per_g = round(last_price, 2)
+            if not 0.5 <= current_per_g <= 2_000.0:
+                raise RuntimeError(f"igold last_price out of range: {current_per_g}")
+
+            return SilverSide(
+                currency="AED",
+                per_g=current_per_g,
+                source="igold.ae (Dubai bullion, AED/gram)",
+                source_url=IGOLD_XAG_URL,
+                status="ok",
+                history=history,
+            )
+        except Exception as exc:
+            last_exc = exc
+
+    raise RuntimeError(
+        f"igold UAE silver fetch failed after 3 attempts: "
+        f"{type(last_exc).__name__}: {last_exc}"
+    )
+
+
+def _fetch_spot_xag_uae_silver() -> SilverSide:
+    """Fallback UAE silver source — international spot XAG converted
+    via the UAE Dirham/USD peg.  This is the v0.23–v0.32.1 primary;
+    kept as a safety net so the silver column never goes blank if
+    igold.ae has an outage.  No history (the spot endpoint is just a
+    point-in-time price), but at least the home card stays populated.
     """
     import time
 
     last_exc: Optional[Exception] = None
     for attempt in range(3):
         if attempt > 0:
-            # Exponential backoff: 2s, 4s.
             time.sleep(2.0 ** attempt)
         try:
             with http_client() as c:
@@ -529,30 +617,42 @@ def fetch_uae_silver() -> SilverSide:
                 raise RuntimeError(f"Spot silver out of range: {spot_usd_oz}")
 
             per_g_aed = (spot_usd_oz / GRAMS_PER_TROY_OZ) * AED_PER_USD
-            # Round to 2 decimal places — silver per gram in retail
-            # rarely has more precision than that.
             per_g_aed = round(per_g_aed, 2)
 
             return SilverSide(
                 currency="AED",
                 per_g=per_g_aed,
-                source="Spot (gold-api.com → AED peg)",
+                source="Spot (gold-api.com → AED peg, fallback)",
                 source_url=XAG_API_URL,
                 status="ok",
             )
         except Exception as exc:
             last_exc = exc
-            # Continue to next attempt; the loop's sleep handles backoff.
 
-    # All 3 attempts failed — return error with the last exception's text.
     return SilverSide(
         currency="AED",
         per_g=None,
-        source="Spot (gold-api.com → AED peg)",
+        source="Spot (gold-api.com → AED peg, fallback)",
         source_url=XAG_API_URL,
         status="error",
-        note=f"3-attempt retry failed; last: {type(last_exc).__name__}: {last_exc}",
+        note=f"both igold + spot fallback failed; last: "
+             f"{type(last_exc).__name__}: {last_exc}",
     )
+
+
+def fetch_uae_silver() -> SilverSide:
+    """UAE silver entry point.
+
+    v0.32.2: tries igold.ae first (AED-denominated with daily history),
+    falls back to the international spot + AED-peg derivation only if
+    igold is unreachable across 3 attempts.  This way the silver
+    column always populates and we get history when the primary works.
+    """
+    try:
+        return _fetch_igold_uae_silver()
+    except Exception:
+        # Primary unreachable — degrade gracefully to spot-only.
+        return _fetch_spot_xag_uae_silver()
 
 
 # =====================================================================

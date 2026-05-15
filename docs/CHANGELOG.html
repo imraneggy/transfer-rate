@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.32.1 · 2026-05-15</span>
+    <span><strong>Latest:</strong> v0.32.2 · 2026-05-15</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-2">v0.32.2</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-1">v0.32.1</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-0">v0.32.0</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-31-1">v0.31.1</a><span class="date">2026-05-15</span></li>
@@ -374,8 +375,53 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-32-1">
-  <h2><span class="ver">v0.32.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-2">
+  <h2><span class="ver">v0.32.2</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-05-15</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>UAE silver now has daily history.</strong>  v0.23
+      through v0.32.1 rendered the UAE silver card with a "spot
+      only — no daily history" footnote because Khaleej Times
+      doesn't publish a daily silver page.  v0.32.2 closes the
+      gap by switching UAE silver's primary source to
+      <a href="https://igold.ae/gold-rate">igold.ae</a> — a
+      Dubai-based bullion dealer that publishes AED-denominated
+      silver with a 30-day daily history via a public chart-data
+      JSON API.  User-visible effect: the gold/silver bottom
+      sheet now shows a real silver trend sparkline + 30-day
+      high/low/avg pills + the "Recent days" mini-table populates
+      for the UAE column instead of showing dash placeholders.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li>UAE silver acquisition path: <code>igold.ae</code> is now
+      primary, <code>gold-api.com XAG × AED peg</code> retained as
+      <strong>fallback</strong> when igold is unreachable.  On
+      rare outage days the silver card stays populated (no blank
+      state) but the sparkline disappears until igold comes
+      back.</li>
+    <li>USER_GUIDE.md FAQ updated: removed the "Why is UAE silver
+      spot only?" entry; added a "Where does UAE silver come
+      from?" entry describing the primary + fallback chain.  Data
+      Freshness table entry updated accordingly.</li>
+  </ul>
+
+  <h3 class="internal">Internal</h3>
+  <ul>
+    <li>No Android-client networking changes —
+      <code>charts.igold.ae</code> is contacted only by the
+      scraper running in GitHub Actions.  The
+      <code>NetworkSecurity.kt::ALLOWED_HOSTS</code> +
+      <code>network_security_config.xml</code> allowlists stay
+      untouched.</li>
+  </ul>
+</section>
+
+<section class="release" id="v0-32-1">
+  <h2><span class="ver">v0.32.1</span></h2>
   <p class="date">2026-05-15</p>
 
   <h3 class="fixed">Fixed</h3>
