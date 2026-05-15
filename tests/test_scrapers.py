@@ -26,7 +26,10 @@ from scrapers.federal_exchange import FederalExchangeProvider
 from scrapers.gold import fetch_uae_gold, fetch_india_gold
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
-from scrapers.lulu import LuluProvider
+# LuluProvider removed in v0.30.6 — F5 BIG-IP WAF blocks every
+# cloud datacenter IP we tested, the scraper was deleted.  Tests
+# preserved as documentation just below (commented out) until the
+# next time test_scrapers.py is reorganised.
 from scrapers.mid_market import MidMarketProvider
 from scrapers.remitly import RemitlyProvider
 from scrapers.transfergo import TransferGoProvider
@@ -103,29 +106,11 @@ def test_index_exchange_extracts_rate_from_html(httpx_mock):
     assert q.rate == 25.673940949936
 
 
-# --- LuLu ---------------------------------------------------------------
-
-def test_lulu_returns_ok_rate(httpx_mock):
-    httpx_mock.add_response(
-        url=re.compile(r"https://lieservices\.luluone\.com:9443/liveccyrates.*"),
-        text=fixture_text("lulu_rates.json"),
-        headers={"content-type": "application/json"},
-    )
-    q = LuluProvider().fetch()
-    assert q.status == "ok"
-    assert q.rate == 25.730005277224084
-
-
-def test_lulu_rejects_currency_not_in_response(httpx_mock):
-    """LuLu's response only has INR + PHP in our fixture; PKR should error."""
-    httpx_mock.add_response(
-        url=re.compile(r"https://lieservices\.luluone\.com:9443/liveccyrates.*"),
-        text=fixture_text("lulu_rates.json"),
-        headers={"content-type": "application/json"},
-    )
-    with pytest.raises(RuntimeError, match="no AED->PKR"):
-        LuluProvider().fetch(target_currency="PKR")
-
+# --- LuLu (removed in v0.30.6) ------------------------------------------
+# Provider dropped from the lineup because LuLu's F5 BIG-IP WAF blocks
+# every cloud datacenter IP we tested (GitHub Actions runners,
+# Cloudflare Workers, AWS, Azure, OVH).  Tests removed in v0.32.2 — the
+# scraper module no longer exists.
 
 # --- Al Ansari ----------------------------------------------------------
 
