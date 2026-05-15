@@ -63,6 +63,52 @@ After this, when you start a new session in this directory, Claude will
 read `MEMORY.md` automatically and surface the project context + your
 preferences (terse responses, design-iteration pattern, etc.).
 
+## 3.5. Restore the auto-backup hook (optional but recommended)
+
+The original machine ran a Stop hook that continuously backed up
+memory + session transcripts to this same repo on every turn — that's
+what kept `.claude-context/` fresh.  To restore that behaviour on the
+new machine:
+
+1. **Edit the paths in the hook script.**  Open
+   `.claude-context/auto-backup.sh` and change the three top-level
+   variables to reflect the new machine's paths:
+
+   ```bash
+   REPO="/path/to/your/transfer-rate/clone"
+   MEMORY_DIR="$HOME/.claude/projects/<new-project-id>/memory"
+   SESSION_DIR="$HOME/.claude/projects/<new-project-id>"
+   ```
+
+   The `<new-project-id>` is a hash of the working directory — find
+   it by `ls ~/.claude/projects/` after first launching Claude Code.
+
+2. **Wire the Stop hook into `~/.claude/settings.json`:**
+
+   ```json
+   {
+     "hooks": {
+       "Stop": [
+         {
+           "hooks": [
+             {
+               "type": "command",
+               "command": "bash /path/to/transfer-rate/.claude-context/auto-backup.sh",
+               "timeout": 30,
+               "async": true
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+
+3. **Activate via `/hooks` menu** once (reloads the watcher).
+
+After that, every Claude response triggers a backup commit + push
+in the background.  Verify via `tail /tmp/claude-backup.log`.
+
 ## 4. Git credentials
 
 GitHub auth is per-machine — the Windows Credential Manager entries
