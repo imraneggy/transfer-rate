@@ -1,0 +1,8 @@
+- [Transfer Rate app project context](transfer-rate-project.md) — Android remittance app, Stripe Atlas v0.26 palette just shipped, scraper + Cloudflare Worker stack
+- [Wadi Alhayati Tourism site project](wadi-alhayati-project.md) — Dubai travel agency 3D landing site, Next.js 15 + R3F + GSAP + Sanity, lead-capture only via Resend + WhatsApp
+- [Mobile Multiplayer Game project](mobile-multiplayer-game-project.md) — Godot 4.6 + Nakama, iOS+Android, learning build to monetized launch; repo imraneggy/mobile-multiplayer-game
+- [Design iteration preferences](feedback-design-iteration.md) — propose 2–3 palette/layout options with hex + rationale, get a pick before coding
+- [Response style — terse](feedback-response-style.md) — one-sentence end-of-turn summaries, no auto-appended headers
+- [Compose stringResource — no local shim](feedback-compose-string-resource.md) — bit Transfer Rate v0.30.0 CI; private shim shadows vararg overload, breaks format-arg calls
+- [Git commit email for Vercel repos](feedback-git-commit-email.md) — use GitHub no-reply (`{id}+{user}@users.noreply.github.com`), not work email, or Vercel blocks the deploy
+- [Wadi Alhayati — auto-push every change](feedback-wadi-auto-push.md) — commit + push to GitHub after every batch of edits so live site stays in sync
