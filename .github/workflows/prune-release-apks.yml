@@ -1,0 +1,64 @@
+# Prune APK assets from older GitHub Releases.
+#
+# Goal: keep the latest N releases' APKs (default 2) and free storage on
+# everything older.  The release itself (tag + changelog/notes) is
+# preserved — only the .apk binaries are deleted.  Users who want to
+# side-load an old version can still rebuild from source at the tag.
+#
+# Triggers:
+#   1. workflow_run after android-build completes successfully — keeps
+#      storage trim automatically as new releases ship.
+#   2. workflow_dispatch — manual run for one-time cleanups or to test
+#      the prune logic.  Has a `keep` input + a `dry_run` toggle so the
+#      first run can be a no-destructive preview.
+name: prune-release-apks
+
+on:
+  workflow_run:
+    workflows: ["android-build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: "Number of latest releases to keep APKs on"
+        required: false
+        default: "2"
+        type: string
+      dry_run:
+        description: "Preview only — list what would be deleted without deleting"
+        required: false
+        default: false
+        type: boolean
+
+# Default-deny.  Only the prune job needs contents:write to delete
+# release assets.
+permissions: {}
+
+concurrency:
+  group: prune-release-apks
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    # Skip the workflow_run path if the upstream build failed — we don't
+    # want to delete old APKs when the new release didn't actually
+    # produce a working APK to replace them with.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write   # required to DELETE release assets
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Prune APKs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP: ${{ inputs.keep || '2' }}
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          python3 .github/scripts/prune_release_apks.py --keep "$KEEP" $DRY_RUN
