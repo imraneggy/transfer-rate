@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
@@ -127,16 +129,36 @@ fun SplashScreen(
  * source — preserves the dual circular refresh arrows, mini bar chart
  * and ₹ currency cue that hand-coded vector paths cannot match.
  *
+ * v0.32.1: wrapped in a neutral near-white circular "coin" so the
+ * navy "TR" + dark refresh arrows stay readable on any background.
+ * Previously the transparent PNG sat directly on the parent bg —
+ * fine on the v0.31.x soft-white splash bg, invisible on the v0.32.0
+ * OLED-pure-black splash bg.  The coin is the same pattern the
+ * toolbar logo (RatesScreen.kt:130) already used since v0.29.x; this
+ * just hoists the pattern into the shared composable so all callers
+ * (Splash + About) get OLED-safe rendering automatically.
+ *
  * Reused by SplashScreen and AboutScreen.
  */
 @Composable
 fun TransferRateLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
-    Image(
-        painter = painterResource(id = R.drawable.transfer_rate_logo),
-        contentDescription = "Transfer Rate",
-        contentScale = ContentScale.Fit,
-        modifier = Modifier.size(size),
-    )
+    val padding = (size.value * 0.06f).dp
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(Color(0xFFFFFFFF)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.transfer_rate_logo),
+            contentDescription = "Transfer Rate",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .size(size)
+                .padding(padding),
+        )
+    }
 }
 
 /** Backwards-compat alias for the v0.11/v0.13 names. */

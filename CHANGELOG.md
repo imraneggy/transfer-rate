@@ -15,6 +15,29 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.1] — 2026-05-15
+
+### Fixed
+- **Splash logo invisible on OLED black.**  v0.32.0 switched the
+  dark splash background to pure `#000000`, but the brand mark
+  is a navy `"TR"` + dark refresh arrows on a *transparent*
+  background.  Result on AMOLED dark devices: the splash logo
+  appeared to render only its teal+yellow accents, with the main
+  letterform missing.  Fixed at two layers:
+  - **In-app splash + About screen logo** (`TransferRateLogo`
+    composable) is now wrapped in a near-white circular "coin"
+    backing.  Same pattern the toolbar logo already used since
+    v0.29.x — just hoisted into the shared composable so both
+    Splash + About inherit it.  Padding scales proportionally
+    with `size` (6%) so the coin always has a small white halo
+    around the mark.
+  - **OS-level Android 12+ splash** (the briefer splash shown
+    *before* Compose runs) now declares
+    `windowSplashScreenIconBackgroundColor = #FFFFFF` in
+    `values-night/themes.xml`.  The system draws the white coin
+    automatically — no need to ship a separate dark-mode icon
+    drawable.
+
 ## [0.32.0] — 2026-05-15
 
 ### Changed

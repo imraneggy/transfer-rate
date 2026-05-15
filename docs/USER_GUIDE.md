@@ -1,6 +1,6 @@
 # Transfer Rate — User Guide
 
-> A short tour of the app for first-time users. Last updated for **v0.32.0**.
+> A short tour of the app for first-time users. Last updated for **v0.32.1**.
 > Screenshots welcome — drop them in `docs/screenshots/` via PR.
 
 ---

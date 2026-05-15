@@ -18,6 +18,13 @@
 
         <item name="android:windowSplashScreenBackground">@color/splash_bg</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <!-- v0.32.1: white "coin" behind the icon so the navy "TR" +
+             dark refresh arrows stay readable on the v0.32.0 OLED-
+             black splash background.  Without this, the navy logo
+             elements blended into the pure-black bg and looked
+             half-rendered for the ~200 ms the OS splash is on
+             screen.  Matches the in-app TransferRateLogo wrap. -->
+        <item name="android:windowSplashScreenIconBackgroundColor">#FFFFFF</item>
         <item name="android:windowSplashScreenAnimationDuration">200</item>
     </style>
 </resources>
