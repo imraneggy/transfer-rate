@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.transferrate.app.R
 import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeParseException
@@ -83,7 +85,7 @@ fun FreshnessBanner(
             Spacer(Modifier.width(10.dp))
             TextButton(onClick = onRefresh) {
                 Text(
-                    text = "Refresh",
+                    text = stringResource(R.string.toolbar_refresh),
                     fontWeight = FontWeight.Bold,
                     color = contentColor,
                 )
