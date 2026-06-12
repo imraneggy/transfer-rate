@@ -275,7 +275,7 @@ def test_mid_market_falls_back_to_open_erapi(httpx_mock):
     assert "Open ExchangeRate" in (q.note or "")
 
 
-# --- Gold (UAE / India) -------------------------------------------------
+# --- Gold (UAE / India current sources) ---------------------------------
 
 def test_uae_gold_extracts_24k_and_22k(httpx_mock):
     httpx_mock.add_response(
