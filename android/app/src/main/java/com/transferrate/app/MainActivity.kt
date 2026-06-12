@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,11 +23,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -180,12 +183,26 @@ private fun AppRoot(
             Surface(modifier = Modifier.fillMaxSize()) {
                 when {
                     showAbout -> AboutScreen(onBack = { showAbout = false })
-                    else -> RatesScreen(
-                        vm = vm,
-                        themeMode = themeMode,
-                        onCycleThemeMode = onCycleThemeMode,
-                        onShowAbout = { showAbout = true },
-                    )
+                    else -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            RatesScreen(
+                                vm = vm,
+                                themeMode = themeMode,
+                                onCycleThemeMode = onCycleThemeMode,
+                                onShowAbout = { showAbout = true },
+                            )
+                            val ready = state as? RatesUiState.Ready
+                            if (ready != null) {
+                                FreshnessBanner(
+                                    completedAt = ready.doc.completedAt,
+                                    onRefresh = { vm.refresh() },
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
