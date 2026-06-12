@@ -59,22 +59,14 @@ The design is strong for zero-cost hosting, public data, low operational burden,
 
 ## Gaps And Risks
 
-### Release blocker: Python scraper tests are failing
+### Python scraper tests fixed
 
-Latest inspected pytest run: 25921673777.
+The stale gold scraper tests were updated to match the current source architecture.
 
-Observed failures:
-
-- test_uae_gold_extracts_24k_and_22k has unexpected igold API requests not registered in pytest-httpx.
-- test_india_gold_extracts_history_series expects the older BankBazaar path while the scraper now uses newer gold-source behavior.
-
-Impact: Do not create v0.32.6 until scraper tests are updated and green.
-
-Recommended fix:
-
-- Update tests/test_scrapers.py fixtures and mocks to match current scrapers/gold.py behavior.
-- Add explicit mocks for igold chart-data calls.
-- Replace stale BankBazaar expectations with the current India gold source or mark BankBazaar as fallback-only if that is the intended architecture.
+- UAE gold test now covers igold.ae primary JSON parsing and 22K derivation.
+- India gold test now covers LiveChennai history parsing.
+- New fixture: tests/fixtures/livechennai_gold_silver.html.
+- Verification: test.yml run 27449778191 passed on commit 759e8f10ce600e6bd794cd2ac862a5d8fd514fa0.
 
 ### Android test coverage gap
 
@@ -95,10 +87,8 @@ Recommended additions:
 
 Before tagging:
 
-1. Fix scraper pytest failures.
-2. Run test.yml successfully.
-3. Confirm android-test-build still succeeds after version bump.
-4. Bump Android versionName from 0.32.5 to 0.32.6 and increment versionCode from 67 to 68.
+1. Confirm android-test-build still succeeds after version bump.
+2. Bump Android versionName from 0.32.5 to 0.32.6 and increment versionCode from 67 to 68.
 5. Update CHANGELOG.md with v0.32.6 entries.
 6. Regenerate/update docs/CHANGELOG.html if required by the changelog workflow.
 7. Update docs/FRONTEND_UPDATE_REPORT.html with final release validation.
@@ -107,8 +97,8 @@ Before tagging:
 
 ## Prioritized Improvement Backlog
 
-1. Fix scraper tests and make test.yml green.
-2. Add Android FreshnessBanner tests.
+1. Add Android FreshnessBanner tests.
+2. Add release dry-run workflow for assembleRelease without publishing a GitHub Release.
 3. Add release dry-run workflow for assembleRelease without publishing a GitHub Release.
 4. Add workflow validation for scrape artifact commit consistency.
 5. Update action pins to Node 24-compatible revisions.
@@ -120,11 +110,9 @@ Before tagging:
 
 Start here:
 
-1. Inspect tests/test_scrapers.py around gold tests.
-2. Inspect scrapers/gold.py and align tests to current source order.
-3. Run or dispatch test.yml after fixing fixtures.
-4. Only after pytest is green, prepare the v0.32.6 version/changelog commit.
-5. Re-run android-test-build.
-6. Tag v0.32.6 and verify android-build release APK artifacts.
+1. Prepare the v0.32.6 version/changelog commit.
+2. Re-run android-test-build after the version bump.
+3. Tag v0.32.6 only after Android build validation passes.
+4. Verify android-build release APK artifacts.
 
-Do not create the official release tag while pytest is red.
+Python pytest is green as of run 27449778191; do not regress it before tagging.
