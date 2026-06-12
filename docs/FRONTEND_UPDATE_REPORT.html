@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transfer Rate · Frontend Update Report</title>
+<style>
+  :root {
+    --bg: #f6f9fc;
+    --card: #ffffff;
+    --text: #1f2f41;
+    --muted: #52677e;
+    --brand: #635bff;
+    --warn: #8a5a00;
+    --critical: #9b1c1c;
+    --ok: #176b3a;
+    --border: #d7e2ee;
+  }
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 36px 18px 64px;
+  }
+  header {
+    background: linear-gradient(135deg, #0a2540, #635bff);
+    color: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 18px 45px rgba(31, 47, 65, .18);
+  }
+  header p { color: rgba(255,255,255,.84); max-width: 760px; }
+  h1 { margin: 0 0 8px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; }
+  h2 { margin-top: 0; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    margin-top: 18px;
+    box-shadow: 0 10px 30px rgba(31,47,65,.06);
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: .78rem;
+    letter-spacing: .02em;
+  }
+  .ok { background: #e7f7ee; color: var(--ok); }
+  .warn { background: #fff2cc; color: var(--warn); }
+  .critical { background: #ffe4e6; color: var(--critical); }
+  code, pre { background: #eef3f8; border-radius: 8px; }
+  code { padding: 2px 6px; }
+  pre { overflow-x: auto; padding: 14px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-size: .88rem; text-transform: uppercase; letter-spacing: .04em; }
+  footer { color: var(--muted); margin-top: 24px; font-size: .9rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="pill ok">Frontend improvement report</p>
+  <h1>Transfer Rate UI Update · Step 1</h1>
+  <p>This report records the first controlled frontend change: adding visible data-freshness protection to the Android home screen so users are warned before relying on delayed remittance rates.</p>
+</header>
+
+<section>
+  <h2>1. Problem found</h2>
+  <p>The repository copy of <code>public/rates.json</code> showed an old <code>completed_at</code> timestamp during the audit. A remittance comparison UI should not rely only on small relative-time text when feed age becomes operationally unsafe.</p>
+  <div class="grid">
+    <div><span class="pill warn">Risk</span><p>Users may assume values are current even when the scraper or Pages artifact is delayed.</p></div>
+    <div><span class="pill critical">Impact</span><p>Wrong timing can lead to poor transfer decisions, especially when AED→INR rates move quickly.</p></div>
+    <div><span class="pill ok">Fix</span><p>Add a prominent home-screen banner when feed age crosses defined thresholds.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Code changes completed</h2>
+  <table>
+    <thead><tr><th>File</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td><code>android/app/src/main/java/com/transferrate/app/FreshnessBanner.kt</code></td><td>New Compose component that parses <code>completed_at</code>, calculates age, and renders delayed / stale / unknown warnings.</td></tr>
+      <tr><td><code>android/app/src/main/java/com/transferrate/app/MainActivity.kt</code></td><td>Home screen now overlays the banner above <code>RatesScreen</code> when <code>RatesUiState.Ready</code> is available.</td></tr>
+      <tr><td><code>docs/FRONTEND_UPDATE_REPORT.html</code></td><td>This report, kept in-repo for review and release documentation.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Behaviour specification</h2>
+  <table>
+    <thead><tr><th>Feed age</th><th>UI behaviour</th></tr></thead>
+    <tbody>
+      <tr><td>&lt; 3 hours</td><td>No banner. Normal UI remains clean.</td></tr>
+      <tr><td>3–24 hours</td><td>Delayed warning: asks user to refresh.</td></tr>
+      <tr><td>&gt;= 24 hours</td><td>Critical stale warning: tells user to confirm in the provider app before sending money.</td></tr>
+      <tr><td>Invalid timestamp</td><td>Unknown-age warning: asks user to refresh before relying on rates.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>4. Validation performed</h2>
+  <ul>
+    <li>Confirmed the new banner source exists in the Android package.</li>
+    <li>Confirmed the home screen passes <code>ready.doc.completedAt</code> into the banner.</li>
+    <li>Confirmed the banner refresh button reuses the existing <code>RatesViewModel.refresh()</code> path instead of adding a second refresh mechanism.</li>
+    <li>Confirmed the happy path remains uncluttered because <code>FreshnessLevel.Fresh</code> returns without rendering UI.</li>
+  </ul>
+  <p><strong>Build note:</strong> A full Gradle build could not be executed from the local execution container because direct GitHub network/DNS access is unavailable there. The change was therefore validated by committed-source review through the GitHub connector. The next repository-side validation should be the existing Android build workflow.</p>
+</section>
+
+<section>
+  <h2>5. Next recommended step</h2>
+  <p>The next frontend improvement should be <strong>toolbar simplification</strong>: keep the home screen visually focused by moving secondary actions such as theme, share, about, and language into a menu while keeping refresh/freshness visible.</p>
+</section>
+
+<footer>
+  Generated for the Transfer Rate frontend improvement workstream. Last updated: 2026-06-12.
+</footer>
+</main>
+</body>
+</html>
