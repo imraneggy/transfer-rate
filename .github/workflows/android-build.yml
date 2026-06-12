@@ -1,6 +1,6 @@
-# Build the release APK on a tag push or manual dispatch.
-# Uses repo secrets KEYSTORE_BASE64 + KEYSTORE_* if configured; otherwise
-# falls back to debug-signed APK (per build.gradle.kts).
+# Build release APKs on a tag push or manual dispatch.
+# CI release builds require KEYSTORE_BASE64 + KEYSTORE_* secrets; debug-signing
+# fallback is intentionally blocked in CI by android/app/build.gradle.kts.
 name: android-build
 
 on:
