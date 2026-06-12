@@ -279,21 +279,32 @@ def test_mid_market_falls_back_to_open_erapi(httpx_mock):
 
 def test_uae_gold_extracts_24k_and_22k(httpx_mock):
     httpx_mock.add_response(
-        url=re.compile(r"https://www\.khaleejtimes\.com/gold-forex.*"),
-        text=fixture_text("khaleej_gold.html"),
-        headers={"content-type": "text/html"},
+        url=re.compile(r"https://charts\.igold\.ae/api/data.*metal=xau.*"),
+        json={
+            "last_price": 556.00,
+            "data": [
+                [1777593600000, 540.00],
+                [1777680000000, 550.00],
+                [1777766400000, 556.00],
+            ],
+        },
+        headers={"content-type": "application/json"},
     )
     side = fetch_uae_gold()
     assert side.status == "ok"
     assert side.currency == "AED"
     assert side.per_g_24k == 556.00
-    assert side.per_g_22k == 514.75
+    assert side.per_g_22k == pytest.approx(509.67)
+    assert "igold.ae" in side.source
+    assert len(side.history) == 3
+    assert side.history[-1].date == "2026-05-03"
+    assert side.history[-1].per_g_22k == pytest.approx(509.67)
 
 
 def test_india_gold_extracts_history_series(httpx_mock):
     httpx_mock.add_response(
-        url=re.compile(r"https://www\.bankbazaar\.com/gold-rate-india\.html.*"),
-        text=fixture_text("bankbazaar_gold.html"),
+        url=re.compile(r"https://www\.livechennai\.com/gold_silverrate\.asp.*"),
+        text=fixture_text("livechennai_gold_silver.html"),
         headers={"content-type": "text/html"},
     )
     side = fetch_india_gold(history_days=30)
@@ -301,7 +312,8 @@ def test_india_gold_extracts_history_series(httpx_mock):
     assert side.currency == "INR"
     assert side.per_g_24k == 14632.0
     assert side.per_g_22k == 13935.0
-    # Should have 3 days of history from the fixture (de-duplicated)
+    assert side.source == "LiveChennai"
+    # LiveChennai fixture carries 3 recent daily rows, newest first.
     assert len(side.history) == 3
     assert side.history[0].date == "2026-05-02"
     assert side.history[0].per_g_24k == 14632.0
