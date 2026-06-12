@@ -139,7 +139,11 @@ android {
             } else {
                 val isCi = System.getenv("CI") == "true" ||
                     System.getenv("GITHUB_ACTIONS") == "true"
-                if (isCi) {
+                val requestedReleaseBuild = gradle.startParameter.taskNames.any { taskName ->
+                    taskName.contains("Release", ignoreCase = true) ||
+                        taskName.contains("Bundle", ignoreCase = true)
+                }
+                if (isCi && requestedReleaseBuild) {
                     error(
                         "CI release build attempted with no signing keystore configured. " +
                         "Provide KEYSTORE_FILE / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD " +
