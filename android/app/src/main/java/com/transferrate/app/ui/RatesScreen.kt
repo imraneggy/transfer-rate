@@ -937,12 +937,11 @@ private fun CurrencyChip(info: CurrencyInfo, isSelected: Boolean, onClick: () ->
 }
 
 /**
- * Send-amount input panel. Three things:
- *   - Quick-pick chips for common amounts (1k, 5k, 10k, 25k, 50k AED)
- *   - A text field for custom amounts
- *   - Updates state on focus-loss / IME action so we don't recompute on
- *     every keystroke (which would cause the LazyColumn to re-layout
- *     every typed character)
+ * Send-amount input panel.
+ *
+ * The text field updates the calculated receive amounts as the user types,
+ * without a separate Set button. Quick-pick chips cover the requested common
+ * send amounts: 500, 1,000, 4,000, 6,000, and 10,000 AED.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
