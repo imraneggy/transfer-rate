@@ -30,6 +30,22 @@ A data-publishing workflow blocker was fixed:
 - Verification: scrape run 27441082256 succeeded and created commit 0dfef2a43d39a75a9f3321addb4ab6e5dfa28827.
 - main public/rates.json after fix: completed_at=2026-06-12T20:26:51Z, INR providers ok=12.
 
+## Release Completion
+
+v0.32.6 has been released.
+
+- Tag: v0.32.6
+- Tag commit: e5b6c502627fa2a750a3b6d6eb4e84eb1c43eb68
+- Changelog workflow: 27450258278 passed
+- Android release workflow: 27450258280 passed
+- Release URL: https://github.com/imraneggy/transfer-rate/releases/tag/v0.32.6
+- Release APK assets:
+  - app-arm64-v8a-release.apk
+  - app-armeabi-v7a-release.apk
+  - app-universal-release.apk
+  - app-x86_64-release.apk
+
+Frontend design work can now continue from a green release baseline.
 ## Architecture Summary
 
 Transfer Rate has two main planes:
@@ -83,12 +99,12 @@ Recommended additions:
 - Node 20 deprecation warnings appear in Actions logs. Pinned action SHAs should be reviewed and upgraded to Node 24-compatible revisions before September 2026.
 - Add a post-scrape check that asserts generated artifacts were committed or intentionally unchanged.
 
-## Release Plan For v0.32.6
+## Completed Release Plan For v0.32.6
 
-Before tagging:
+Completed:
 
-1. Confirm android-test-build still succeeds after version bump.
-2. Bump Android versionName from 0.32.5 to 0.32.6 and increment versionCode from 67 to 68.
+1. android-test-build passed for the version bump.
+2. Android versionName was bumped to 0.32.6 and versionCode to 68.
 5. Update CHANGELOG.md with v0.32.6 entries.
 6. Regenerate/update docs/CHANGELOG.html if required by the changelog workflow.
 7. Update docs/FRONTEND_UPDATE_REPORT.html with final release validation.
@@ -110,9 +126,8 @@ Before tagging:
 
 Start here:
 
-1. Prepare the v0.32.6 version/changelog commit.
-2. Re-run android-test-build after the version bump.
-3. Tag v0.32.6 only after Android build validation passes.
-4. Verify android-build release APK artifacts.
+1. Continue with frontend design work from the v0.32.6 baseline.
+2. Keep test.yml and android-test-build.yml green before the next release.
+3. Add FreshnessBanner UI tests and a release dry-run workflow next.
 
-Python pytest is green as of run 27449778191; do not regress it before tagging.
+Python pytest is green as of run 27450166895 and v0.32.6 release artifacts are verified.
