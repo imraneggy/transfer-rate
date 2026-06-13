@@ -8,7 +8,7 @@ fixtures (committed under tests/fixtures/). Each test verifies:
 
 When a provider's site changes its response shape, the regex/JSON path
 no longer matches the fixture and the test fails. The test then needs
-to be updated alongside the scraper. This is the desired behaviour —
+to be updated alongside the scraper. This is the desired behaviour -
 the test is the contract.
 """
 from __future__ import annotations
@@ -26,7 +26,8 @@ from scrapers.federal_exchange import FederalExchangeProvider
 from scrapers.gold import fetch_uae_gold, fetch_india_gold
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
-# LuluProvider removed in v0.30.6 — F5 BIG-IP WAF blocks every
+from scrapers.orient_exchange import OrientExchangeProvider
+# LuluProvider removed in v0.30.6 - F5 BIG-IP WAF blocks every
 # cloud datacenter IP we tested, the scraper was deleted.  Tests
 # preserved as documentation just below (commented out) until the
 # next time test_scrapers.py is reorganised.
@@ -58,7 +59,7 @@ def test_wise_returns_ok_rate(httpx_mock):
 # --- Aspora -------------------------------------------------------------
 
 def test_aspora_returns_ok_rate(httpx_mock):
-    # Aspora cycles through a host list — match any
+    # Aspora cycles through a host list - match any
     httpx_mock.add_response(
         url=re.compile(r"https://api-z[1-4]\.aspora\.com/forex/rates"),
         text=fixture_text("aspora_forex_rates.json"),
@@ -106,10 +107,38 @@ def test_index_exchange_extracts_rate_from_html(httpx_mock):
     assert q.rate == 25.673940949936
 
 
+
+# --- Orient Exchange ----------------------------------------------------
+
+def test_orient_exchange_extracts_rate_from_json(httpx_mock):
+    httpx_mock.add_response(
+        url="https://www.orientexchange.com/Orient/GetExchangeRates",
+        text=fixture_text("orient_exchange_rates.json"),
+        headers={"content-type": "application/json"},
+    )
+    q = OrientExchangeProvider().fetch()
+    assert q.status == "ok"
+    assert q.provider_id == "orient_exchange"
+    assert q.rate == 25.7599
+    assert q.base == "AED"
+    assert q.quote == "INR"
+    assert q.received_quote == pytest.approx(25759.9)
+    assert "13 Jun 2026 08.20 AM" in (q.note or "")
+
+
+def test_orient_exchange_rejects_unknown_currency(httpx_mock):
+    httpx_mock.add_response(
+        url="https://www.orientexchange.com/Orient/GetExchangeRates",
+        text=fixture_text("orient_exchange_rates.json"),
+        headers={"content-type": "application/json"},
+    )
+    with pytest.raises(RuntimeError, match="XYZ not found"):
+        OrientExchangeProvider().fetch(target_currency="XYZ")
+
 # --- LuLu (removed in v0.30.6) ------------------------------------------
 # Provider dropped from the lineup because LuLu's F5 BIG-IP WAF blocks
 # every cloud datacenter IP we tested (GitHub Actions runners,
-# Cloudflare Workers, AWS, Azure, OVH).  Tests removed in v0.32.2 — the
+# Cloudflare Workers, AWS, Azure, OVH).  Tests removed in v0.32.2 - the
 # scraper module no longer exists.
 
 # --- Al Ansari ----------------------------------------------------------

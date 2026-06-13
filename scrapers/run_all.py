@@ -17,20 +17,20 @@ Output is a single combined JSON document at public/rates.json:
 Design choices:
 
   1. **Only providers with verified public rate sources are included.**
-     Providers without a working scraper are not listed at all — no stubs,
+     Providers without a working scraper are not listed at all - no stubs,
      no estimates. Cleaner UX in the app and less noise.
 
-  2. **Concurrency with hard isolation** — each (provider, corridor) pair
+  2. **Concurrency with hard isolation** - each (provider, corridor) pair
      runs in its own thread with a strict timeout.
 
-  3. **Stale tolerance** — if a (provider, corridor) cell fails this run,
+  3. **Stale tolerance** - if a (provider, corridor) cell fails this run,
      we keep the previous successful quote (if any) but mark it
      status="stale" with the original `fetched_at`.
 
-  4. **Atomic write** — temp file + os.replace, so readers never see a
+  4. **Atomic write** - temp file + os.replace, so readers never see a
      half-written document.
 
-  5. **Manual override layer** — `data/manual-rates.json` can override
+  5. **Manual override layer** - `data/manual-rates.json` can override
      entries (kept for future use, e.g. emergency corrections; currently
      no provider expects manual override since all listed providers have
      working scrapers).
@@ -48,15 +48,16 @@ from typing import Dict, List
 
 from .base import BaseProvider, Quote, SUPPORTED_TARGETS
 
-# Tier 0 — independent mid-market benchmark (extracted to header in app, not in list)
+# Tier 0 - independent mid-market benchmark (extracted to header in app, not in list)
 from .mid_market import MidMarketProvider
 
-# Tier 1 — providers with verified public rate sources (real working scrapers)
+# Tier 1 - providers with verified public rate sources (real working scrapers)
 from .wise import WiseProvider
 from .aspora import AsporaProvider
 from .remitly import RemitlyProvider
 from .transfergo import TransferGoProvider
 from .index_exchange import IndexExchangeProvider
+from .orient_exchange import OrientExchangeProvider
 from .ahalia import AhaliaProvider
 from .al_ansari import AlAnsariProvider
 from .al_dahab import AlDahabProvider
@@ -69,11 +70,11 @@ from .gold import fetch_gold, GoldHistoryPoint
 # Display order. Mid-market first (extracted to header), then real providers.
 # Stubs for app-only services (Botim, Comera, e&) and providers without
 # discovered public APIs (Al Fardan, Sharaf, Habib, etc.) are intentionally
-# NOT in this list — they would just clutter the UI with "estimated"
+# NOT in this list - they would just clutter the UI with "estimated"
 # placeholders. To re-add a stub, import it from scrapers/<name>.py and
 # include it below.
 #
-# LuLu was dropped in v0.30.6 — their F5 BIG-IP WAF blocks every datacenter
+# LuLu was dropped in v0.30.6 - their F5 BIG-IP WAF blocks every datacenter
 # IP we tried (GitHub Actions, Cloudflare Workers, AWS, Azure, etc).  The
 # only reliable path was a self-hosted runner on a residential IP, and the
 # operational overhead of keeping that runner online outweighed having
@@ -93,6 +94,7 @@ def _build_providers() -> List[BaseProvider]:
         FederalExchangeProvider(),
         GccExchangeProvider(),
         IndexExchangeProvider(),
+        OrientExchangeProvider(),
         LariProvider(),
     ]
 
@@ -337,7 +339,7 @@ def _merge_uae_gold_history(
          persist, fold back into side.
 
     This way the union of "igold history + accumulated cron snapshots"
-    is what the app sees — fullness when primary works, graceful
+    is what the app sees - fullness when primary works, graceful
     degradation when primary doesn't.
     """
     from datetime import date as _date
@@ -361,7 +363,7 @@ def _merge_uae_gold_history(
             if isinstance(loaded, dict):
                 for d, v in loaded.items():
                     if isinstance(v, dict) and "22k" in v and "24k" in v:
-                        # Don't overwrite scraper-provided values —
+                        # Don't overwrite scraper-provided values -
                         # the scraper output is fresher (sub-day),
                         # the rolling file is yesterday's tick.
                         rolling.setdefault(d, v)
@@ -457,7 +459,7 @@ def main() -> int:
     for c in fresh:
         fresh[c].sort(key=lambda q: order.get(q.provider_id, 99))
 
-    # Gold module — pulled separately from the FX corridors and embedded
+    # Gold module - pulled separately from the FX corridors and embedded
     # at the top level. Failures here are isolated: rates.json publishes
     # with `gold: null` if the gold scrape fails entirely.
     gold_payload = None
@@ -492,7 +494,7 @@ def main() -> int:
     try:
         _append_to_history(payload, args.history)
     except Exception as exc:
-        # Non-fatal — rate.json is the primary artifact; history is bonus.
+        # Non-fatal - rate.json is the primary artifact; history is bonus.
         print(f"warning: history update failed: {exc}", file=sys.stderr)
 
     total = sum(len(v) for v in fresh.values())
