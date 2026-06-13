@@ -15,6 +15,19 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.32.6] - 2026-06-13
+
+### Added
+- **Android stale-rate warning banner.** The home screen now shows a delayed warning when the loaded feed is 3-24 hours old and a critical stale warning after 24 hours, with the refresh action wired to the existing `RatesViewModel.refresh()` flow.
+- **Debug APK validation workflow.** Added `android-test-build.yml` to compile `:app:assembleDebug` and upload the `transfer-rate-debug-apk` artifact before official release tagging.
+
+### Fixed
+- **CI debug builds no longer require release-signing secrets.** The Gradle release-signing guard now fails only when a release or bundle task is requested, so `:app:assembleDebug` can run safely in CI without keystore secrets.
+- **Scrape workflow now commits generated rate artifacts again.** Replaced the invalid `git status --porcelain --cached` check with `git diff --cached --quiet`, restoring the intended git-backed history for `public/rates.json`, `public/history.json`, and `data/uae_gold_history.json`.
+- **Gold scraper tests now match current sources.** UAE gold tests cover the igold.ae primary path and India gold tests cover LiveChennai history parsing.
+
+### Internal
+- Updated frontend and project analysis reports with the debug APK result, scrape verification, and release-readiness handoff.
 ## [0.32.5] — 2026-05-15
 
 ### Fixed
