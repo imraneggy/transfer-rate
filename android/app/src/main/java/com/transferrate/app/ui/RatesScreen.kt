@@ -30,7 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -957,8 +956,6 @@ private fun AmountPanel(
     )) { mutableStateOf(TextFieldValue(formatAmount(amount))) }
     val focusManager = LocalFocusManager.current
 
-    // If the underlying amount changes (e.g. quick-chip), reflect that in the
-    // text field — but only if the user isn't currently editing.
     LaunchedEffect(amount) {
         val currentText = fieldValue.text.replace(",", "").trim()
         val currentNum = currentText.toDoubleOrNull()
@@ -967,63 +964,35 @@ private fun AmountPanel(
         }
     }
 
-    fun commitAmount(text: String) {
-        val cleaned = text.replace(",", "").trim()
+    fun applyTypedAmount(value: TextFieldValue) {
+        fieldValue = value
+        val cleaned = value.text.replace(",", "").trim()
         val n = cleaned.toDoubleOrNull()
-        if (n != null && n in 1.0..1_000_000.0) {
+        if (n != null && n in 1.0..1_000_000.0 && n != amount) {
             onAmountChange(n)
-            fieldValue = TextFieldValue(formatAmount(n))
-        } else {
-            // Snap back to the current valid amount
-            fieldValue = TextFieldValue(formatAmount(amount))
         }
     }
 
     Column(Modifier.fillMaxWidth()) {
-        // Trailing "Set" affordance inside the field — visible button so
-        // users on phones know the amount can be confirmed without
-        // dismissing the keyboard via the system Done key.  Tapping it
-        // commits the amount and removes focus (closes the keyboard).
         OutlinedTextField(
             value = fieldValue,
-            onValueChange = { fieldValue = it },
+            onValueChange = ::applyTypedAmount,
             label = { Text(stringResource(R.string.amount_label_sending)) },
             prefix = { Text(stringResource(R.string.amount_input_prefix)) },
-            trailingIcon = {
-                androidx.compose.material3.TextButton(
-                    onClick = {
-                        commitAmount(fieldValue.text)
-                        focusManager.clearFocus()
-                    },
-                    modifier = Modifier.padding(end = 4.dp),
-                ) {
-                    Text(
-                        stringResource(R.string.amount_action_set),
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done,
             ),
             keyboardActions = KeyboardActions(
-                onDone = {
-                    commitAmount(fieldValue.text)
-                    focusManager.clearFocus()
-                },
+                onDone = { focusManager.clearFocus() },
             ),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(),
         )
         Spacer(Modifier.height(8.dp))
-        // LazyRow so chips can scroll horizontally on narrow screens.
-        // A regular Row with 5 chips overflowed at ~360dp width and the
-        // "50,000" label wrapped to two lines.
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(listOf(1000.0, 5000.0, 10_000.0, 25_000.0, 50_000.0)) { v ->
+            items(listOf(500.0, 1000.0, 4000.0, 6000.0, 10_000.0)) { v ->
                 AmountChip(
                     label = formatAmount(v),
                     selected = (amount == v),
@@ -1037,7 +1006,6 @@ private fun AmountPanel(
         }
     }
 }
-
 @Composable
 private fun AmountChip(label: String, selected: Boolean, onClick: () -> Unit) {
     val bg = if (selected) MaterialTheme.colorScheme.primary
