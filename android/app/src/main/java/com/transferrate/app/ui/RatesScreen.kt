@@ -57,6 +57,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
@@ -800,9 +803,36 @@ private fun MidMarketHeader(
     // Fixed height + tight padding so both modules visually align.
     // When onClick is provided (mid-market history is available), the
     // entire card becomes tappable to open the 30-day history sheet.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    // v0.33 facelift: hero shape bumped 18dp -> 22dp for a softer
+    // silhouette, plus a depth treatment per theme — light mode gets a
+    // soft primary-tinted shadow (cards "float"), dark mode (OLED true
+    // black has no usable shadow) gets a subtle light-catch gradient
+    // border instead.
+    val heroShape = RoundedCornerShape(22.dp)
+    val depthMod = if (isDark) {
+        Modifier.border(
+            width = 1.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                    Color.Transparent,
+                ),
+            ),
+            shape = heroShape,
+        )
+    } else {
+        Modifier.shadow(
+            elevation = 6.dp,
+            shape = heroShape,
+            ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+        )
+    }
     val baseMod = modifier
         .fillMaxWidth()
         .heightIn(min = 156.dp)
+        .then(depthMod)
     // v0.27.1: bg switched from primaryContainer (saturated pale indigo)
     // to surfaceVariant (near-neutral slate) and the body text from
     // onPrimaryContainer (deep indigo, same hue as old bg → muddy) to
@@ -814,12 +844,32 @@ private fun MidMarketHeader(
             onClick = onClick,
             onClickLabel = "Show mid-market 30-day history",
         ) else baseMod,
-        shape = RoundedCornerShape(18.dp),
+        shape = heroShape,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
     ) {
-        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+        // v0.33 facelift: soft radial glow behind the hero rate —
+        // primary-tinted, fades to transparent so the existing
+        // surfaceVariant background shows through at the edges.
+        val glowAlpha = if (isDark) 0.22f else 0.14f
+        val glowColor = MaterialTheme.colorScheme.primary.copy(alpha = glowAlpha)
+        Column(
+            Modifier
+                .drawBehind {
+                    drawRect(
+                        brush = Brush.radialGradient(
+                            colors = listOf(glowColor, Color.Transparent),
+                            center = androidx.compose.ui.geometry.Offset(
+                                size.width * 0.28f,
+                                size.height * 0.32f,
+                            ),
+                            radius = size.maxDimension * 0.85f,
+                        ),
+                    )
+                }
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+        ) {
             // Eyebrow label — primary-coloured to retain brand pop.
             // AutoSizeText: Tamil "மிட்-மார்க்கெட்" + Hindi "मिड-मार्केट"
             // + Malayalam "മിഡ്-മാർക്കറ്റ്" are all wider than English
@@ -1057,6 +1107,10 @@ private fun ProviderCard(
         p.status == "ok" -> MaterialTheme.colorScheme.surfaceVariant
         else -> MaterialTheme.colorScheme.surface
     }
+    // v0.33 facelift: corner radius bumped 16dp -> 20dp for a softer
+    // silhouette, matching the hero/gold header cards.
+    val cardShape = RoundedCornerShape(20.dp)
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     // BEST border matches the brand tint at a deeper saturation so the
     // card edge is unmistakable without overpowering the fill.
     val border = if (isBest) {
@@ -1070,16 +1124,41 @@ private fun ProviderCard(
         Modifier.border(
             width = 1.5.dp,
             color = borderShade,
-            shape = RoundedCornerShape(16.dp),
+            shape = cardShape,
+        )
+    } else if (isDark) {
+        // v0.33 facelift: OLED black has no usable drop shadow, so
+        // non-BEST cards get a subtle light-catch gradient border
+        // (top-left lighter, fading out) for a glassy, dimensional edge.
+        Modifier.border(
+            width = 1.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                    Color.Transparent,
+                ),
+            ),
+            shape = cardShape,
+        )
+    } else Modifier
+    // v0.33 facelift: light mode cards get a soft primary-tinted shadow
+    // so they visually "float" off the paper background — BEST cards
+    // float a bit more than regular ones.
+    val shadowMod = if (!isDark) {
+        Modifier.shadow(
+            elevation = if (isBest) 6.dp else 3.dp,
+            shape = cardShape,
+            ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
         )
     } else Modifier
 
     Card(
-        modifier = Modifier.fillMaxWidth().then(border),
-        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth().then(shadowMod).then(border),
+        shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = containerColor),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = if (isBest) 2.dp else 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark && isBest) 2.dp else 0.dp),
     ) {
         Column(Modifier.padding(14.dp).fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {

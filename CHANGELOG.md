@@ -15,6 +15,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.33.0] - 2026-06-13
+
+### Changed
+- **Android visual facelift.** Hero mid-market rate card, gold/silver card, and provider cards now use a slightly larger corner radius (16-20dp -> 20-22dp) for a softer, more premium feel.
+- **Depth treatment per theme.** In light mode, the hero, gold/silver, and provider cards now carry a subtle primary-tinted shadow; in OLED dark mode they instead get a faint light-catch gradient border, so cards read as raised surfaces against the pure-black background.
+- **Hero rate glow.** The mid-market rate card now has a soft radial primary-color glow behind the headline rate, tuned lower-alpha for light mode and higher for dark mode.
+
 ## [0.32.7] - 2026-06-13
 
 ### Added

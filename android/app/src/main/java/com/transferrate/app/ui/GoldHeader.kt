@@ -1,6 +1,7 @@
 package com.transferrate.app.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +25,10 @@ import com.transferrate.app.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,12 +74,38 @@ fun GoldHeader(
 
     val metals = LocalMetalColors.current
 
+    // v0.33 facelift: shape bumped 20dp -> 22dp to match MidMarketHeader,
+    // plus the same per-theme depth treatment — soft primary-tinted
+    // shadow in light mode, light-catch gradient border on OLED black.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val cardShape = RoundedCornerShape(22.dp)
+    val depthMod = if (isDark) {
+        Modifier.border(
+            width = 1.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                    Color.Transparent,
+                ),
+            ),
+            shape = cardShape,
+        )
+    } else {
+        Modifier.shadow(
+            elevation = 6.dp,
+            shape = cardShape,
+            ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+        )
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 156.dp)
+            .then(depthMod)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = cardShape,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
