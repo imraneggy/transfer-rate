@@ -183,6 +183,7 @@ Not active in the live app until a reliable public source is confirmed:
 | Al Rostamani, Al Fardan, Sharaf, Joyalukkas, Al Ghurair, Wall Street | Dubai/UAE candidates under investigation; Orient was the first confirmed clean public endpoint found in the June 2026 gap check. |
 
 Contributions to add stable public scrapers are welcome — see `CONTRIBUTING.md`.
+
 ## Repository layout
 
 ```
