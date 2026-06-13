@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-6">v0.32.6</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-5">v0.32.5</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-4">v0.32.4</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-3">v0.32.3</a><span class="date">2026-05-15</span></li>
@@ -378,8 +379,47 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-32-5">
-  <h2><span class="ver">v0.32.5</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-6">
+  <h2><span class="ver">v0.32.6</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Android stale-rate warning banner.</strong> The home
+      screen now shows a delayed warning when the loaded feed is 3-24
+      hours old and a critical stale warning after 24 hours, with the
+      refresh action wired to the existing
+      <code>RatesViewModel.refresh()</code> flow.</li>
+    <li><strong>Debug APK validation workflow.</strong> Added
+      <code>android-test-build.yml</code> to compile
+      <code>:app:assembleDebug</code> and upload the
+      <code>transfer-rate-debug-apk</code> artifact before official
+      release tagging.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>CI debug builds no longer require release-signing
+      secrets.</strong> The Gradle release-signing guard now fails only
+      when a release or bundle task is requested, so debug builds can run
+      safely in CI without keystore secrets.</li>
+    <li><strong>Scrape workflow now commits generated rate artifacts
+      again.</strong> Replaced the invalid staged-change check with
+      <code>git diff --cached --quiet</code>, restoring the intended
+      git-backed history for published data artifacts.</li>
+    <li><strong>Gold scraper tests now match current sources.</strong>
+      UAE gold tests cover the igold.ae primary path and India gold tests
+      cover LiveChennai history parsing.</li>
+  </ul>
+
+  <h3 class="internal">Internal</h3>
+  <ul>
+    <li>Updated frontend and project analysis reports with the debug APK
+      result, scrape verification, and release-readiness handoff.</li>
+  </ul>
+</section>
+<section class="release" id="v0-32-5">
+  <h2><span class="ver">v0.32.5</span></h2>
   <p class="date">2026-05-15</p>
 
   <h3 class="fixed">Fixed</h3>
