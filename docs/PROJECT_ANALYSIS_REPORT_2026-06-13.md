@@ -167,3 +167,24 @@ Pre-tag validation required before creating `v0.32.7`:
 3. `android-test-build.yml` on latest main.
 
 After those pass, create tag `v0.32.7` and verify `changelog-sync` plus `android-build` release APK assets.
+## v0.32.7 Release Completion - 2026-06-13
+
+v0.32.7 has been released.
+
+- Tag: v0.32.7
+- Tag commit: 3e8fc00c3e60a61b2389bfd5806024c47df75f29
+- Release URL: https://github.com/imraneggy/transfer-rate/releases/tag/v0.32.7
+- Pre-tag validation:
+  - test.yml: 27461445131 passed
+  - scrape.yml: 27461445543 passed
+  - android-test-build.yml: 27461445966 passed
+- Tag workflows:
+  - changelog.yml: 27461573956 passed
+  - android-build.yml: 27461573946 passed
+- Release APK assets:
+  - app-arm64-v8a-release.apk (3,462,958 bytes)
+  - app-armeabi-v7a-release.apk (3,460,116 bytes)
+  - app-universal-release.apk (3,513,031 bytes)
+  - app-x86_64-release.apk (3,463,619 bytes)
+
+The earlier changelog run 27461505573 failed because docs/CHANGELOG.html did not yet contain the v0.32.7 section. The rendered HTML changelog was fixed in commit 3e8fc00c3e60a61b2389bfd5806024c47df75f29, the tag was moved to that fixed commit, and the corrected tag workflows passed.
