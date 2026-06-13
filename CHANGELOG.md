@@ -27,6 +27,7 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ### Documentation
 - Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
+
 ## [0.32.6] - 2026-06-13
 
 ### Added
