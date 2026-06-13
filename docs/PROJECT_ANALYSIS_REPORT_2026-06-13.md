@@ -150,3 +150,20 @@ June 2026 UAE provider gap check result:
 4. Sharaf Exchange, Al Rostamani, Al Fardan, Joyalukkas: no confirmed free, stable AED->INR public endpoint yet.
 
 Next data-plane task: investigate Al Ghurair's frontend request pattern and add it only if the GitHub Actions runner can fetch it reliably without secrets, CAPTCHA, or browser-only state.
+## v0.32.7 Release Preparation - 2026-06-13
+
+Prepared patch release v0.32.7 for the Android amount-input and Orient provider UI work.
+
+- Android versionCode: 69
+- Android versionName: 0.32.7
+- Includes Orient Exchange scraper and live `public/rates.json` validation.
+- Includes Orient Android avatar asset and brand tint mapping.
+- Includes Sending amount live-update behavior and quick amount chips: 500, 1,000, 4,000, 6,000, 10,000.
+
+Pre-tag validation required before creating `v0.32.7`:
+
+1. `test.yml` on latest main.
+2. `scrape.yml` on latest main.
+3. `android-test-build.yml` on latest main.
+
+After those pass, create tag `v0.32.7` and verify `changelog-sync` plus `android-build` release APK assets.

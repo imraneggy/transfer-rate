@@ -15,14 +15,18 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
-## [Unreleased]
+## [0.32.7] - 2026-06-13
 
 ### Added
 - **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+- **Orient Exchange Android avatar.** Bundled `logo_orient_exchange.png` and added Orient brand tint mapping for BEST-card styling.
+
+### Changed
+- **Sending amount now updates live while typing.** Removed the `Set` button from the Sending amount field; entered amounts immediately update provider receive totals.
+- **Quick amount chips updated.** The amount shortcuts now show AED 500, 1,000, 4,000, 6,000, and 10,000.
 
 ### Documentation
 - Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
-
 ## [0.32.6] - 2026-06-13
 
 ### Added
