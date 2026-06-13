@@ -15,6 +15,12 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.34.0] - 2026-06-13
+
+### Added
+- **Sharaf Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.sharafexchange.ae/engine/wp-json/v1/currency-exchange-rates`, with fixture-backed parser tests.
+- **Gold/silver "what this buys" calculator.** The amount section is now split into two cards: the existing Sending-amount input/chips, and a new calculator that converts the entered AED amount into grams of 24K gold, 22K gold, or silver at today's UAE rate, with a chip selector between the three.
+
 ## [0.33.0] - 2026-06-13
 
 ### Changed

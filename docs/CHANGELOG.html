@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-34-0">v0.34.0</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-33-0">v0.33.0</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-7">v0.32.7</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-6">v0.32.6</a><span class="date">2026-06-13</span></li>
@@ -381,8 +382,25 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-33-0">
-  <h2><span class="ver">v0.33.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-34-0">
+  <h2><span class="ver">v0.34.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Sharaf Exchange scraper.</strong> Added a public JSON-backed
+      provider for AED → INR rates using
+      <code>https://www.sharafexchange.ae/engine/wp-json/v1/currency-exchange-rates</code>,
+      with fixture-backed parser tests.</li>
+    <li><strong>Gold/silver "what this buys" calculator.</strong> The amount
+      section is now split into two cards: the existing Sending-amount
+      input/chips, and a new calculator that converts the entered AED
+      amount into grams of 24K gold, 22K gold, or silver at today's UAE
+      rate, with a chip selector between the three.</li>
+  </ul>
+</section>
+<section class="release" id="v0-33-0">
+  <h2><span class="ver">v0.33.0</span></h2>
   <p class="date">2026-06-13</p>
 
   <h3 class="changed">Changed</h3>

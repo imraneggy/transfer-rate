@@ -73,7 +73,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.transferrate.app.R
 import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.CurrencyInfo
+import com.transferrate.app.data.GoldDocument
 import com.transferrate.app.data.ProviderQuote
+import com.transferrate.app.ui.theme.LocalMetalColors
 
 /** Theme override modes for the user-facing toggle. */
 enum class ThemeMode {
@@ -503,6 +505,7 @@ private fun ReadyView(
     val selected = state.selectedCurrency
     val info = CURRENCIES[selected]
     val midMarket = state.midMarketRate
+    val gold = state.doc.gold
 
     // The provider whose history sheet is currently open (null = no sheet).
     var sheetForProvider by remember { mutableStateOf<ProviderQuote?>(null) }
@@ -539,7 +542,6 @@ private fun ReadyView(
             // forces both cards to the same height — matches whichever
             // module's content is taller. When the gold module is
             // unavailable the FX header takes full width.
-            val gold = state.doc.gold
             val midMarketQuote = state.midMarketQuote
             val onMidMarketClick: (() -> Unit)? = midMarketQuote?.let { q ->
                 { sheetForProvider = q }
@@ -579,6 +581,12 @@ private fun ReadyView(
             AmountPanel(
                 amount = state.selectedAmount,
                 onAmountChange = onAmountChange,
+            )
+        }
+        item {
+            MetalCalculatorPanel(
+                amount = state.selectedAmount,
+                gold = gold,
             )
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
@@ -1085,6 +1093,115 @@ private fun formatAmount(value: Double): String {
     val asLong = value.toLong()
     return if (asLong.toDouble() == value) "%,d".format(asLong)
     else "%,.2f".format(value)
+}
+
+/** Which metal/karat the [MetalCalculatorPanel] is currently converting to. */
+private enum class MetalCalcOption(val labelRes: Int) {
+    Gold24k(R.string.metals_calc_option_gold_24k),
+    Gold22k(R.string.metals_calc_option_gold_22k),
+    Silver(R.string.metals_calc_option_silver),
+}
+
+/**
+ * "What this buys" gold/silver calculator — split out of the amount
+ * section in v0.34.0 so the AED amount entered in [AmountPanel] above
+ * can also be read as grams of metal at today's UAE rate.
+ *
+ * Tapping a chip (24K gold / 22K gold / silver) divides the entered AED
+ * amount by that metal's UAE per-gram rate from [GoldDocument]. Options
+ * whose rate is unavailable are omitted from the chip row; if none are
+ * available the whole card is hidden (mirrors [GoldHeader]'s graceful
+ * degradation).
+ */
+@Composable
+private fun MetalCalculatorPanel(
+    amount: Double,
+    gold: GoldDocument?,
+    modifier: Modifier = Modifier,
+) {
+    val goldOk = gold?.uae?.status == "ok"
+    val silverOk = gold?.uaeSilver?.status == "ok" && gold.uaeSilver?.perG != null
+
+    val options = buildList {
+        if (goldOk && gold?.uae?.perG24k != null) add(MetalCalcOption.Gold24k)
+        if (goldOk && gold?.uae?.perG22k != null) add(MetalCalcOption.Gold22k)
+        if (silverOk) add(MetalCalcOption.Silver)
+    }
+    if (options.isEmpty()) return
+
+    var selected by remember { mutableStateOf(options.first()) }
+    if (selected !in options) selected = options.first()
+
+    val metals = LocalMetalColors.current
+    val perGram = when (selected) {
+        MetalCalcOption.Gold24k -> gold?.uae?.perG24k
+        MetalCalcOption.Gold22k -> gold?.uae?.perG22k
+        MetalCalcOption.Silver -> gold?.uaeSilver?.perG
+    }
+    val grams = perGram?.takeIf { it > 0.0 }?.let { amount / it }
+    val isSilver = selected == MetalCalcOption.Silver
+    val accentColor = if (isSilver) metals.silverText else metals.goldText
+    val valueColor = if (isSilver) metals.silverDeep else metals.goldDeep
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+    ) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            Text(
+                text = stringResource(R.string.metals_calc_title),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.0.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                options.forEach { option ->
+                    AmountChip(
+                        label = stringResource(option.labelRes),
+                        selected = (option == selected),
+                        onClick = { selected = option },
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            if (grams != null && perGram != null) {
+                Text(
+                    text = "%,.2f g".format(grams),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = valueColor,
+                    maxLines = 1,
+                    softWrap = false,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = stringResource(
+                        R.string.metals_calc_rate_format,
+                        "%,.2f".format(perGram),
+                    ),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = accentColor.copy(alpha = 0.85f),
+                    maxLines = 1,
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.metals_calc_unavailable),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
 }
 
 @Composable

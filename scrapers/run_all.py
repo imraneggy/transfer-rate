@@ -64,15 +64,15 @@ from .al_dahab import AlDahabProvider
 from .federal_exchange import FederalExchangeProvider
 from .gcc_exchange import GccExchangeProvider
 from .lari import LariProvider
+from .sharaf import SharafProvider
 from .gold import fetch_gold, GoldHistoryPoint
 
 
 # Display order. Mid-market first (extracted to header), then real providers.
 # Stubs for app-only services (Botim, Comera, e&) and providers without
-# discovered public APIs (Al Fardan, Sharaf, Habib, etc.) are intentionally
-# NOT in this list - they would just clutter the UI with "estimated"
-# placeholders. To re-add a stub, import it from scrapers/<name>.py and
-# include it below.
+# discovered public APIs (Al Fardan, Habib, etc.) are intentionally NOT in
+# this list - they would just clutter the UI with "estimated" placeholders.
+# To re-add a stub, import it from scrapers/<name>.py and include it below.
 #
 # LuLu was dropped in v0.30.6 - their F5 BIG-IP WAF blocks every datacenter
 # IP we tried (GitHub Actions, Cloudflare Workers, AWS, Azure, etc).  The
@@ -96,6 +96,7 @@ def _build_providers() -> List[BaseProvider]:
         IndexExchangeProvider(),
         OrientExchangeProvider(),
         LariProvider(),
+        SharafProvider(),
     ]
 
 

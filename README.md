@@ -8,7 +8,7 @@ Public, free, ad-free, no analytics, no accounts.
 [![android-build](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> **Latest release: [v0.32.7](https://github.com/imraneggy/transfer-rate/releases/tag/v0.32.7)** — universal APK ~3.4 MB.
+> **Latest release: [v0.34.0](https://github.com/imraneggy/transfer-rate/releases/tag/v0.34.0)** — universal APK ~3.4 MB.
 > See [`CHANGELOG.md`](CHANGELOG.md) for the full version history;
 > the rendered HTML report lives at [`docs/CHANGELOG.html`](docs/CHANGELOG.html).
 > End-user docs are in [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
@@ -25,11 +25,11 @@ A small Android 14+ app (~3.4 MB universal APK, **zero native
 dependencies as of v0.29.x**) that shows three things side-by-side,
 refreshed every 15 minutes:
 
-1. **AED → INR remittance rates** from up to twelve UAE money-transfer
+1. **AED → INR remittance rates** from up to thirteen UAE money-transfer
    providers (Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab,
    Ahalia, Federal Exchange, GCC Exchange, Index Exchange, Orient Exchange,
-   Lari). Providers without a verified public scraper stay out of the live
-   provider list until they can be sourced reliably.
+   Lari, Sharaf Exchange). Providers without a verified public scraper stay
+   out of the live provider list until they can be sourced reliably.
 2. **The Google Finance mid-market rate** as a benchmark, so the
    provider spread is visible at a glance.
 3. **Gold & silver rates** for the UAE (Khaleej Times) and India
@@ -170,6 +170,7 @@ Active scrapers:
 | Index Exchange | working | Public homepage rate field |
 | Orient Exchange | working | Public `/Orient/GetExchangeRates` JSON endpoint |
 | Lari Exchange | working | Public server-rendered rate table |
+| Sharaf Exchange | working | Public `/engine/wp-json/v1/currency-exchange-rates` JSON endpoint |
 
 Not active in the live app until a reliable public source is confirmed:
 
@@ -180,7 +181,7 @@ Not active in the live app until a reliable public source is confirmed:
 | Botim Pay | App-only / no stable public web rate endpoint confirmed. |
 | Comera | App-only / no stable public web rate endpoint confirmed. |
 | Careem Pay | Not in the active scraper registry; needs a re-check before listing. |
-| Al Rostamani, Al Fardan, Sharaf, Joyalukkas, Al Ghurair, Wall Street | Dubai/UAE candidates under investigation; Orient was the first confirmed clean public endpoint found in the June 2026 gap check. |
+| Al Rostamani, Al Fardan, Joyalukkas, Al Ghurair, Wall Street | Dubai/UAE candidates under investigation; Al Fardan is blocked by a Sucuri CloudProxy WAF challenge. |
 
 Contributions to add stable public scrapers are welcome — see `CONTRIBUTING.md`.
 

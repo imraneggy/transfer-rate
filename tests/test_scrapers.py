@@ -27,6 +27,7 @@ from scrapers.gold import fetch_uae_gold, fetch_india_gold
 from scrapers.gcc_exchange import GccExchangeProvider
 from scrapers.index_exchange import IndexExchangeProvider
 from scrapers.orient_exchange import OrientExchangeProvider
+from scrapers.sharaf import SharafProvider
 # LuluProvider removed in v0.30.6 - F5 BIG-IP WAF blocks every
 # cloud datacenter IP we tested, the scraper was deleted.  Tests
 # preserved as documentation just below (commented out) until the
@@ -134,6 +135,34 @@ def test_orient_exchange_rejects_unknown_currency(httpx_mock):
     )
     with pytest.raises(RuntimeError, match="XYZ not found"):
         OrientExchangeProvider().fetch(target_currency="XYZ")
+
+
+# --- Sharaf Exchange ------------------------------------------------------
+
+def test_sharaf_extracts_rate_from_json(httpx_mock):
+    httpx_mock.add_response(
+        url="https://www.sharafexchange.ae/engine/wp-json/v1/currency-exchange-rates",
+        text=fixture_text("sharaf_exchange_rates.json"),
+        headers={"content-type": "application/json"},
+    )
+    q = SharafProvider().fetch()
+    assert q.status == "ok"
+    assert q.provider_id == "sharaf"
+    assert q.rate == 25.76
+    assert q.base == "AED"
+    assert q.quote == "INR"
+    assert q.received_quote == pytest.approx(25760.0)
+    assert "2026-06-12 06:23 PM" in (q.note or "")
+
+
+def test_sharaf_rejects_unknown_currency(httpx_mock):
+    httpx_mock.add_response(
+        url="https://www.sharafexchange.ae/engine/wp-json/v1/currency-exchange-rates",
+        text=fixture_text("sharaf_exchange_rates.json"),
+        headers={"content-type": "application/json"},
+    )
+    with pytest.raises(RuntimeError, match="XYZ not found"):
+        SharafProvider().fetch(target_currency="XYZ")
 
 # --- LuLu (removed in v0.30.6) ------------------------------------------
 # Provider dropped from the lineup because LuLu's F5 BIG-IP WAF blocks
