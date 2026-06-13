@@ -311,7 +311,7 @@
     UAE / India corridor.
   </p>
   <div class="meta">
-    <span><strong>Latest:</strong> v0.32.5 · 2026-05-15</span>
+    <span><strong>Latest:</strong> v0.32.7 · 2026-06-13</span>
     <span><strong>Source:</strong> <a href="https://github.com/imraneggy/transfer-rate">github.com/imraneggy/transfer-rate</a></span>
     <span><strong>Canonical:</strong> <a href="../CHANGELOG.md">CHANGELOG.md</a></span>
     <span><strong>Auto-rendered by</strong> <code>changelog.yml</code> on tag push</span>
@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-32-7">v0.32.7</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-6">v0.32.6</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-5">v0.32.5</a><span class="date">2026-05-15</span></li>
     <li><a href="#v0-32-4">v0.32.4</a><span class="date">2026-05-15</span></li>
@@ -379,8 +380,38 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-32-6">
-  <h2><span class="ver">v0.32.6</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-32-7">
+  <h2><span class="ver">v0.32.7</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-13</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Orient Exchange scraper.</strong> Added a public JSON-backed
+      provider for AED → INR rates using
+      <code>https://www.orientexchange.com/Orient/GetExchangeRates</code>,
+      with fixture-backed parser tests and live scrape validation.</li>
+    <li><strong>Orient Exchange Android avatar.</strong> Bundled
+      <code>logo_orient_exchange.png</code> and added Orient brand tint
+      mapping for BEST-card styling.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Sending amount now updates live while typing.</strong>
+      Removed the <code>Set</code> button from the Sending amount field;
+      entered amounts immediately update provider receive totals.</li>
+    <li><strong>Quick amount chips updated.</strong> The amount shortcuts now
+      show AED 500, 1,000, 4,000, 6,000, and 10,000.</li>
+  </ul>
+
+  <h3 class="internal">Documentation</h3>
+  <ul>
+    <li>Updated provider documentation to reflect the active scraper
+      registry and the June 2026 Dubai/Abu Dhabi provider gap check.</li>
+  </ul>
+</section>
+<section class="release" id="v0-32-6">
+  <h2><span class="ver">v0.32.6</span></h2>
   <p class="date">2026-06-13</p>
 
   <h3 class="added">Added</h3>
