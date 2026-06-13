@@ -27,9 +27,9 @@ refreshed every 15 minutes:
 
 1. **AED → INR remittance rates** from up to twelve UAE money-transfer
    providers (Wise, Aspora, Remitly, TransferGo, Al Ansari, Al Dahab,
-   Ahalia, Federal Exchange, GCC Exchange, Index Exchange, Lari, LuLu).
-   App-only providers (e&, Botim, Comera, Careem Pay) appear when the
-   maintainer enters them through the manual admin UI.
+   Ahalia, Federal Exchange, GCC Exchange, Index Exchange, Orient Exchange,
+   Lari). Providers without a verified public scraper stay out of the live
+   provider list until they can be sourced reliably.
 2. **The Google Finance mid-market rate** as a benchmark, so the
    provider spread is visible at a glance.
 3. **Gold & silver rates** for the UAE (Khaleej Times) and India
@@ -154,20 +154,35 @@ single JSON file to GitHub Pages — no servers to operate, $0 ongoing cost.
 
 ## Providers
 
-| Provider     | Status        | Source                 |
-|--------------|---------------|------------------------|
-| Wise         | working       | Public comparisons API |
-| Remitly      | working       | Public calculator API  |
-| LuLu Money   | working       | Public rate page       |
-| Aspora       | working       | Public landing page    |
-| Careem Pay   | working       | Public rate page       |
-| e& Money     | investigating | App-only               |
-| Botim Pay    | investigating | App-only               |
-| Comera       | investigating | App-only               |
+Active scrapers:
 
-`investigating` providers appear in the app with a "Coming soon" badge.
-Contributions to add scrapers for them are welcome — see `CONTRIBUTING.md`.
+| Provider | Status | Source |
+|----------|--------|--------|
+| Wise | working | Public comparisons API |
+| Aspora | working | Public rates API |
+| Remitly | working | Public calculator page |
+| TransferGo | working | Public FX API |
+| Al Ansari Exchange | working | Public WordPress AJAX calculator |
+| Al Dahab Exchange | working/stale-tolerant | Public homepage rate marquee |
+| Ahalia Exchange | working | Public inline `cc_data` rates |
+| Federal Exchange | working | Public homepage rate card |
+| GCC Exchange | working | Public rates API |
+| Index Exchange | working | Public homepage rate field |
+| Orient Exchange | working | Public `/Orient/GetExchangeRates` JSON endpoint |
+| Lari Exchange | working | Public server-rendered rate table |
 
+Not active in the live app until a reliable public source is confirmed:
+
+| Provider | Current finding |
+|----------|-----------------|
+| LuLu Money | Dropped in v0.30.6 because F5 BIG-IP WAF blocks cloud datacenter IPs used by GitHub Actions and Cloudflare Workers. |
+| e& Money | App-only / no stable public web rate endpoint confirmed. |
+| Botim Pay | App-only / no stable public web rate endpoint confirmed. |
+| Comera | App-only / no stable public web rate endpoint confirmed. |
+| Careem Pay | Not in the active scraper registry; needs a re-check before listing. |
+| Al Rostamani, Al Fardan, Sharaf, Joyalukkas, Al Ghurair, Wall Street | Dubai/UAE candidates under investigation; Orient was the first confirmed clean public endpoint found in the June 2026 gap check. |
+
+Contributions to add stable public scrapers are welcome — see `CONTRIBUTING.md`.
 ## Repository layout
 
 ```
@@ -180,7 +195,7 @@ transfer-rate/
 │   ├── run_all.py             Runs everything, writes public/rates.json
 │   ├── gold.py                UAE gold (Khaleej Times) + India gold/silver
 │   │                          (LiveChennai) + UAE silver (XAG spot × peg)
-│   ├── wise.py, remitly.py, lulu.py, aspora.py, careem.py, …
+│   ├── wise.py, remitly.py, transfergo.py, orient_exchange.py, aspora.py, …
 ├── public/
 │   ├── rates.json             Output, served by GitHub Pages
 │   └── admin/                 Static manual-entry admin UI

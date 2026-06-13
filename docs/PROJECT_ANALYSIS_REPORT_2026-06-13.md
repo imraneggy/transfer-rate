@@ -131,3 +131,22 @@ Start here:
 3. Add FreshnessBanner UI tests and a release dry-run workflow next.
 
 Python pytest is green as of run 27450166895 and v0.32.6 release artifacts are verified.
+## Provider Expansion Update - 2026-06-13
+
+Orient Exchange has been added as a live provider after the Dubai/Abu Dhabi provider gap check.
+
+- Implementation commit: c9885b15162ea23401195e2be93c9df4d3e45dd7
+- Scraper: scrapers/orient_exchange.py
+- Fixture: tests/fixtures/orient_exchange_rates.json
+- Registry: scrapers/run_all.py now includes OrientExchangeProvider after Index Exchange.
+- Unit tests: test.yml push run 27460858686 passed on the Orient commit; workflow_dispatch run 27460875026 also passed.
+- Live scrape: scrape.yml push run 27460858678 passed and public/rates.json now includes provider_id=orient_exchange with status=ok, rate=25.7599, and provider timestamp 13 Jun 2026 08.20 AM.
+
+June 2026 UAE provider gap check result:
+
+1. Orient Exchange: added now; clean public JSON endpoint.
+2. Al Ghurair Exchange: promising, but direct endpoint calls need exact request matching before it can be trusted.
+3. Wall Street Exchange: public converter appears to be cash FX and was stale in the fetched page; not a remittance-rate source yet.
+4. Sharaf Exchange, Al Rostamani, Al Fardan, Joyalukkas: no confirmed free, stable AED->INR public endpoint yet.
+
+Next data-plane task: investigate Al Ghurair's frontend request pattern and add it only if the GitHub Actions runner can fetch it reliably without secrets, CAPTCHA, or browser-only state.

@@ -15,6 +15,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.32.6] - 2026-06-13
 
 ### Added
@@ -722,6 +729,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.5] — 2026-05-10
 
 ### Fixed
@@ -767,6 +781,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.4] — 2026-05-10
 
 ### Added
@@ -803,6 +824,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.3] — 2026-05-10
 
 ### Fixed
@@ -846,6 +874,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.2] — 2026-05-09
 
 ### Added
@@ -904,6 +939,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.1] — 2026-05-08
 
 ### Fixed
@@ -934,6 +976,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.29.0] — 2026-05-08
 
 ### Removed
@@ -970,6 +1019,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.28.2] — 2026-05-08
 
 ### Changed
@@ -999,6 +1055,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.28.1] — 2026-05-08
 
 ### Security
@@ -1036,6 +1099,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.28.0] — 2026-05-08
 
 ### Security
@@ -1141,6 +1211,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.27.1] — 2026-05-08
 
 ### Fixed
@@ -1180,6 +1257,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.27.0] — 2026-05-08
 
 ### Changed
@@ -1208,6 +1292,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.26.0] — 2026-05-07
 
 ### Added
@@ -1229,6 +1320,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.25.0] — 2026-05-07
 
 ### Changed
@@ -1242,6 +1340,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.24.0] — 2026-05-07
 
 ### Added
@@ -1251,6 +1356,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.23.0] — 2026-05-07
 
 ### Changed
@@ -1264,6 +1376,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.22.0] — 2026-05-07
 
 ### Added
@@ -1280,6 +1399,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.21.0] — 2026-05-07
 
 ### Fixed
@@ -1290,6 +1416,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.20.0] — 2026-05-07
 
 ### Removed
@@ -1299,6 +1432,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.19.0] — 2026-05-06
 
 ### Added
@@ -1309,6 +1449,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.18.0] — 2026-05-06
 
 ### Added
@@ -1318,6 +1465,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.17.0] — 2026-05-06
 
 ### Changed
@@ -1326,6 +1480,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.16.x] — 2026-05-04
 
 - **0.16.3** — New launcher icon (Stair-Step E variant).
@@ -1337,6 +1498,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.15.0] — 2026-05-04
 
 ### Added
@@ -1345,6 +1513,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.14.0] — 2026-05-03
 
 ### Added
@@ -1354,6 +1529,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.13.x] — 2026-05-03
 
 - **0.13.6** — Word labels in the toolbar; LuLu workaround attempt notes.
@@ -1369,6 +1551,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.12.2] — 2026-05-03
 
 ### Fixed
@@ -1377,6 +1566,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.11.0] — 2026-05-02
 
 ### Changed
@@ -1385,6 +1581,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.10.x] — 2026-05-02
 
 - **0.10.1** — Ahalia Exchange (11th provider).
@@ -1392,6 +1595,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.9.x] — 2026-05-02
 
 - **0.9.0 (later)** — Provider history sheet; provider logos; 10-day
@@ -1401,6 +1611,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.8.x] — 2026-05-02
 
 - **0.8.1** — Rate history sparklines; improved logo graphics.
@@ -1409,6 +1626,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.7.0] — 2026-05-02
 
 ### Added
@@ -1419,6 +1643,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.6.0] — 2026-05-02
 
 ### Changed
@@ -1426,6 +1657,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.5.x] — 2026-05-02
 
 - **0.5.1** — Minimalist T-monogram icon and splash screen.
@@ -1434,6 +1672,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.4.0] — 2026-05-02
 
 ### Added
@@ -1444,6 +1689,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.3.0] — 2026-05-02
 
 ### Added
@@ -1453,6 +1705,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 ## [0.1.0] — 2026-05-01
 
 ### Added
@@ -1461,6 +1720,13 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Orient Exchange scraper.** Added a public JSON-backed provider for AED -> INR rates using `https://www.orientexchange.com/Orient/GetExchangeRates`, with fixture-backed parser tests and live scrape validation.
+
+### Documentation
+- Updated provider documentation to reflect the active scraper registry and the June 2026 Dubai/Abu Dhabi provider gap check.
 [0.29.6]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.6
 [0.29.5]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.5
 [0.29.4]: https://github.com/imraneggy/transfer-rate/releases/tag/v0.29.4
