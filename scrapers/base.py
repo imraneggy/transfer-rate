@@ -8,12 +8,24 @@ from typing import Optional
 
 # Active corridors the orchestrator generates data for.
 #
-# Currently AED -> INR only. The architecture supports multi-currency
-# (every scraper, the schema, the UI all handle a list of targets) — to
-# re-enable a corridor, just add its 3-letter code back to this tuple.
-# Available codes for re-enabling: PKR, PHP, BDT, EGP, USD, EUR, GBP, NPR, LKR.
+# The architecture supports multi-currency (every scraper, the schema,
+# the UI all handle a list of targets) — to enable another corridor,
+# just add its 3-letter code to this tuple.
+# Note: providers that don't support a given corridor raise inside
+# fetch() and the orchestrator records status="error" for that cell —
+# the app hides those cells per-currency (see RatesViewModel.visibleQuotes),
+# so it's safe for coverage to vary across corridors.
 SUPPORTED_TARGETS = (
     "INR",
+    "PKR",
+    "PHP",
+    "BDT",
+    "EGP",
+    "USD",
+    "EUR",
+    "GBP",
+    "NPR",
+    "LKR",
 )
 
 

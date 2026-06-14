@@ -258,16 +258,21 @@ const PROVIDERS = [
 ];
 
 // Active corridors. Mirrors scrapers/base.py SUPPORTED_TARGETS.
-// Currently INR only. To re-enable a corridor, add its code here AND
-// in scrapers/base.py.
-const CURRENCIES = ["INR"];
+// To enable another corridor, add its code here AND in scrapers/base.py.
+const CURRENCIES = ["INR", "PKR", "PHP", "BDT", "EGP", "USD", "EUR", "GBP", "NPR", "LKR"];
 
 // Plausible bounds per currency (1 AED -> X). Used to reject typos.
-// Other entries kept as comments so re-enabling is one-line:
-//   PKR: [40, 150], PHP: [8, 30], BDT: [15, 60], EGP: [5, 40],
-//   USD: [0.1, 1], EUR: [0.1, 1], GBP: [0.1, 1], NPR: [20, 80], LKR: [40, 150]
 const BOUNDS = {
   INR: [10, 50],
+  PKR: [40, 150],
+  PHP: [8, 30],
+  BDT: [15, 60],
+  EGP: [5, 40],
+  USD: [0.1, 1],
+  EUR: [0.1, 1],
+  GBP: [0.1, 1],
+  NPR: [20, 80],
+  LKR: [40, 150],
 };
 
 const REPO_OWNER = "imraneggy";

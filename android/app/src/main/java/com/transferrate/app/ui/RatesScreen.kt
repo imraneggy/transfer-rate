@@ -126,17 +126,17 @@ fun RatesScreen(
                     // + ⓘ leaves ~120 dp for the title which fits the
                     // logo + "Transfer Rate" cleanly.
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Logo on a NEUTRAL near-white coin in BOTH light
-                        // and dark modes.  The brand mark's own dark-navy
-                        // + teal palette is what reads as "this is the
-                        // logo"; tinting the coin (as in v0.29.x) muted
-                        // those colours.  Apple/Stripe pattern: brand
-                        // marks always sit on a neutral container.
+                        // Logo on a Deep Navy (#071827) coin in BOTH light
+                        // and dark modes — matches TransferRateLogo
+                        // (SplashScreen.kt) and the Adaptive Icon
+                        // Background from the "infinity DXR" brand sheet.
+                        // The symbol's AED/INR glyphs are white, so they
+                        // need this dark backing for contrast.
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(Color(0xFFFFFFFF)),
+                                .background(Color(0xFF071827)),
                             contentAlignment = Alignment.Center,
                         ) {
                             androidx.compose.foundation.Image(
@@ -594,9 +594,14 @@ private fun ReadyView(
             val isBest = (p.status == "ok" || p.status == "manual")
                     && state.bestRate != null
                     && (p.effectiveRate ?: p.rate) == state.bestRate
-            val historyForProvider = state.history?.providers?.get(p.providerId)
-                ?.map { it.rate }
-                ?: emptyList()
+            // history.json only tracks the AED->INR corridor today (see
+            // run_all.py _append_to_history) — don't show INR sparklines/
+            // trend arrows while viewing another corridor's rates.
+            val historyForProvider = if (selected == "INR") {
+                state.history?.providers?.get(p.providerId)?.map { it.rate } ?: emptyList()
+            } else {
+                emptyList()
+            }
             ProviderCard(
                 p = p,
                 isBest = isBest,
@@ -621,7 +626,12 @@ private fun ReadyView(
 
     // History bottom sheet for the tapped provider.
     sheetForProvider?.let { p ->
-        val historyPoints = state.history?.providers?.get(p.providerId).orEmpty()
+        // Same INR-only history scoping as the list view above.
+        val historyPoints = if (selected == "INR") {
+            state.history?.providers?.get(p.providerId).orEmpty()
+        } else {
+            emptyList()
+        }
         ProviderHistorySheet(
             provider = p,
             history = historyPoints,

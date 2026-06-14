@@ -36,15 +36,21 @@ sealed interface RatesUiState {
             get() = doc.corridors[selectedCurrency]
                 ?.firstOrNull { it.providerId == "mid_market" && it.status == "ok" }
 
-        /** Quotes for the selected corridor, EXCLUDING only the mid-market
-         *  benchmark (which is promoted to the header). Wise and all other
-         *  providers remain in the list.
-         *  Sorted: ok by best rate, then stale, then investigating, then error. */
+        /** Quotes for the selected corridor, EXCLUDING the mid-market
+         *  benchmark (which is promoted to the header) and any provider
+         *  with no rate at all for this currency. A provider that doesn't
+         *  support a given corridor comes back as status="error" (or, on
+         *  a never-fetched corridor, "investigating") with rate=null —
+         *  rather than showing an empty StatusDot card, we hide it from
+         *  this currency's list entirely. "stale" quotes keep their last
+         *  good rate and remain visible.
+         *  Sorted: ok by best rate, then stale, then manual. */
         val visibleQuotes: List<ProviderQuote>
             get() {
                 val all = doc.corridors[selectedCurrency] ?: emptyList()
                 return all
                     .filterNot { it.providerId == "mid_market" }
+                    .filter { it.rate != null || it.effectiveRate != null }
                     .sortedWith(
                         compareBy(
                             { statusOrder(it.status) },
