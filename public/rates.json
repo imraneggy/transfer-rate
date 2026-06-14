@@ -2,8 +2,8 @@
   "schema_version": 2,
   "base": "AED",
   "amount_base": 1000.0,
-  "started_at": "2026-06-14T09:01:51Z",
-  "completed_at": "2026-06-14T09:01:58Z",
+  "started_at": "2026-06-14T11:16:53Z",
+  "completed_at": "2026-06-14T11:17:15Z",
   "corridors": {
     "INR": [
       {
@@ -12,17 +12,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.9149,
+        "rate": 25.89803,
         "fee_base": null,
-        "received_quote": 25914.899999999998,
-        "effective_rate": 25.9149,
+        "received_quote": 25898.03,
+        "effective_rate": 25.89803,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:54Z"
       },
       {
         "provider_id": "wise",
@@ -40,7 +40,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "aspora",
@@ -48,17 +48,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.91,
+        "rate": 25.9,
         "fee_base": 0.0,
-        "received_quote": 25910.0,
-        "effective_rate": 25.91,
+        "received_quote": 25900.0,
+        "effective_rate": 25.9,
         "delivery_estimate": "within minutes",
         "url": "https://www.aspora.com/ae",
         "status": "ok",
         "note": null,
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "remitly",
@@ -66,17 +66,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.77,
+        "rate": 25.83,
         "fee_base": 0.0,
-        "received_quote": 25770.0,
-        "effective_rate": 25.77,
+        "received_quote": 25830.0,
+        "effective_rate": 25.83,
         "delivery_estimate": "cash pickup, bank deposit, or UPI",
         "url": "https://www.remitly.com/ae/en/india",
         "status": "ok",
         "note": null,
-        "promo_rate": 25.95,
+        "promo_rate": 26.01,
         "promo_note": "First transfer \u2265 AED 10",
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:54Z"
       },
       {
         "provider_id": "transfergo",
@@ -94,7 +94,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "al_ansari",
@@ -112,7 +112,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:55Z"
+        "fetched_at": "2026-06-14T11:16:58Z"
       },
       {
         "provider_id": "al_dahab",
@@ -130,7 +130,7 @@
         "note": "Daily ticker rate from Al Dahab Exchange homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:51Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "ahalia",
@@ -148,7 +148,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -162,8 +162,8 @@
         "effective_rate": 25.89,
         "delivery_estimate": null,
         "url": "https://www.federalexchange.ae/",
-        "status": "ok",
-        "note": "Daily rate from Federal Exchange homepage card.",
+        "status": "stale",
+        "note": "Last good fetch: 2026-06-14T09:01:54Z; current error: RuntimeError: Federal Exchange: 'INDIAN RUPEE' card not found on page. Their homepage structure may have changed.",
         "promo_rate": null,
         "promo_note": null,
         "fetched_at": "2026-06-14T09:01:54Z"
@@ -184,7 +184,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:53Z"
       },
       {
         "provider_id": "index_exchange",
@@ -202,7 +202,7 @@
         "note": "Indicative rate from indexexchange.ae homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:53Z"
+        "fetched_at": "2026-06-14T11:16:54Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -220,7 +220,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 13 Jun 2026 08.20 AM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:54Z"
       },
       {
         "provider_id": "lari",
@@ -234,8 +234,8 @@
         "effective_rate": 25.83,
         "delivery_estimate": "branch / online transfer",
         "url": "https://www.lariexchange.com/",
-        "status": "ok",
-        "note": "Static homepage rate table.",
+        "status": "stale",
+        "note": "Last good fetch: 2026-06-14T09:01:57Z; current error: ConnectTimeout: timed out",
         "promo_rate": null,
         "promo_note": null,
         "fetched_at": "2026-06-14T09:01:57Z"
@@ -256,7 +256,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-06-12 06:23 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-06-14T09:01:52Z"
+        "fetched_at": "2026-06-14T11:16:55Z"
       }
     ]
   },
@@ -663,6 +663,6 @@
         }
       ]
     },
-    "fetched_at": "2026-06-14T09:01:58Z"
+    "fetched_at": "2026-06-14T11:17:15Z"
   }
 }
