@@ -15,6 +15,19 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.35.0] - 2026-06-14
+
+### Added
+- **HD provider avatars.** Added a real `logo_sharaf.png` (was missing entirely, falling back to initials) and replaced the blurry low-res `logo_orient_exchange.png` with a sharp 192x192 asset sourced from each provider's official site.
+- **Motivational gold/silver calculator headlines.** The "what this buys" eyebrow above the gold/silver calculator now rotates through 30+ catchy, metal-specific phrases each time the screen opens or the metal selection changes: a purity-focused pool for 24K (incl. comparisons to 22K), a general gold-buying pool for 22K, and a silver-buying pool for Silver.
+
+### Changed
+- **Avatar fill.** Bundled provider logos now fill more of the avatar circle (padding reduced from 14% to 6%) so HD logos read clearly at small sizes.
+- **Brand tints refreshed.** Updated the Orient Exchange BEST-card tint to match its real brand color, and added a new Sharaf Exchange tint.
+
+### Removed
+- **Provider-card sparklines.** Removed the 7-day rate trend sparkline rendered below each provider card to save vertical space; the ▲/▼ trend arrow next to the rate is unchanged.
+
 ## [0.34.0] - 2026-06-13
 
 ### Added

@@ -138,7 +138,7 @@ fun ProviderAvatar(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(size)
-                    .padding(size * 0.14f),
+                    .padding(size * 0.06f),
             )
         }
         return

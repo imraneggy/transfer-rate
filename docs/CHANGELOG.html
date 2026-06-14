@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-35-0">v0.35.0</a><span class="date">2026-06-14</span></li>
     <li><a href="#v0-34-0">v0.34.0</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-33-0">v0.33.0</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-32-7">v0.32.7</a><span class="date">2026-06-13</span></li>
@@ -382,8 +383,44 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-34-0">
-  <h2><span class="ver">v0.34.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-35-0">
+  <h2><span class="ver">v0.35.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-14</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>HD provider avatars.</strong> Added a real
+      <code>logo_sharaf.png</code> (was missing entirely, falling back to
+      initials) and replaced the blurry low-res
+      <code>logo_orient_exchange.png</code> with a sharp 192x192 asset
+      sourced from each provider's official site.</li>
+    <li><strong>Motivational gold/silver calculator headlines.</strong> The
+      "what this buys" eyebrow above the gold/silver calculator now rotates
+      through 30+ catchy, metal-specific phrases each time the screen opens
+      or the metal selection changes: a purity-focused pool for 24K (incl.
+      comparisons to 22K), a general gold-buying pool for 22K, and a
+      silver-buying pool for Silver.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Avatar fill.</strong> Bundled provider logos now fill more
+      of the avatar circle (padding reduced from 14% to 6%) so HD logos
+      read clearly at small sizes.</li>
+    <li><strong>Brand tints refreshed.</strong> Updated the Orient Exchange
+      BEST-card tint to match its real brand color, and added a new Sharaf
+      Exchange tint.</li>
+  </ul>
+
+  <h3 class="removed">Removed</h3>
+  <ul>
+    <li><strong>Provider-card sparklines.</strong> Removed the 7-day rate
+      trend sparkline rendered below each provider card to save vertical
+      space; the ▲/▼ trend arrow next to the rate is unchanged.</li>
+  </ul>
+</section>
+<section class="release" id="v0-34-0">
+  <h2><span class="ver">v0.34.0</span></h2>
   <p class="date">2026-06-13</p>
 
   <h3 class="added">Added</h3>

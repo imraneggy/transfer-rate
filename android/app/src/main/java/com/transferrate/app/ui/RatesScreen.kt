@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -1151,8 +1152,20 @@ private fun MetalCalculatorPanel(
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            // v0.35.0: pick a random motivational, metal-specific phrase
+            // for the eyebrow — a purity-focused pool for 24K, a general
+            // gold pitch for 22K, and a silver pool for silver. Re-rolled
+            // on screen open and again whenever the user switches metals,
+            // instead of always showing the same static "WHAT THIS BUYS"
+            // label.
+            val titleVariants = when (selected) {
+                MetalCalcOption.Gold24k -> stringArrayResource(R.array.metals_calc_title_variants_gold_24k)
+                MetalCalcOption.Gold22k -> stringArrayResource(R.array.metals_calc_title_variants_gold_22k)
+                MetalCalcOption.Silver -> stringArrayResource(R.array.metals_calc_title_variants_silver)
+            }
+            val title = remember(selected) { titleVariants.random() }
             Text(
-                text = stringResource(R.string.metals_calc_title),
+                text = title,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.0.sp,
@@ -1351,21 +1364,6 @@ private fun ProviderCard(
                 // rate against the rolling 7-day average.
                 RateView(p, midMarket = midMarket, amount = amount, history = history)
             }
-            // Sparkline of past rates (last 7 days). Only render when we
-            // have at least 2 history points; one point is just a dot.
-            if (history.size >= 2 && (p.status == "ok" || p.status == "manual")) {
-                Spacer(Modifier.height(10.dp))
-                Sparkline(
-                    values = history,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
-                    // 36 dp gives the v0.25 thicker stroke + fill gradient
-                    // adequate plot height (28 dp clipped the highlight
-                    // halo because the new Sparkline reserves more inset).
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp),
-                )
-            }
             if (p.status == "ok" && p.promoRate != null) {
                 Spacer(Modifier.height(10.dp))
                 PromoBadge(p.promoRate, p.promoNote, p.quote)
@@ -1435,8 +1433,8 @@ private fun RateView(
     val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
     val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
 
-    // v0.31.0: rolling-7-day trend arrow.  Computed against the same
-    // history list the sparkline below the card already consumes.
+    // v0.31.0: rolling-7-day trend arrow.  Computed against the
+    // provider's 7-day rate history.
     // Threshold 0.1% (10 bps) matches the existing vs-mid threshold
     // (`delta > 0.001` on a rate around 26 = ~10 bps) so the two
     // indicators share a consistency: a ▲ here roughly corresponds in

@@ -42,9 +42,10 @@ internal fun bestCardTintFor(providerId: String): Color {
         "gcc_exchange"         -> if (isDark) Color(0xFF126448) else Color(0xFFAEE2C7)  // brand #02A451
         "index_exchange"       -> if (isDark) Color(0xFF837C35) else Color(0xFFFEF3B9)  // brand #FDDA26
         "lari"                 -> if (isDark) Color(0xFF7F5A38) else Color(0xFFFCDBBB)  // brand #F58E2C
-        "orient_exchange"      -> if (isDark) Color(0xFF243C55) else Color(0xFFB9C7D4)  // brand favicon blue
+        "orient_exchange"      -> if (isDark) Color(0xFF776338) else Color(0xFFF6E1BC)  // brand #E2A22E
         "lulu"                 -> if (isDark) Color(0xFF1A678C) else Color(0xFFB4E4F7)  // brand #15ABE7
         "remitly"              -> if (isDark) Color(0xFF213449) else Color(0xFFB9C0C8)  // brand #243954
+        "sharaf"               -> if (isDark) Color(0xFF84542B) else Color(0xFFFFD7B3)  // brand #FF8110
         "transfergo"           -> if (isDark) Color(0xFF847724) else Color(0xFFFFF0AD)  // brand #FFD000
         "wise"                 -> if (isDark) Color(0xFF153124) else Color(0xFFB0BEAE)  // brand #083500
         // Fallback: prior dual-tone indigo (used when a provider is

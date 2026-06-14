@@ -52,7 +52,111 @@
     <!-- "What this buys" gold/silver calculator (v0.34.0, split from the
          amount panel). "24K"/"22K" stay English-only — unit-code style
          labels like the gold header, not prose. -->
-    <string name="metals_calc_title">WHAT THIS BUYS</string>
+    <!-- v0.35.0: the eyebrow above the chip row picks a random phrase from
+         one of these pools each time the screen loads (and again whenever
+         the user switches between 24K, 22K, and silver), so the calculator
+         feels fresh on repeat visits and nudges towards a purchase instead
+         of showing the same static label. The 24K pool leans on purity
+         ("99.9%", "pure") and contrasts with 22K; the 22K pool is the
+         general gold pitch. -->
+    <string-array name="metals_calc_title_variants_gold_24k">
+        <item>✨ 24K — as pure as gold gets</item>
+        <item>💯 99.9% pure gold, just for you</item>
+        <item>👑 The purest gold, no compromises</item>
+        <item>🏆 24K beats 22K on purity, every time</item>
+        <item>💎 Pure gold beats jewelry-grade — go 24K</item>
+        <item>✨ This is gold at its finest</item>
+        <item>🌟 Nothing added, nothing taken — pure 24K</item>
+        <item>🔥 The gold standard, literally</item>
+        <item>💯 Why settle for 22K when you can go pure?</item>
+        <item>👑 24K: investment-grade, not just jewelry-grade</item>
+        <item>✨ Purer than 22K, worth every gram</item>
+        <item>🏆 The real deal — 24K pure gold</item>
+        <item>💎 99% pure and counting</item>
+        <item>🌟 Top-tier gold, top-tier you</item>
+        <item>🔥 24K: the purest form your money can take</item>
+        <item>✨ Skip the alloy — this is pure gold</item>
+        <item>👑 More gold, less filler — that\'s 24K</item>
+        <item>💯 Pure gold, zero compromise</item>
+        <item>🏆 24K outshines 22K in purity</item>
+        <item>✨ The gold that\'s all gold</item>
+        <item>🌟 99.9% gold — the rest is rounding</item>
+        <item>💎 Investment gold starts at 24K</item>
+        <item>🔥 24K: purity you can hold</item>
+        <item>✨ Go pure — go 24K</item>
+        <item>👑 The closest thing to gold bullion</item>
+        <item>💯 24K: more carats, more value</item>
+        <item>🏆 Pure gold, pure value</item>
+        <item>✨ This is as good as gold gets</item>
+        <item>🌟 24K — purity meets opportunity</item>
+        <item>💎 Why mix it? Go full 24K</item>
+    </string-array>
+    <string-array name="metals_calc_title_variants_gold_22k">
+        <item>✨ This much gold could be yours</item>
+        <item>🪙 Gold never goes out of style</item>
+        <item>💰 Lock in gold before prices climb</item>
+        <item>🔥 Treat yourself to real gold</item>
+        <item>😍 That\'s real gold, right there</item>
+        <item>🏆 Smart money holds gold</item>
+        <item>✨ Your AED, turned into golden wealth</item>
+        <item>🤩 Why wait? Grab this gold today</item>
+        <item>💛 Gold: the gift that keeps its shine</item>
+        <item>🌟 Make it gold — you deserve it</item>
+        <item>💎 Add some gold to your stack</item>
+        <item>🚀 This could be your gold haul</item>
+        <item>👑 Gold fit for royalty, just for you</item>
+        <item>🎁 Gift yourself some gold today</item>
+        <item>📈 Gold: a tradition that pays off</item>
+        <item>✨ Turn today\'s AED into tomorrow\'s gold</item>
+        <item>🌞 Shine bright — go for gold</item>
+        <item>💍 Gold that lasts a lifetime</item>
+        <item>🏅 Gold: always in fashion, always in demand</item>
+        <item>💛 Your wealth, in gold form</item>
+        <item>🔔 Don\'t just save — own gold</item>
+        <item>✨ This is what gold ownership looks like</item>
+        <item>🪙 Every gram counts towards your gold goal</item>
+        <item>💰 Gold prices won\'t wait — will you?</item>
+        <item>🌟 Build your golden future, gram by gram</item>
+        <item>🎉 Gold day! Here\'s what you\'d get</item>
+        <item>💛 Real gold, real value, right now</item>
+        <item>🚀 Kickstart your gold collection today</item>
+        <item>✨ Gold: the original safe haven</item>
+        <item>🏆 Add gold to your portfolio today</item>
+        <item>💍 22K: the classic choice for jewelry</item>
+        <item>✨ 22K gold, ready to wear and shine</item>
+    </string-array>
+    <string-array name="metals_calc_title_variants_silver">
+        <item>✨ Silver looks good on you</item>
+        <item>🌙 This much silver could be yours</item>
+        <item>💰 Stack silver while it\'s affordable</item>
+        <item>🔥 Silver: the smart starter investment</item>
+        <item>😍 That\'s real silver, right there</item>
+        <item>🏆 Build your stack with silver</item>
+        <item>✨ Your AED, turned into shining silver</item>
+        <item>🤩 Why wait? Grab this silver today</item>
+        <item>🤍 Silver: small price, big shine</item>
+        <item>🌟 Make it silver — smart move</item>
+        <item>💎 Add some silver to your stack</item>
+        <item>🚀 This could be your silver haul</item>
+        <item>🌙 Silver: gold\'s brilliant little sibling</item>
+        <item>🎁 Gift yourself some silver today</item>
+        <item>📈 Silver: an easy way to start investing</item>
+        <item>✨ Turn today\'s AED into tomorrow\'s silver</item>
+        <item>🌟 Shine on — go for silver</item>
+        <item>🤍 Silver that adds up fast</item>
+        <item>🏅 Silver: affordable, timeless, yours</item>
+        <item>💰 Your savings, in silver form</item>
+        <item>🔔 Don\'t just save — own silver</item>
+        <item>✨ This is what silver ownership looks like</item>
+        <item>🥈 Every gram counts towards your silver goal</item>
+        <item>💰 Silver prices won\'t wait — will you?</item>
+        <item>🌟 Build your silver stack, gram by gram</item>
+        <item>🎉 Silver day! Here\'s what you\'d get</item>
+        <item>🤍 Real silver, real value, right now</item>
+        <item>🚀 Kickstart your silver collection today</item>
+        <item>✨ Silver: the smart entry point</item>
+        <item>🏆 Add silver to your portfolio today</item>
+    </string-array>
     <string name="metals_calc_option_gold_24k">24K Gold</string>
     <string name="metals_calc_option_gold_22k">22K Gold</string>
     <string name="metals_calc_option_silver">Silver</string>
