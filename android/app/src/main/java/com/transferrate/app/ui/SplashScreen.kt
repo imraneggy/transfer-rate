@@ -31,6 +31,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.transferrate.app.R
@@ -41,12 +44,14 @@ import kotlinx.coroutines.delay
  * BEFORE the rates list. Holds for at least [minDurationMs] so the
  * brand registers, then dismisses when the caller's data is ready.
  *
- * Composition (per brand brief 2026-05-06 — v0.17 refresh):
- *   - Soft-white backdrop matching the OS splash (visual continuity)
- *   - The Transfer Rate brand mark: navy "TR" with dual circular
- *     refresh arrows + bar chart + rupee currency cue
- *   - "Transfer Rate" wordmark in Space Grotesk Bold
- *   - Tagline: "Compare. Choose. Save more."
+ * Composition ("infinity DXR" brand refresh, artifacts/Splash Dark.png
+ * + Splash White.png):
+ *   - Backdrop matches the OS splash (visual continuity)
+ *   - The Transfer Rate brand mark: teal infinity money-flow loop with
+ *     white AED/INR glyphs, on a Deep Navy badge
+ *   - "Transfer Rate" wordmark in Space Grotesk Bold, with "Rate" in
+ *     brand teal
+ *   - Tagline: "Compare. Choose. Save."
  *   - Subtle loading indicator at the bottom
  *   - Whole composition fades in over 400ms for a softer transition
  *     from the OS splash
@@ -97,7 +102,12 @@ fun SplashScreen(
             Spacer(Modifier.height(28.dp))
 
             Text(
-                text = "Transfer Rate",
+                text = buildAnnotatedString {
+                    append("Transfer ")
+                    withStyle(SpanStyle(color = Color(0xFF14BBA6))) {
+                        append("Rate")
+                    }
+                },
                 color = textColor,
                 style = MaterialTheme.typography.displaySmall.copy(
                     fontSize = 40.sp,
@@ -116,7 +126,7 @@ fun SplashScreen(
 
             CircularProgressIndicator(
                 modifier = Modifier.size(28.dp),
-                color = Color(0xFF06B59C), // brand teal
+                color = Color(0xFF14BBA6), // brand teal (infinity DXR refresh)
                 strokeWidth = 2.5.dp,
             )
         }
@@ -125,18 +135,18 @@ fun SplashScreen(
 
 /**
  * In-app Transfer Rate logo. Renders the high-resolution PNG mark
- * (res/drawable-nodpi/transfer_rate_logo.png) extracted from the brand
- * source — preserves the dual circular refresh arrows, mini bar chart
- * and ₹ currency cue that hand-coded vector paths cannot match.
+ * (res/drawable-nodpi/transfer_rate_logo.png) — the "infinity DXR"
+ * symbol (teal money-flow loop + white AED/INR glyphs) extracted from
+ * the brand source.
  *
- * v0.32.1: wrapped in a neutral near-white circular "coin" so the
- * navy "TR" + dark refresh arrows stay readable on any background.
- * Previously the transparent PNG sat directly on the parent bg —
- * fine on the v0.31.x soft-white splash bg, invisible on the v0.32.0
- * OLED-pure-black splash bg.  The coin is the same pattern the
- * toolbar logo (RatesScreen.kt:130) already used since v0.29.x; this
- * just hoists the pattern into the shared composable so all callers
- * (Splash + About) get OLED-safe rendering automatically.
+ * Wrapped in a Deep Navy (#071827) circular badge, matching the
+ * Adaptive Icon Background and the "Dark Mode Avatar" treatment in
+ * artifacts/Logo System.png — the symbol's AED/INR glyphs are white,
+ * so they need a dark backing for contrast on both the light splash
+ * bg (#F6F9FC, visible navy badge per Splash White.png) and the dark
+ * splash bg (#081324, the navy badge nearly disappears into it,
+ * letting the symbol float per Splash Dark.png). One fixed badge
+ * colour keeps the brand mark consistent regardless of app theme.
  *
  * Reused by SplashScreen and AboutScreen.
  */
@@ -147,7 +157,7 @@ fun TransferRateLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(Color(0xFFFFFFFF)),
+            .background(Color(0xFF071827)),
         contentAlignment = Alignment.Center,
     ) {
         Image(

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-        Dark/OLED splash background.  v0.32.0: was inheriting the
-        light splash_bg (#F1F4F8) which caused a bright white flash
-        during cold-start on OLED devices in dark mode (splash shows
-        for ~200 ms before Compose's pure-black background takes
-        over).  Pure #000000 keeps the OLED pixels off for the entire
-        cold-start → first-frame transition.
+        Dark splash background — "infinity DXR" brand refresh.
+        #081324 (Deep Navy) per artifacts/Splash Dark.png: the new
+        symbol's teal ribbon + white AED/INR glyphs are designed to
+        float directly on this navy, with no separate icon card (see
+        windowSplashScreenIconBackgroundColor removal in
+        values-night/themes.xml). v0.32.0 used pure #000000 here for
+        OLED pixel-off savings, but that was scoped to the splash's
+        ~200 ms cold-start window — negligible power impact vs. the
+        continuous OLED-black main app background, which is unchanged.
     -->
-    <color name="splash_bg">#000000</color>
+    <color name="splash_bg">#081324</color>
 </resources>

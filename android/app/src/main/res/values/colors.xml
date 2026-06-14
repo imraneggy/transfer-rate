@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash screen background — Transfer Rate brand soft white.
-         Matches the white-bg launcher icon variant from the brand sheet
-         (clean navy "TR" + dual circular arrows on a near-white field)
-         so the OS splash, launcher icon, and in-app splash all read as
-         a unified clean composition. -->
-    <color name="splash_bg">#F1F4F8</color>
+    <!-- Splash screen background — "infinity DXR" brand refresh.
+         #F6F9FC (Soft Paper) per artifacts/Splash White.png — also the
+         app's main light-mode background (Theme.kt), so the OS splash,
+         in-app splash, and first Compose frame are visually seamless. -->
+    <color name="splash_bg">#F6F9FC</color>
 </resources>

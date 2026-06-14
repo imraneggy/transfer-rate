@@ -39,7 +39,7 @@ internal fun bestCardTintFor(providerId: String): Color {
         "al_dahab"             -> if (isDark) Color(0xFF126239) else Color(0xFFAEE1BC)  // brand #02A12F
         "aspora"               -> if (isDark) Color(0xFF372A74) else Color(0xFFC9B9E6)  // brand #5523B2
         "federal_exchange"     -> if (isDark) Color(0xFF7B5D3A) else Color(0xFFF9DDBD)  // brand #EC9532
-        "gcc_exchange"         -> if (isDark) Color(0xFF126448) else Color(0xFFAEE2C7)  // brand #02A451
+        "gcc_exchange"         -> if (isDark) Color(0xFF186646) else Color(0xFFB2E3C6)  // brand #0FA94D
         "index_exchange"       -> if (isDark) Color(0xFF837C35) else Color(0xFFFEF3B9)  // brand #FDDA26
         "lari"                 -> if (isDark) Color(0xFF7F5A38) else Color(0xFFFCDBBB)  // brand #F58E2C
         "orient_exchange"      -> if (isDark) Color(0xFF776338) else Color(0xFFF6E1BC)  // brand #E2A22E

@@ -3,44 +3,16 @@
   Themed-icon variant (Android 13+). Single white channel; the launcher
   tints to the wallpaper-derived theme color.
 
-  v0.17.0: simplified "TR" letterform pair as the monochrome fallback —
-  the full brand mark (TR + dual circular arrows + bar chart + rupee
-  cue) loses too much detail when reduced to a single channel. The TR
-  monogram stays legible from 24 dp notification badges up to launcher
-  sizes.
+  "infinity DXR" brand refresh: white silhouette of the infinity
+  money-flow loop + AED/INR glyphs (mipmap-xxxhdpi/ic_launcher_monochrome_image.png),
+  derived by alpha-thresholding the same symbol used for
+  ic_launcher_foreground.png. Replaces the old "TR" letterform vector —
+  the full infinity-loop mark is the brand identity now, so the themed
+  icon should match it rather than fall back to a monogram.
 
-  Geometry stays inside the 66dp safe zone of the 108dp adaptive canvas
-  so any mask (circle/squircle/teardrop) won't crop content.
+  Sized to the same 66dp safe zone as the foreground so any mask
+  (circle/squircle/teardrop) won't crop content.
 -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-
-    <!-- ==========  Letter T  ==========
-         Top crossbar + descender, left half of the monogram.            -->
-    <!-- T crossbar -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M28,30 h28 a4,4 0 0,1 0,8 h-28 a4,4 0 0,1 0,-8 z" />
-    <!-- T stem -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M38,30 h8 v44 a4,4 0 0,1 -8,0 z" />
-
-    <!-- ==========  Letter R  ==========
-         Spine + bowl + leg, right half of the monogram.                  -->
-    <!-- R spine -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M58,30 h8 v48 h-8 z" />
-    <!-- R bowl (top loop) -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M62,30 h12 a14,14 0 0,1 0,28 h-12 v-8 h12 a6,6 0 0,0 0,-12 h-12 z" />
-    <!-- R leg (diagonal stroke) -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M66,52 l14,26 h-9 l-13,-22 z" />
-</vector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@mipmap/ic_launcher_monochrome_image"
+    android:gravity="center" />

@@ -1,37 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Launcher icon background — Transfer Rate brand soft white.
+  Launcher icon background — "infinity DXR" brand refresh.
 
-  v0.17.0: switched from teal gradient (Exchangia era) to a near-white
-  vertical gradient (#FFFFFF → #ECEFF5) to match the new brand: a navy
-  "TR" mark with teal/navy circular arrows on a clean light field.
-
-  The gradient adds the slightest depth at icon size; both endpoints
-  are bright enough that the launcher's circle/squircle/teardrop mask
-  reveals consistent light bg around the rounded-square badge in the
-  foreground PNG.
+  Flat Deep Navy (#071827) — the Adaptive Icon Background colour from
+  the brand sheet (artifacts/Logo System.png, section 3). The
+  foreground PNG carries the teal infinity loop + white AED/INR
+  glyphs (ic_launcher_foreground.png); this flat navy is what shows
+  through behind/around it under every launcher mask shape.
 
   Adaptive icons receive a 108dp canvas; the outer 18dp gets masked by
-  the launcher (circle, squircle, etc.) so the gradient just needs to
-  fill the full canvas — no safe zone to respect for the background.
+  the launcher (circle, squircle, etc.) so the flat fill just needs to
+  cover the full canvas — no safe zone to respect for the background.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <path android:pathData="M0,0h108v108h-108z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:type="linear"
-                android:startX="0"
-                android:startY="0"
-                android:endX="0"
-                android:endY="108"
-                android:startColor="#FFFFFF"
-                android:endColor="#ECEFF5" />
-        </aapt:attr>
-    </path>
+    <path
+        android:pathData="M0,0h108v108h-108z"
+        android:fillColor="#071827" />
 </vector>
