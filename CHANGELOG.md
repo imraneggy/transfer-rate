@@ -15,6 +15,19 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.36.0] - 2026-06-15
+
+### Added
+- **8 more currency corridors.** AED -> PHP, BDT, EGP, USD, EUR, GBP, NPR, and LKR join the existing INR and PKR corridors (10 total), with feasibility live-verified across all scrapers. Use the currency chips to switch.
+- **Animated splash screen.** The in-app splash now plays a full-bleed "infinity DXR" brand-reveal animation (the teal infinity money-flow loop drawing in, then the "Transfer Rate" wordmark and tagline) before settling on the rates list.
+
+### Changed
+- **Hide unavailable providers per currency.** When you switch currency, providers with no rate for that corridor (instead of showing an empty status dot) are hidden entirely from the list.
+- **"infinity DXR" brand refresh.** New navy/teal logo, launcher icon, and splash colors across the app; tagline shortened to "Compare. Choose. Save."
+
+### Fixed
+- **Intermittent stale Lari rate.** lariexchange.com's ~2MB homepage routinely took 15-18s to download, occasionally exceeding the scraper's timeout and leaving the rate "stale" for hours. Raised Lari's client timeout to 30s and the orchestrator's per-call ceiling to 35s.
+
 ## [0.35.0] - 2026-06-14
 
 ### Added

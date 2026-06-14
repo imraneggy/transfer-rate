@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-36-0">v0.36.0</a><span class="date">2026-06-15</span></li>
     <li><a href="#v0-35-0">v0.35.0</a><span class="date">2026-06-14</span></li>
     <li><a href="#v0-34-0">v0.34.0</a><span class="date">2026-06-13</span></li>
     <li><a href="#v0-33-0">v0.33.0</a><span class="date">2026-06-13</span></li>
@@ -383,8 +384,44 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-35-0">
-  <h2><span class="ver">v0.35.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-36-0">
+  <h2><span class="ver">v0.36.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-15</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>8 more currency corridors.</strong> AED -> PHP, BDT, EGP,
+      USD, EUR, GBP, NPR, and LKR join the existing INR and PKR corridors
+      (10 total), with feasibility live-verified across all scrapers. Use
+      the currency chips to switch.</li>
+    <li><strong>Animated splash screen.</strong> The in-app splash now
+      plays a full-bleed "infinity DXR" brand-reveal animation (the teal
+      infinity money-flow loop drawing in, then the "Transfer Rate"
+      wordmark and tagline) before settling on the rates list.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Hide unavailable providers per currency.</strong> When you
+      switch currency, providers with no rate for that corridor (instead
+      of showing an empty status dot) are hidden entirely from the
+      list.</li>
+    <li><strong>"infinity DXR" brand refresh.</strong> New navy/teal logo,
+      launcher icon, and splash colors across the app; tagline shortened
+      to "Compare. Choose. Save."</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Intermittent stale Lari rate.</strong> lariexchange.com's
+      ~2MB homepage routinely took 15-18s to download, occasionally
+      exceeding the scraper's timeout and leaving the rate "stale" for
+      hours. Raised Lari's client timeout to 30s and the orchestrator's
+      per-call ceiling to 35s.</li>
+  </ul>
+</section>
+<section class="release" id="v0-35-0">
+  <h2><span class="ver">v0.35.0</span></h2>
   <p class="date">2026-06-14</p>
 
   <h3 class="added">Added</h3>

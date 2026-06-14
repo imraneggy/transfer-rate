@@ -8,7 +8,7 @@ Public, free, ad-free, no analytics, no accounts.
 [![android-build](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> **Latest release: [v0.35.0](https://github.com/imraneggy/transfer-rate/releases/tag/v0.35.0)** — universal APK ~3.4 MB.
+> **Latest release: [v0.36.0](https://github.com/imraneggy/transfer-rate/releases/tag/v0.36.0)**
 > See [`CHANGELOG.md`](CHANGELOG.md) for the full version history;
 > the rendered HTML report lives at [`docs/CHANGELOG.html`](docs/CHANGELOG.html).
 > End-user docs are in [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
