@@ -175,7 +175,7 @@ private fun AppRoot(
     Box(modifier = Modifier.fillMaxSize().background(SPLASH_BG)) {
         if (!splashDone) {
             SplashScreen(
-                minDurationMs = 1000L,
+                minDurationMs = 3100L,
                 isReady = state !is RatesUiState.Loading,
                 onDone = { splashDone = true },
             )

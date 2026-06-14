@@ -1,22 +1,20 @@
 package com.transferrate.app.ui
 
+import android.graphics.ImageDecoder
+import android.graphics.drawable.AnimatedImageDrawable
+import android.widget.ImageView
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,37 +26,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.transferrate.app.R
 import kotlinx.coroutines.delay
 
 /**
  * Branded Transfer Rate splash that runs AFTER the OS native splash and
  * BEFORE the rates list. Holds for at least [minDurationMs] so the
- * brand registers, then dismisses when the caller's data is ready.
+ * brand animation registers, then dismisses when the caller's data is
+ * ready.
  *
- * Composition ("infinity DXR" brand refresh, artifacts/Splash Dark.png
- * + Splash White.png):
- *   - Backdrop matches the OS splash (visual continuity)
- *   - The Transfer Rate brand mark: teal infinity money-flow loop with
- *     white AED/INR glyphs, on a Deep Navy badge
- *   - "Transfer Rate" wordmark in Space Grotesk Bold, with "Rate" in
- *     brand teal
- *   - Tagline: "Compare. Choose. Save."
- *   - Subtle loading indicator at the bottom
+ * Composition ("infinity DXR" brand refresh, res/raw/splash.gif):
+ *   - Full-bleed playback of the animated brand reveal — the teal
+ *     infinity money-flow loop draws in, then the "Transfer Rate"
+ *     wordmark and "Compare. Choose. Save." tagline appear, settling
+ *     on a Deep Navy backdrop. The GIF loops forever by default
+ *     (NETSCAPE2.0 loop=0), so we force play-once and hold the final
+ *     frame — which already matches the desired static splash state.
+ *   - [minDurationMs] defaults to the GIF's ~3.1s runtime so the
+ *     animation completes before the rates list can take over.
+ *   - Subtle loading indicator near the bottom, overlaid on the GIF's
+ *     final frame.
  *   - Whole composition fades in over 400ms for a softer transition
- *     from the OS splash
+ *     from the OS splash.
  */
 @Composable
 fun SplashScreen(
-    minDurationMs: Long = 1000L,
+    minDurationMs: Long = 3100L,
     isReady: Boolean = false,
     onDone: () -> Unit,
 ) {
@@ -78,58 +75,36 @@ fun SplashScreen(
         label = "splash-fade",
     )
 
-    // v0.32.0: text colour adapts to theme so the splash works on
-    // both the light soft-white backdrop AND the OLED-true-black dark
-    // backdrop.  Pre-v0.32 used a hardcoded #0A1F44 navy that became
-    // invisible on the new pure-black dark splash bg.
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val textColor = if (isDark) Color(0xFFE0F1FF) else Color(0xFF0A1F44)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .alpha(alpha),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.BottomCenter,
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(horizontal = 32.dp),
-        ) {
-            TransferRateLogo(size = 128.dp)
-
-            Spacer(Modifier.height(28.dp))
-
-            Text(
-                text = buildAnnotatedString {
-                    append("Transfer ")
-                    withStyle(SpanStyle(color = Color(0xFF14BBA6))) {
-                        append("Rate")
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { ctx ->
+                ImageView(ctx).apply {
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    val source = ImageDecoder.createSource(ctx.resources, R.raw.splash)
+                    val drawable = ImageDecoder.decodeDrawable(source)
+                    setImageDrawable(drawable)
+                    if (drawable is AnimatedImageDrawable) {
+                        drawable.repeatCount = 0 // play once, then hold the final frame
+                        drawable.start()
                     }
-                },
-                color = textColor,
-                style = MaterialTheme.typography.displaySmall.copy(
-                    fontSize = 40.sp,
-                ),
-            )
+                }
+            },
+        )
 
-            Spacer(Modifier.height(10.dp))
-
-            Text(
-                text = androidx.compose.ui.res.stringResource(R.string.app_tagline),
-                color = textColor.copy(alpha = 0.65f),
-                style = MaterialTheme.typography.titleSmall,
-            )
-
-            Spacer(Modifier.height(44.dp))
-
-            CircularProgressIndicator(
-                modifier = Modifier.size(28.dp),
-                color = Color(0xFF14BBA6), // brand teal (infinity DXR refresh)
-                strokeWidth = 2.5.dp,
-            )
-        }
+        CircularProgressIndicator(
+            modifier = Modifier
+                .padding(bottom = 64.dp)
+                .size(28.dp),
+            color = Color(0xFF14BBA6), // brand teal (infinity DXR refresh)
+            strokeWidth = 2.5.dp,
+        )
     }
 }
 
@@ -148,7 +123,7 @@ fun SplashScreen(
  * letting the symbol float per Splash Dark.png). One fixed badge
  * colour keeps the brand mark consistent regardless of app theme.
  *
- * Reused by SplashScreen and AboutScreen.
+ * Used by AboutScreen (and the toolbar).
  */
 @Composable
 fun TransferRateLogo(size: androidx.compose.ui.unit.Dp = 96.dp) {
