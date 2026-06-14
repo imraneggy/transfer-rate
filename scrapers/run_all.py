@@ -102,7 +102,10 @@ def _build_providers() -> List[BaseProvider]:
 
 PROVIDERS: List[BaseProvider] = _build_providers()
 
-PER_CALL_TIMEOUT_S = 25.0
+# v0.36: raised from 25.0 -> 35.0 so Lari's 30s httpx timeout (its
+# homepage routinely takes 15-18s to download) has room to complete
+# instead of being killed by this hard ceiling first.
+PER_CALL_TIMEOUT_S = 35.0
 DEFAULT_AMOUNT = 1000.0
 
 

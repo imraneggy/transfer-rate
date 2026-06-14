@@ -67,7 +67,12 @@ class LariProvider(BaseProvider):
             verify_target = certifi.where()
 
         with httpx.Client(
-            timeout=20.0,
+            # v0.36: lariexchange.com serves a ~2MB homepage that routinely
+            # takes 15-18s to fully download. 20s left almost no margin and
+            # the scraper was intermittently failing with ConnectTimeout,
+            # leaving the rate "stale" for hours. 30s stays comfortably
+            # under run_all.py's PER_CALL_TIMEOUT_S hard ceiling.
+            timeout=30.0,
             follow_redirects=True,
             verify=verify_target,
             headers={
