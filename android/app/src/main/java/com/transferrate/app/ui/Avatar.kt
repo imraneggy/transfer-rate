@@ -96,9 +96,8 @@ fun ProviderAvatar(
     // The mid-market "provider" is us — show the Transfer Rate brand mark
     // rather than falling through to the initials fallback (which produces
     // a generic "MR" colored chip indistinguishable from a third-party
-    // provider's avatar).  Routed through the same white-circle treatment
-    // as a real provider logo so the visual rhythm of the rates list and
-    // history sheets stays consistent.
+    // provider's avatar).  Gets its own Deep Navy backing below (the brand
+    // mark is light-on-transparent, unlike third-party logos).
     //
     // IMPORTANT: use `transfer_rate_logo` (a direct PNG in drawable-nodpi)
     // not `ic_splash` (which is a <bitmap> XML wrapper around a mipmap).
@@ -109,6 +108,32 @@ fun ProviderAvatar(
         R.drawable.transfer_rate_logo
     } else {
         logoResIdFor(providerId)
+    }
+
+    if (providerId == "mid_market" && effectiveLogoRes != 0) {
+        // The Transfer Rate brand mark (transfer_rate_logo) is a light
+        // glyph on a transparent background — designed for the Deep Navy
+        // (#071827) badge used by the toolbar logo and TransferRateLogo
+        // (SplashScreen.kt). Rendering it on the near-white circle below
+        // (the generic provider-logo treatment) makes it nearly invisible.
+        // Give it the same navy backing here for contrast.
+        Box(
+            modifier = modifier
+                .size(size)
+                .clip(CircleShape)
+                .background(Color(0xFF071827)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Image(
+                painter = painterResource(id = effectiveLogoRes),
+                contentDescription = "$displayName logo",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(size)
+                    .padding(size * 0.08f),
+            )
+        }
+        return
     }
 
     if (effectiveLogoRes != 0) {

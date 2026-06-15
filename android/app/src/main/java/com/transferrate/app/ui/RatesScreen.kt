@@ -565,6 +565,8 @@ private fun ReadyView(
                         gold = gold,
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                         onClick = { goldSheetOpen = true },
+                        secondaryCurrencySymbol = info?.symbol ?: "₹",
+                        secondaryConversionRate = state.goldIndiaConversionRate,
                     )
                 }
             } else {

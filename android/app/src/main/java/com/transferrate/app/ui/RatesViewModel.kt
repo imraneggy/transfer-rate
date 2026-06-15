@@ -65,6 +65,23 @@ sealed interface RatesUiState {
                 .filter { it.status == "ok" || it.status == "manual" }
                 .mapNotNull { it.effectiveRate ?: it.rate }
                 .maxOrNull()
+
+        /** Multiplier that converts an India-side gold/silver value (always
+         *  quoted in INR by the scraper) into [selectedCurrency], so the
+         *  GoldHeader card tracks the currency chip the same way the
+         *  mid-market card does. 1.0 when [selectedCurrency] is INR; null
+         *  if either corridor's mid-market benchmark is missing, in which
+         *  case the caller should fall back to showing the raw INR value. */
+        val goldIndiaConversionRate: Double?
+            get() {
+                if (selectedCurrency == "INR") return 1.0
+                val inrRate = doc.corridors["INR"]
+                    ?.firstOrNull { it.providerId == "mid_market" && it.status == "ok" }
+                    ?.rate
+                val targetRate = midMarketQuote?.rate
+                if (inrRate == null || inrRate <= 0.0 || targetRate == null) return null
+                return targetRate / inrRate
+            }
     }
     data class Failed(val message: String) : RatesUiState
 }

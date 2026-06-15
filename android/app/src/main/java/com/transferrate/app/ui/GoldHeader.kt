@@ -60,7 +60,17 @@ fun GoldHeader(
     gold: GoldDocument,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    // v0.37.0: the India-side values below are quoted in INR by the
+    // scraper. When the user has a non-INR corridor selected, convert
+    // them into that currency (via the AED mid-market rates) and label
+    // them with that currency's symbol, so this card tracks the
+    // currency chip the same way MidMarketHeader does. null/1.0 ->
+    // shown as INR (unchanged behaviour).
+    secondaryCurrencySymbol: String = "₹",
+    secondaryConversionRate: Double? = 1.0,
 ) {
+    val indiaRateMultiplier = secondaryConversionRate ?: 1.0
+    val indiaSymbol = if (secondaryConversionRate != null) secondaryCurrencySymbol else "₹"
     val goldOk = gold.uae.status == "ok" && gold.india.status == "ok"
 
     // v0.29.6: silver section shows whenever EITHER side has a value.
@@ -168,7 +178,8 @@ fun GoldHeader(
                 MetalRow(
                     label = "24K",
                     aedValue = gold.uae.perG24k,
-                    inrValue = gold.india.perG24k,
+                    inrValue = gold.india.perG24k?.times(indiaRateMultiplier),
+                    secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
                     valueColor = metals.goldDeep,
                     aedDecimals = 0,
@@ -178,7 +189,8 @@ fun GoldHeader(
                 MetalRow(
                     label = "22K",
                     aedValue = gold.uae.perG22k,
-                    inrValue = gold.india.perG22k,
+                    inrValue = gold.india.perG22k?.times(indiaRateMultiplier),
+                    secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
                     valueColor = metals.goldDeep,
                     aedDecimals = 0,
@@ -215,7 +227,8 @@ fun GoldHeader(
                     MetalRow(
                         label = "1g",
                         aedValue = gold.uaeSilver?.perG,
-                        inrValue = gold.indiaSilver?.perG,
+                        inrValue = gold.indiaSilver?.perG?.times(indiaRateMultiplier),
+                        secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
                         valueColor = metals.silverDeep,
                         aedDecimals = 2,
@@ -225,7 +238,8 @@ fun GoldHeader(
                     MetalRow(
                         label = "1kg",
                         aedValue = gold.uaeSilver?.perG?.times(1000),
-                        inrValue = gold.indiaSilver?.perG?.times(1000),
+                        inrValue = gold.indiaSilver?.perG?.times(1000)?.times(indiaRateMultiplier),
+                        secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
                         valueColor = metals.silverDeep,
                         aedDecimals = 0,
@@ -246,6 +260,7 @@ private fun MetalRow(
     valueColor: androidx.compose.ui.graphics.Color,
     aedDecimals: Int,
     emphasis: Boolean,
+    secondaryCurrencySymbol: String = "₹",
 ) {
     // v0.30.7: AED prefix is gone — unit moved to the column header
     // ("GOLD · AED" / "SILVER · AED").  Values render as bare numbers,
@@ -294,7 +309,7 @@ private fun MetalRow(
             ),
         )
         Text(
-            text = if (inrValue != null) "₹ %,.0f".format(inrValue) else "—",
+            text = if (inrValue != null) "$secondaryCurrencySymbol %,.0f".format(inrValue) else "—",
             fontSize = 10.sp,
             fontWeight = FontWeight.Medium,
             color = accentColor.copy(alpha = 0.85f),
