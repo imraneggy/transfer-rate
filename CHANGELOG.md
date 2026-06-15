@@ -15,6 +15,12 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.37.0] - 2026-06-15
+
+### Fixed
+- **Invisible mid-market logo.** The Transfer Rate brand mark shown for the mid-market benchmark was a light glyph rendered on a near-white circle (the generic provider-avatar treatment) — effectively invisible. It now gets the same Deep Navy badge as the toolbar logo.
+- **Gold/silver card stuck in INR.** The gold/silver rate card's India-side values now convert into the selected currency (via the AED mid-market rates) when you switch the currency chip, instead of always showing INR.
+
 ## [0.36.0] - 2026-06-15
 
 ### Added
