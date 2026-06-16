@@ -4,11 +4,16 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,13 +23,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -32,16 +42,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -173,10 +186,8 @@ fun AboutScreen(onBack: () -> Unit) {
             ReshowWelcomeCard()
             Spacer(Modifier.height(12.dp))
 
-            DailyHighToggleCard()
-            Spacer(Modifier.height(12.dp))
-
-            CustomTargetAlertCard()
+            // Notifications: both alert types in a single branded card.
+            NotificationsCard()
             Spacer(Modifier.height(12.dp))
 
             // Privacy is the only outbound link — and even that is a
@@ -203,195 +214,418 @@ fun AboutScreen(onBack: () -> Unit) {
 }
 
 /**
- * Toggle card for the optional daily-high notification.
+ * Unified notification-settings card replacing the two separate
+ * DailyHighToggleCard / CustomTargetAlertCard that used to render as
+ * generic SectionCards.
  *
- * Behavior:
- *   - Switch reads current state from [NotificationPrefs] on first
- *     composition.
- *   - Flipping ON: if POST_NOTIFICATIONS is already granted, just save
- *     the flag. Otherwise launches the runtime permission request and
- *     saves the flag only on grant.
- *   - Flipping OFF: saves the flag immediately. We deliberately do NOT
- *     attempt to revoke the OS permission — that's a system-level
- *     setting the user controls, not something an app should toggle.
- *   - If the user denied permission, we surface a one-line hint
- *     pointing to system settings rather than re-prompting (re-prompts
- *     trigger Android's "permission permanently denied" path which is
- *     a worse UX than just telling them where to go).
+ * Design decisions:
+ *  - Branded deep-navy header ties it visually to the toolbar / splash.
+ *  - Icon circles use per-section accent colours: teal for Daily High
+ *    (live/active feel) and amber for Rate Target (goal/aim feel).
+ *  - Switch checked-track uses the brand teal so the "on" state reads
+ *    as distinctly enabled rather than just another indigo accent.
+ *  - An animated notification-preview bubble appears when Daily High is
+ *    enabled, showing the user exactly what the notification will look
+ *    like in the shade — reduces uncertainty about what "on" means.
+ *  - Armed-target chip shows the current threshold at a glance without
+ *    the user having to look at the text field.
+ *  - All logic, permission flow, and preference writes are identical to
+ *    the previous two composables; only the visual presentation changed.
  */
 @Composable
-private fun DailyHighToggleCard() {
+private fun NotificationsCard() {
     val ctx = LocalContext.current
     val prefs = remember { NotificationPrefs(ctx) }
+
+    // ── Daily-high state ──────────────────────────────────────────────
     var enabled by remember { mutableStateOf(prefs.dailyHighEnabled) }
-    var permissionPreviouslyDenied by remember { mutableStateOf(false) }
+    var permissionDenied by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { granted ->
         if (granted) {
-            // Make sure the channel exists before the worker tries to
-            // post — registration is idempotent.
             NotificationCenter.ensureChannel(ctx)
             prefs.dailyHighEnabled = true
             enabled = true
-            permissionPreviouslyDenied = false
+            permissionDenied = false
         } else {
             prefs.dailyHighEnabled = false
             enabled = false
-            permissionPreviouslyDenied = true
+            permissionDenied = true
         }
     }
 
-    SectionCard(title = stringResource(R.string.about_section_notifications)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(
-                    stringResource(R.string.about_dailyhigh_title),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold,
+    // ── Rate-target state ─────────────────────────────────────────────
+    val initial = prefs.customAlertTargetInr?.let { "%.2f".format(it) } ?: ""
+    var fieldText by remember { mutableStateOf(initial) }
+    var savedTarget by remember { mutableStateOf(prefs.customAlertTargetInr) }
+    var inputError by remember { mutableStateOf<String?>(null) }
+    val errInvalid = stringResource(R.string.about_target_invalid)
+    val errOutOfRange = stringResource(R.string.about_target_out_of_range)
+
+    // ── Brand palette ─────────────────────────────────────────────────
+    val brandNavy = Color(0xFF071827)
+    val brandTeal = Color(0xFF14BBA6)
+    val amberAccent = Color(0xFFF4A900)
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+
+        // ── Header band ───────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        listOf(brandNavy, Color(0xFF0C2336)),
+                    ),
                 )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    stringResource(R.string.about_dailyhigh_body),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(brandTeal.copy(alpha = 0.18f), CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("🔔", fontSize = 20.sp)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text(
+                        stringResource(R.string.about_section_notifications),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = Color.White,
+                    )
+                    Text(
+                        "Smart rate alerts · No spam",
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.58f),
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                // Active-alerts count badge
+                val activeCount = (if (enabled) 1 else 0) + (if (savedTarget != null) 1 else 0)
+                if (activeCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .background(brandTeal, RoundedCornerShape(999.dp))
+                            .padding(horizontal = 9.dp, vertical = 3.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            "$activeCount active",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = brandNavy,
+                        )
+                    }
+                }
+            }
+        }
+
+        Column(Modifier.padding(horizontal = 16.dp)) {
+
+            // ── Daily High Alert ──────────────────────────────────────
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .background(
+                            if (enabled) brandTeal.copy(alpha = 0.14f)
+                            else MaterialTheme.colorScheme.surfaceVariant,
+                            CircleShape,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(if (enabled) "📈" else "📊", fontSize = 20.sp)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.about_dailyhigh_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        stringResource(R.string.about_dailyhigh_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+                Switch(
+                    checked = enabled,
+                    onCheckedChange = { wantsOn ->
+                        if (wantsOn) {
+                            val granted = ContextCompat.checkSelfPermission(
+                                ctx, Manifest.permission.POST_NOTIFICATIONS,
+                            ) == PackageManager.PERMISSION_GRANTED
+                            if (granted) {
+                                NotificationCenter.ensureChannel(ctx)
+                                prefs.dailyHighEnabled = true
+                                enabled = true
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        } else {
+                            prefs.dailyHighEnabled = false
+                            enabled = false
+                        }
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedTrackColor = brandTeal,
+                        checkedThumbColor = Color.White,
+                        checkedBorderColor = Color.Transparent,
+                    ),
                 )
             }
-            Switch(
-                checked = enabled,
-                onCheckedChange = { wantsOn ->
-                    if (wantsOn) {
-                        val granted = ContextCompat.checkSelfPermission(
-                            ctx, Manifest.permission.POST_NOTIFICATIONS,
-                        ) == PackageManager.PERMISSION_GRANTED
-                        if (granted) {
-                            NotificationCenter.ensureChannel(ctx)
-                            prefs.dailyHighEnabled = true
-                            enabled = true
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+
+            // Notification preview — animated, appears when switch is ON.
+            // Shows the user exactly what will appear in the notification shade.
+            AnimatedVisibility(
+                visible = enabled,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+            ) {
+                Column {
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "PREVIEW",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 2.dp, bottom = 5.dp),
+                    )
+                    NotificationPreviewBubble(brandTeal = brandTeal)
+                }
+            }
+
+            // Permission-denied hint — styled as an inline warning chip.
+            AnimatedVisibility(
+                visible = permissionDenied,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f))
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    Text(
+                        "⚠",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 1.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.about_permission_denied_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            // ── Rate Target Alert ─────────────────────────────────────
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .background(
+                            if (savedTarget != null) amberAccent.copy(alpha = 0.14f)
+                            else MaterialTheme.colorScheme.surfaceVariant,
+                            CircleShape,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(if (savedTarget != null) "🎯" else "🔕", fontSize = 20.sp)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.about_section_target_alert),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        stringResource(R.string.about_target_blurb),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            // Armed-target chip — shows the current threshold when set.
+            savedTarget?.let { t ->
+                Spacer(Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(brandTeal.copy(alpha = 0.10f))
+                        .padding(horizontal = 12.dp, vertical = 9.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(brandTeal, CircleShape),
+                    )
+                    Spacer(Modifier.width(9.dp))
+                    Text(
+                        stringResource(R.string.about_target_armed, "%.2f".format(t)),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+
+            // Input row
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedTextField(
+                    value = fieldText,
+                    onValueChange = {
+                        fieldText = it
+                        inputError = null
+                    },
+                    label = { Text(stringResource(R.string.about_target_label)) },
+                    prefix = { Text("≥ ") },
+                    singleLine = true,
+                    isError = inputError != null,
+                    supportingText = inputError?.let { msg -> { Text(msg) } },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        val text = fieldText.trim()
+                        if (text.isEmpty()) {
+                            prefs.customAlertTargetInr = null
+                            savedTarget = null
+                            inputError = null
+                            return@Button
                         }
-                    } else {
-                        prefs.dailyHighEnabled = false
-                        enabled = false
-                    }
-                },
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = MaterialTheme.colorScheme.primary,
-                ),
-            )
-        }
-        if (permissionPreviouslyDenied) {
-            Spacer(Modifier.height(10.dp))
-            Text(
-                stringResource(R.string.about_permission_denied_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+                        val n = text.toDoubleOrNull()
+                        if (n == null) {
+                            inputError = errInvalid
+                            return@Button
+                        }
+                        if (n !in 15.0..40.0) {
+                            inputError = errOutOfRange
+                            return@Button
+                        }
+                        prefs.customAlertTargetInr = n
+                        savedTarget = n
+                        inputError = null
+                        fieldText = "%.2f".format(n)
+                    },
+                ) {
+                    Text(
+                        stringResource(
+                            if (fieldText.isBlank()) R.string.about_button_clear
+                            else R.string.about_button_set,
+                        ),
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
 
 /**
- * Custom rate-target alert (v0.30).
+ * A mock-up of an Android notification shade entry, showing the user
+ * exactly what the daily-high alert will look like.  Uses illustrative
+ * values (Wise, ₹25.87) — the real notification is generated dynamically
+ * by NotificationCenter when a new high is detected.
  *
- * Lets the user say "ping me when AED→INR ≥ 25.85" so they can act on
- * a peak without having to open the app to check.  Independent of the
- * daily-high toggle — those are two different alert flavours:
- *
- *   * daily-high: "tell me whenever today's previous best is beaten"
- *     (~few notifications/day; surfaces upward momentum)
- *   * custom target: "tell me when rate hits MY threshold" (one
- *     notification/day max per target; converts watching into action)
- *
- * Per-day dedup is handled by NotificationPrefs.  Empty input clears
- * the target (disables the alert).  Sane bounds (15.0..40.0 covers
- * any plausible AED→INR rate for the next decade).
+ * Styled to match Material 3's notification appearance: rounded card,
+ * app-name eyebrow row, bold title, single-line body.  The teal left-
+ * dot echoes the Transfer Rate brand mark the user sees in the shade.
  */
 @Composable
-private fun CustomTargetAlertCard() {
-    val ctx = LocalContext.current
-    val prefs = remember { NotificationPrefs(ctx) }
-    val initial = prefs.customAlertTargetInr?.let { "%.2f".format(it) } ?: ""
-    var fieldText by remember { mutableStateOf(initial) }
-    var savedTarget by remember { mutableStateOf(prefs.customAlertTargetInr) }
-    var inputError by remember { mutableStateOf<String?>(null) }
-
-    val errInvalid = stringResource(R.string.about_target_invalid)
-    val errOutOfRange = stringResource(R.string.about_target_out_of_range)
-    SectionCard(title = stringResource(R.string.about_section_target_alert)) {
-        Text(
-            stringResource(R.string.about_target_blurb),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(10.dp))
-
-        // Show whether a target is currently armed.
-        savedTarget?.let { t ->
-            Text(
-                stringResource(R.string.about_target_armed, "%.2f".format(t)),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            androidx.compose.material3.OutlinedTextField(
-                value = fieldText,
-                onValueChange = {
-                    fieldText = it
-                    inputError = null
-                },
-                label = { Text(stringResource(R.string.about_target_label)) },
-                singleLine = true,
-                isError = inputError != null,
-                supportingText = inputError?.let { { Text(it) } },
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
-                ),
-                modifier = Modifier.weight(1f),
-            )
-            Spacer(Modifier.width(8.dp))
-            androidx.compose.material3.Button(
-                onClick = {
-                    val text = fieldText.trim()
-                    if (text.isEmpty()) {
-                        prefs.customAlertTargetInr = null
-                        savedTarget = null
-                        inputError = null
-                        return@Button
-                    }
-                    val n = text.toDoubleOrNull()
-                    if (n == null) {
-                        inputError = errInvalid
-                        return@Button
-                    }
-                    if (n !in 15.0..40.0) {
-                        inputError = errOutOfRange
-                        return@Button
-                    }
-                    prefs.customAlertTargetInr = n
-                    savedTarget = n
-                    inputError = null
-                    fieldText = "%.2f".format(n)
-                },
+private fun NotificationPreviewBubble(brandTeal: Color) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
+        border = BorderStroke(1.dp, brandTeal.copy(alpha = 0.28f)),
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            // Eyebrow row: app icon dot · app name · timestamp
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(
-                    if (fieldText.isBlank()) R.string.about_button_clear
-                    else R.string.about_button_set,
-                ))
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(brandTeal, CircleShape),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    stringResource(R.string.app_name),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Spacer(Modifier.weight(1f))
+                Text(
+                    "just now",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
+            Spacer(Modifier.height(5.dp))
+            // Notification title
+            Text(
+                "New daily high — AED→INR",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(2.dp))
+            // Notification body
+            Text(
+                "Wise now offering ₹25.87. Tap to compare providers.",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -497,4 +731,3 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
         }
     }
 }
-
