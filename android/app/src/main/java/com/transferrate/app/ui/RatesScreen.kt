@@ -165,28 +165,25 @@ fun RatesScreen(
                     }
                 },
                 actions = {
-                    // Word-labeled toolbar chips per user request.
-                    // Compact size + uppercase labels keeps all three
-                    // visible alongside the "Transfer Rate" title even on
-                    // narrow phones. About stays as a small ⓘ glyph
-                    // (the word "ABOUT" would push past the title on
-                    // 360dp screens; the glyph is still tappable and
-                    // its content description is read aloud).
-                    val themeLabel = when (themeMode) {
-                        ThemeMode.System -> stringResource(R.string.toolbar_theme_auto)
-                        ThemeMode.Light  -> stringResource(R.string.toolbar_theme_light)
-                        ThemeMode.Dark   -> stringResource(R.string.toolbar_theme_dark)
+                    val themeIcon = when (themeMode) {
+                        ThemeMode.System -> R.drawable.ic_settings_outline
+                        ThemeMode.Light  -> R.drawable.ic_light_mode
+                        ThemeMode.Dark   -> R.drawable.ic_dark_mode
                     }
-                    ToolbarChip(
-                        label = themeLabel,
-                        contentDescription = "Theme: ${themeMode.label} (tap to cycle)",
-                        onClick = onCycleThemeMode,
-                    )
-                    ToolbarChip(
-                        label = stringResource(R.string.toolbar_refresh),
-                        contentDescription = "Refresh rates",
-                        onClick = { vm.refresh() },
-                    )
+                    IconButton(onClick = onCycleThemeMode) {
+                        androidx.compose.material3.Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = themeIcon),
+                            contentDescription = "Theme: ${themeMode.label} (tap to cycle)",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                    IconButton(onClick = { vm.refresh() }) {
+                        androidx.compose.material3.Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_refresh),
+                            contentDescription = "Refresh rates",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                     // v0.31.0: share-best-rate icon.  Composes a short
                     // plain-text payload of today's BEST provider rate +
                     // the AED→INR amount and fires ACTION_SEND through
@@ -381,54 +378,6 @@ private fun relativeTime(iso: String): String {
     }
 }
 
-/**
- * Compact text chip used in the top app bar for the theme toggle and
- * the refresh action. Matches the height of an IconButton so the bar
- * stays a uniform 56 dp; tight horizontal padding keeps three chips
- * + the "Transfer Rate" title visible on a 360 dp screen.
- *
- * Uses an outlined surface treatment so the chips read as tappable
- * controls without being as visually heavy as filled buttons (which
- * would compete with the BEST badge for the user's eye).
- */
-@Composable
-private fun ToolbarChip(
-    label: String,
-    contentDescription: String,
-    onClick: () -> Unit,
-) {
-    val border = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 4.dp, vertical = 8.dp)
-            .heightIn(min = 32.dp)
-            .border(
-                width = 1.dp,
-                color = border,
-                shape = RoundedCornerShape(8.dp),
-            )
-            .clickable(
-                onClick = onClick,
-                onClickLabel = contentDescription,
-            )
-            .padding(horizontal = 10.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        // ToolbarChip labels are kept English by design (AUTO/LIGHT/
-        // DARK/REFRESH/SHARE — universal compact labels) so they don't
-        // localise.  AutoSizeText is still used here because at scaled
-        // font sizes (Android accessibility setting > 100%) "REFRESH"
-        // at 1.3× would push the chip past its budget.
-        AutoSizeText(
-            text = label,
-            fontSize = 11.sp,
-            minFontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.6.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-    }
-}
 
 @Composable
 private fun CenteredSpinner() {

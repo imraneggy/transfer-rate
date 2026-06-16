@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Privacy Policy — Transfer Rate</title>
+  <style>
+    :root {
+      --navy:  #071827;
+      --teal:  #14BBA6;
+      --bg:    #F6F9FC;
+      --text:  #1A2535;
+      --muted: #5A6A7A;
+      --card:  #FFFFFF;
+      --border:#D1DDE9;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:    #000000;
+        --text:  #E8EDF3;
+        --muted: #8A9AB0;
+        --card:  #0E0E0E;
+        --border:#1E2E3E;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0 16px 64px;
+    }
+    header {
+      background: var(--navy);
+      padding: 28px 24px 22px;
+      margin: 0 -16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header .logo {
+      width: 44px; height: 44px;
+      background: #071827;
+      border: 2px solid var(--teal);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    header h1 { color: #fff; font-size: 1.25rem; font-weight: 700; }
+    header p  { color: rgba(255,255,255,.65); font-size: 0.85rem; margin-top: 2px; }
+    main { max-width: 680px; margin: 0 auto; }
+    .effective {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      letter-spacing: .03em;
+    }
+    .summary {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 32px;
+      font-size: 1rem;
+    }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 36px 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 22px 0 8px;
+    }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    ul li { margin-bottom: 6px; }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .pill {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      vertical-align: middle;
+      letter-spacing: .04em;
+    }
+    .muted { color: var(--muted); font-size: 0.88rem; }
+    footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">⇄</div>
+    <div>
+      <h1>Transfer Rate</h1>
+      <p>Privacy Policy</p>
+    </div>
+  </header>
+
+  <main>
+    <span class="effective">Effective date: 2026-06-16</span>
+
+    <div class="summary">
+      <strong>Short version:</strong> Transfer Rate does not collect, store, transmit, or share any
+      personal information about you. It is ad-free and requires no account.
+      Personalization is stored locally on your device only and never leaves it.
+    </div>
+
+    <h2>What we collect</h2>
+    <p>
+      Nothing. There is no analytics SDK, no crash reporter, no advertising ID read,
+      no device fingerprinting, no advertising network, and no account requirement.
+    </p>
+
+    <h2>What is transmitted from your device</h2>
+
+    <h3>Rate data fetch</h3>
+    <p>
+      A single HTTP <code>GET</code> to
+      <code>https://imraneggy.github.io/transfer-rate/rates.json</code>
+      each time you open the app or tap Refresh. The request includes:
+    </p>
+    <ul>
+      <li>Your device's IP address (visible to GitHub Pages and any CDN node it passes
+          through — the same as any web request).</li>
+      <li>The User-Agent string <code>TransferRateApp/&lt;version&gt; Android</code>.</li>
+    </ul>
+    <p>
+      We do not log or process this traffic. GitHub's standard
+      <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+         rel="noopener noreferrer" target="_blank">Privacy Statement</a> covers their handling.
+    </p>
+
+    <h3>Manual refresh trigger <span class="pill">optional</span></h3>
+    <p>
+      If you tap Refresh, the app may send a POST request to a Cloudflare Worker at
+      <code>https://transfer-rate-refresh.imranbatchait.workers.dev</code>.
+      This carries only a short bearer token embedded in the APK — no user data, no device
+      identifiers.
+      <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer" target="_blank">
+        Cloudflare's Privacy Policy</a> applies to this request.
+    </p>
+
+    <h3>Google Play Billing <span class="pill">Pro subscribers only</span></h3>
+    <p>
+      If you purchase Transfer Rate Pro, the purchase is processed entirely by Google Play.
+      We receive only a purchase token from the Play Billing API to verify your active
+      subscription. We never see your payment details.
+      <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">
+        Google's Privacy Policy</a> applies to the purchase flow.
+    </p>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><strong>INTERNET</strong> — to fetch the rates JSON and optionally trigger a
+          manual refresh.</li>
+      <li><strong>ACCESS_NETWORK_STATE</strong> — to check connectivity before attempting
+          a fetch.</li>
+      <li><strong>POST_NOTIFICATIONS</strong> — requested once, only if you enable
+          daily-high alerts in <em>About → Notifications</em>. You can deny or revoke it
+          at any time from Android Settings without breaking any other feature.</li>
+      <li><strong>RECEIVE_BOOT_COMPLETED</strong> — to reschedule the background
+          rate-prefetch job after device restart; no user data is read or transmitted
+          during the boot event.</li>
+    </ul>
+
+    <h2>Local data (personalization)</h2>
+    <p>
+      The following is stored only on your device in Android SharedPreferences:
+    </p>
+    <ul>
+      <li>Display name (optional, set by you).</li>
+      <li>Preferred sending amount and currency corridor.</li>
+      <li>Favourite providers list.</li>
+      <li>Notification preferences (daily-high toggle, rate-target threshold).</li>
+      <li>Onboarding-tour dismissal flag.</li>
+      <li>Pro subscription state cache (verified against Google Play on each launch).</li>
+    </ul>
+    <p>
+      None of this data is transmitted anywhere. Android app-data backup
+      (<code>android:allowBackup</code>) is <strong>disabled</strong> in the manifest,
+      so it never leaves the device through backup channels.
+    </p>
+
+    <h2>Data shared with third parties</h2>
+    <p>None. The only external services involved are:</p>
+    <ul>
+      <li><strong>GitHub Pages</strong> — serves the public rates JSON file.</li>
+      <li><strong>Cloudflare Workers</strong> — optional manual-refresh trigger (no user data).</li>
+      <li><strong>Google Play Billing</strong> — processes Pro subscription payments.</li>
+    </ul>
+
+    <h2>Children</h2>
+    <p>The app is not directed at children under 13 and does not knowingly collect
+       information from children.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>
+      We will update this document and the effective date whenever the privacy posture
+      changes. Significant changes will be noted in the app's release notes on Google Play.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Email: <a href="mailto:imranbatchait@gmail.com">imranbatchait@gmail.com</a><br>
+      Or open an issue in the
+      <a href="https://github.com/imraneggy/transfer-rate" rel="noopener noreferrer" target="_blank">
+        public GitHub repository</a>.
+    </p>
+
+    <footer>
+      <p>Transfer Rate · Ad-free · Open source · No account required</p>
+      <p class="muted" style="margin-top:6px">© 2026 Imran Batch. Released under the MIT License.</p>
+    </footer>
+  </main>
+</body>
+</html>

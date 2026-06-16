@@ -15,6 +15,21 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.38.0] - 2026-06-16
+
+### Added
+- **Transfer Rate Pro.** Optional subscription ($0.99/month via Google Play Billing) unlocks up to 3 simultaneous rate-target alerts (free: 1), priority daily-high notifications, and supports independent development. The core app remains completely ad-free.
+- **User personalization.** Per-device profile (display name, preferred sending amount, preferred corridor, favourite providers) stored locally in SharedPreferences — no account, no cloud sync.
+- **Hosted privacy policy.** Public HTML privacy policy page at `public/privacy.html` (served via GitHub Pages), meeting Google Play's data safety requirement for a linked privacy policy URL.
+
+### Changed
+- **Toolbar icons.** The "AUTO / LIGHT / DARK" theme chip and "REFRESH" text chip in the top bar are now icon-only buttons (⚙ / ☀ / 🌙 and ↺ icons), freeing space so "Transfer Rate" no longer truncates to "Transfer…" on any screen width.
+- **targetSdk bumped to 35.** Required by Google Play for all new submissions from August 2026.
+- **PRIVACY.md updated.** Now discloses `POST_NOTIFICATIONS`, the Cloudflare refresh-trigger call, Google Play Billing data handling, and local SharedPreferences personalization; adds developer contact email.
+
+### Fixed
+- **Toolbar title truncation.** "Transfer Rate" was ellipsized to "Transfer…" on narrow phones (360 dp) because two labeled chips consumed most of the action row. Converting those chips to icon buttons permanently resolves the truncation.
+
 ## [0.37.0] - 2026-06-15
 
 ### Fixed

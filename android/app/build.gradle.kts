@@ -16,11 +16,11 @@ android {
         // ANDROID 14+ ONLY — per project requirement. Reduces install base
         // significantly but gives us the strict modern security posture.
         minSdk = 34
-        targetSdk = 34
+        targetSdk = 35
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 74
-        versionName = "0.37.0"
+        versionCode = 75
+        versionName = "0.38.0"
 
 
         // Locales whose resource folders are bundled into the APK.  Any
@@ -217,4 +217,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.billing.ktx)
 }

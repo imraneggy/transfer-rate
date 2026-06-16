@@ -65,7 +65,11 @@ import com.transferrate.app.data.NotificationPrefs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
+fun AboutScreen(
+    onBack: () -> Unit,
+    isProActive: Boolean = false,
+    onShowUpgrade: () -> Unit = {},
+) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -190,9 +194,8 @@ fun AboutScreen(onBack: () -> Unit) {
             NotificationsCard()
             Spacer(Modifier.height(12.dp))
 
-            // Privacy is the only outbound link — and even that is a
-            // data: URI / in-app screen, not an external service. Source
-            // code link removed at user request.
+            ProCard(isProActive = isProActive, onShowUpgrade = onShowUpgrade)
+            Spacer(Modifier.height(12.dp))
 
             Spacer(Modifier.height(24.dp))
             Text(
@@ -728,6 +731,67 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
             )
             Spacer(Modifier.height(8.dp))
             content()
+        }
+    }
+}
+
+@Composable
+private fun ProCard(isProActive: Boolean, onShowUpgrade: () -> Unit) {
+    val brandNavy = Color(0xFF071827)
+    val brandTeal = Color(0xFF14BBA6)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(brandNavy, Color(0xFF0D2B40)),
+                ),
+            )
+            .padding(16.dp),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("✦", fontSize = 20.sp, color = Color(0xFFF4A900))
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    "Transfer Rate Pro",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color.White,
+                )
+                Spacer(Modifier.weight(1f))
+                if (isProActive) {
+                    Text(
+                        "ACTIVE",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = brandTeal,
+                    )
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(
+                if (isProActive) {
+                    "All Pro features are active on this device. Thank you for your support!"
+                } else {
+                    "Unlock multiple rate targets, priority alerts and more — from \$0.99/month."
+                },
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.75f),
+            )
+            if (!isProActive) {
+                Spacer(Modifier.height(12.dp))
+                Button(
+                    onClick = onShowUpgrade,
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = brandTeal,
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                ) {
+                    Text("View Pro plans", color = Color.White, fontWeight = FontWeight.SemiBold)
+                }
+            }
         }
     }
 }

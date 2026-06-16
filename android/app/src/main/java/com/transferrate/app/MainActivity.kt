@@ -35,15 +35,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.core.content.ContextCompat
+import com.transferrate.app.data.BillingRepository
 import com.transferrate.app.data.NotificationCenter
 import com.transferrate.app.data.NotificationPrefs
 import com.transferrate.app.data.PrefetchScheduler
+import com.transferrate.app.data.UserProfile
 import com.transferrate.app.ui.AboutScreen
 import com.transferrate.app.ui.RatesScreen
 import com.transferrate.app.ui.RatesUiState
 import com.transferrate.app.ui.RatesViewModel
 import com.transferrate.app.ui.SplashScreen
 import com.transferrate.app.ui.ThemeMode
+import com.transferrate.app.ui.UpgradeScreen
 import com.transferrate.app.ui.theme.TransferRateTheme
 
 class MainActivity : ComponentActivity() {
@@ -124,6 +127,14 @@ private fun AppRoot(
     val state by vm.state.collectAsStateWithLifecycle()
     var splashDone by remember { mutableStateOf(false) }
     var showAbout by rememberSaveable { mutableStateOf(false) }
+    var showUpgrade by rememberSaveable { mutableStateOf(false) }
+
+    val ctxForBilling = androidx.compose.ui.platform.LocalContext.current
+    val billing = remember { BillingRepository(ctxForBilling) }
+    val userProfile = remember { UserProfile(ctxForBilling) }
+    val isProActive by billing.isProActive.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) { billing.connect() }
 
     // First-launch POST_NOTIFICATIONS prompt for daily-high alerts.
     // v0.29.2: NotificationPrefs.dailyHighEnabled now defaults to true,
@@ -182,7 +193,20 @@ private fun AppRoot(
         } else {
             Surface(modifier = Modifier.fillMaxSize()) {
                 when {
-                    showAbout -> AboutScreen(onBack = { showAbout = false })
+                    showUpgrade -> UpgradeScreen(
+                        isPro = isProActive,
+                        priceString = billing.priceString(),
+                        onUpgrade = {
+                            val activity = ctxForBilling as? android.app.Activity
+                            if (activity != null) billing.launchBillingFlow(activity)
+                        },
+                        onBack = { showUpgrade = false },
+                    )
+                    showAbout -> AboutScreen(
+                        onBack = { showAbout = false },
+                        isProActive = isProActive,
+                        onShowUpgrade = { showUpgrade = true },
+                    )
                     else -> {
                         Box(modifier = Modifier.fillMaxSize()) {
                             RatesScreen(
