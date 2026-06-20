@@ -376,15 +376,54 @@ def _fetch_kt_uae_gold() -> GoldSide:
 def fetch_uae_gold() -> GoldSide:
     """UAE gold entry point.
 
-    v0.32.4: tries igold.ae first (24K + derived 22K, 30 daily
-    history points) and falls back to Khaleej Times (24K + 22K
-    parsed natively, no history) only if igold is unreachable
-    across 3 retries.  Either path keeps the home card populated.
+    v0.38.1: Khaleej Times is the primary source for the CURRENT rate
+    because it publishes the UAE retail jewellery price — what users
+    see at jewellers and on gold-rate comparison sites.  igold.ae
+    tracks the international bullion/spot price which runs ~1-3% lower
+    than the retail rate; showing it caused a visible mismatch when
+    users compared the app to KT or any UAE jewellery website.
+
+    30-day history still comes from igold.ae (the only source that
+    provides it). The history sparkline will show spot-price values
+    which are proportionally lower, but the trend shape is accurate
+    and the home-card headline now matches KT exactly.
+
+    Fallback chain:
+      1. KT current rate  +  igold history  →  best of both
+      2. KT current rate  +  no history     →  KT unavailable for history
+      3. igold entirely                     →  KT unreachable
     """
+    # Step 1: try to get 30-day history from igold.ae (best-effort).
+    igold_history: list = []
     try:
-        return _fetch_igold_uae_gold()
+        igold_side = _fetch_igold_uae_gold()
+        igold_history = igold_side.history
     except Exception:
-        return _fetch_kt_uae_gold()
+        pass  # history stays empty; home card still works without it
+
+    # Step 2: get the current retail rate from Khaleej Times.
+    try:
+        kt_side = _fetch_kt_uae_gold()
+        kt_side.history = igold_history  # attach igold history for sparkline
+        return kt_side
+    except Exception:
+        # KT failed — if igold succeeded above, return that in full.
+        if igold_history:
+            try:
+                return _fetch_igold_uae_gold()
+            except Exception:
+                pass
+        # Both failed — return a KT error side with whatever history we have.
+        return GoldSide(
+            currency="AED",
+            per_g_24k=None,
+            per_g_22k=None,
+            source="Khaleej Times",
+            source_url=KT_URL,
+            status="error",
+            note="Both Khaleej Times and igold.ae are currently unreachable.",
+            history=igold_history,
+        )
 
 
 # =====================================================================
