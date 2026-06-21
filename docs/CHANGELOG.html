@@ -321,6 +321,11 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-38-4">v0.38.4</a><span class="date">2026-06-21</span></li>
+    <li><a href="#v0-38-3">v0.38.3</a><span class="date">2026-06-21</span></li>
+    <li><a href="#v0-38-2">v0.38.2</a><span class="date">2026-06-21</span></li>
+    <li><a href="#v0-38-1">v0.38.1</a><span class="date">2026-06-20</span></li>
+    <li><a href="#v0-38-0">v0.38.0</a><span class="date">2026-06-16</span></li>
     <li><a href="#v0-37-0">v0.37.0</a><span class="date">2026-06-15</span></li>
     <li><a href="#v0-36-0">v0.36.0</a><span class="date">2026-06-15</span></li>
     <li><a href="#v0-35-0">v0.35.0</a><span class="date">2026-06-14</span></li>
@@ -385,8 +390,112 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-37-0">
-  <h2><span class="ver">v0.37.0</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-38-4">
+  <h2><span class="ver">v0.38.4</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-21</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Skeleton loading screen.</strong> The rates list now shows an
+      animated shimmer skeleton that mirrors the real layout (currency chips,
+      hero rate + gold module, amount field, and provider rows) while data
+      loads, instead of a centred spinner. The screen keeps its shape so
+      content no longer visibly reflows when rates arrive.</li>
+  </ul>
+</section>
+<section class="release" id="v0-38-3">
+  <h2><span class="ver">v0.38.3</span></h2>
+  <p class="date">2026-06-21</p>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>UI polish pass.</strong> Chip selections (currency, amount,
+      karat) now animate their colour change instead of snapping; all chips
+      meet the 48 dp minimum touch target; brand and semantic colours are
+      centralized as theme tokens; the rate column holds a stable width to
+      prevent jitter on refresh; promo badges animate in and out.</li>
+    <li><strong>Back buttons.</strong> The About and Upgrade screens now use a
+      proper vector back arrow with a tint and accessibility label, replacing
+      a plain "&larr;" character.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Low-contrast secondary text.</strong> Secondary text on the
+      Upgrade screen used translucent overlays that failed contrast on the
+      dark theme; it now uses the semantic on-surface-variant colour.</li>
+    <li><strong>Small receive amounts.</strong> Receive amounts under 100
+      (USD/EUR/GBP) now show two decimals instead of rounding down to
+      "$&nbsp;0".</li>
+  </ul>
+</section>
+<section class="release" id="v0-38-2">
+  <h2><span class="ver">v0.38.2</span></h2>
+  <p class="date">2026-06-21</p>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Gold/silver popup stuck in INR.</strong> Opening the
+      gold/silver history sheet from any non-INR corridor now converts all
+      India-side values into the selected currency, instead of always
+      displaying INR.</li>
+  </ul>
+</section>
+<section class="release" id="v0-38-1">
+  <h2><span class="ver">v0.38.1</span></h2>
+  <p class="date">2026-06-20</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Brand flash card.</strong> The splash sequence now shows a
+      brief "infinity DXR" brand flash card after the reveal animation before
+      settling on the rates list.</li>
+  </ul>
+</section>
+<section class="release" id="v0-38-0">
+  <h2><span class="ver">v0.38.0</span></h2>
+  <p class="date">2026-06-16</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Transfer Rate Pro.</strong> Optional subscription
+      ($0.99/month via Google Play Billing) unlocks up to 3 simultaneous
+      rate-target alerts (free: 1), priority daily-high notifications, and
+      supports independent development. The core app remains completely
+      ad-free.</li>
+    <li><strong>User personalization.</strong> Per-device profile (display
+      name, preferred sending amount, preferred corridor, favourite
+      providers) stored locally in SharedPreferences — no account, no cloud
+      sync.</li>
+    <li><strong>Hosted privacy policy.</strong> Public HTML privacy policy
+      page at <code>public/privacy.html</code> (served via GitHub Pages),
+      meeting Google Play's data safety requirement for a linked privacy
+      policy URL.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Toolbar icons.</strong> The theme and refresh text chips in
+      the top bar are now icon-only buttons, freeing space so "Transfer Rate"
+      no longer truncates to "Transfer&hellip;" on any screen width.</li>
+    <li><strong>targetSdk bumped to 35.</strong> Required by Google Play for
+      all new submissions from August 2026.</li>
+    <li><strong>PRIVACY.md updated.</strong> Now discloses
+      <code>POST_NOTIFICATIONS</code>, the Cloudflare refresh-trigger call,
+      Google Play Billing data handling, and local SharedPreferences
+      personalization; adds developer contact email.</li>
+  </ul>
+
+  <h3 class="fixed">Fixed</h3>
+  <ul>
+    <li><strong>Toolbar title truncation.</strong> "Transfer Rate" was
+      ellipsized to "Transfer&hellip;" on narrow phones (360 dp) because two
+      labeled chips consumed most of the action row. Converting those chips
+      to icon buttons permanently resolves the truncation.</li>
+  </ul>
+</section>
+<section class="release" id="v0-37-0">
+  <h2><span class="ver">v0.37.0</span></h2>
   <p class="date">2026-06-15</p>
 
   <h3 class="fixed">Fixed</h3>
