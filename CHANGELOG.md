@@ -15,6 +15,31 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.38.4] - 2026-06-21
+
+### Changed
+- **Skeleton loading screen.** The rates list now shows an animated shimmer skeleton that mirrors the real layout (currency chips, hero rate + gold module, amount field, and provider rows) while data loads, instead of a centred spinner. The screen keeps its shape so content no longer visibly reflows when rates arrive.
+
+## [0.38.3] - 2026-06-21
+
+### Changed
+- **UI polish pass.** Chip selections (currency, amount, karat) now animate their colour change instead of snapping; all chips meet the 48 dp minimum touch target; brand and semantic colours are centralized as theme tokens; the rate column holds a stable width to prevent jitter on refresh; promo badges animate in and out.
+- **Back buttons.** The About and Upgrade screens now use a proper vector back arrow with a tint and accessibility label, replacing a plain "←" character.
+
+### Fixed
+- **Low-contrast secondary text.** Secondary text on the Upgrade screen used translucent overlays that failed contrast on the dark theme; it now uses the semantic on-surface-variant colour.
+- **Small receive amounts.** Receive amounts under 100 (USD/EUR/GBP) now show two decimals instead of rounding down to "$ 0".
+
+## [0.38.2] - 2026-06-21
+
+### Fixed
+- **Gold/silver popup stuck in INR.** Opening the gold/silver history sheet from any non-INR corridor now converts all India-side values into the selected currency, instead of always displaying INR.
+
+## [0.38.1] - 2026-06-20
+
+### Added
+- **Brand flash card.** The splash sequence now shows a brief "infinity DXR" brand flash card after the reveal animation before settling on the rates list.
+
 ## [0.38.0] - 2026-06-16
 
 ### Added
