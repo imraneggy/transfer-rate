@@ -597,6 +597,8 @@ private fun ReadyView(
             GoldHistorySheet(
                 gold = g,
                 onDismiss = { goldSheetOpen = false },
+                secondaryCurrencySymbol = info?.symbol ?: "₹",
+                secondaryConversionRate = state.goldIndiaConversionRate,
             )
         }
     }

@@ -104,6 +104,8 @@ private fun ratesForCarat(carat: String, gold: GoldDocument): Pair<List<DatedRat
 fun GoldHistorySheet(
     gold: GoldDocument,
     onDismiss: () -> Unit,
+    secondaryCurrencySymbol: String = "₹",
+    secondaryConversionRate: Double? = null,
 ) {
     // v0.27 structure: outer body is a LazyColumn (not a Column) so the
     // sheet has a single scrollable child, cooperating with M3's
@@ -125,6 +127,9 @@ fun GoldHistorySheet(
 
     var selectedCarat by remember { mutableStateOf("24K") }
     var fullHistoryOpen by remember { mutableStateOf(false) }
+
+    val multiplier = secondaryConversionRate ?: 1.0
+    val indiaSym = if (secondaryConversionRate != null) secondaryCurrencySymbol else "₹"
 
     val (uaeSelectedRates, indiaSelectedRates) = remember(gold, selectedCarat) {
         ratesForCarat(selectedCarat, gold)
@@ -189,7 +194,7 @@ fun GoldHistorySheet(
 
             // 2. Snapshot grid (gold + optional silver column)
             item {
-                SnapshotGrid(gold = gold, silverAvailable = silverAvailable)
+                SnapshotGrid(gold = gold, silverAvailable = silverAvailable, currencySymbol = indiaSym, multiplier = multiplier)
                 Spacer(Modifier.height(18.dp))
             }
 
@@ -199,13 +204,15 @@ fun GoldHistorySheet(
                     TrendRow(
                         title = stringResource(R.string.gold_sheet_trend_24k),
                         uaeValues = uaeGoldHistory.map { it.perG24k },
-                        indiaValues = indiaGoldHistory.map { it.perG24k },
+                        indiaValues = indiaGoldHistory.map { it.perG24k * multiplier },
+                        indiaUnit = indiaSym,
                     )
                     Spacer(Modifier.height(12.dp))
                     TrendRow(
                         title = stringResource(R.string.gold_sheet_trend_22k),
                         uaeValues = uaeGoldHistory.map { it.perG22k },
-                        indiaValues = indiaGoldHistory.map { it.perG22k },
+                        indiaValues = indiaGoldHistory.map { it.perG22k * multiplier },
+                        indiaUnit = indiaSym,
                     )
                     Spacer(Modifier.height(16.dp))
                 }
@@ -226,8 +233,9 @@ fun GoldHistorySheet(
                         TrendRow(
                             title = stringResource(R.string.gold_sheet_trend_silver),
                             uaeValues = uaeSilverChrono.map { it.perG },
-                            indiaValues = indiaSilverChrono.map { it.perG },
+                            indiaValues = indiaSilverChrono.map { it.perG * multiplier },
                             uaePlaceholder = stringResource(R.string.gold_sheet_uae_spot_only),
+                            indiaUnit = indiaSym,
                         )
                         Spacer(Modifier.height(16.dp))
                     }
@@ -312,8 +320,8 @@ fun GoldHistorySheet(
                     if (indiaSelectedRates.isNotEmpty()) {
                         StatRegionRow(
                             regionLabel = "India",
-                            currencySym = "₹",
-                            rates = indiaSelectedRates.map { it.rate },
+                            currencySym = indiaSym,
+                            rates = indiaSelectedRates.map { it.rate * multiplier },
                         )
                     }
                     Spacer(Modifier.height(16.dp))
@@ -359,7 +367,7 @@ fun GoldHistorySheet(
                         HistoryRow(
                             date = date,
                             uaeRate = uaeMap[date]?.rate,
-                            indiaRate = inrMap[date]?.rate,
+                            indiaRate = inrMap[date]?.rate?.let { it * multiplier },
                             isSilver = selectedCarat == "Ag",
                         )
                     }
@@ -424,6 +432,8 @@ fun GoldHistorySheet(
             indiaRates = indiaSelectedRates,
             sheetState = historySheetState,
             onDismiss = { fullHistoryOpen = false },
+            currencySymbol = indiaSym,
+            multiplier = multiplier,
         )
     }
 }
@@ -445,6 +455,8 @@ private fun FullHistorySheet(
     indiaRates: List<DatedRate>,
     sheetState: SheetState,
     onDismiss: () -> Unit,
+    currencySymbol: String = "₹",
+    multiplier: Double = 1.0,
 ) {
     val allDates = remember(uaeRates, indiaRates) {
         (uaeRates.map { it.date } + indiaRates.map { it.date })
@@ -516,7 +528,7 @@ private fun FullHistorySheet(
             item {
                 HistoryTableHeader(
                     uaeLabel = stringResource(R.string.gold_sheet_uae_aed),
-                    indiaLabel = stringResource(R.string.gold_sheet_india_inr),
+                    indiaLabel = "India ($currencySymbol)",
                 )
                 Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             }
@@ -543,7 +555,7 @@ private fun FullHistorySheet(
                     HistoryRow(
                         date = date,
                         uaeRate = uaeMap[date]?.rate,
-                        indiaRate = inrMap[date]?.rate,
+                        indiaRate = inrMap[date]?.rate?.let { it * multiplier },
                         isSilver = isSilver,
                     )
                 }
@@ -670,6 +682,7 @@ private fun TrendRow(
     uaeValues: List<Double>,
     indiaValues: List<Double>,
     uaePlaceholder: String? = null,
+    indiaUnit: String = "₹",
 ) {
     // v0.31.1: AutoSizeText for the trend headers — "Silver trend ·
     // India (newest right)" + the Malayalam equivalent are visibly
@@ -719,7 +732,7 @@ private fun TrendRow(
         }
         SparkColumn(
             label = "India",
-            unit = "₹",
+            unit = indiaUnit,
             values = indiaValues,
             modifier = Modifier.weight(1f),
         )
@@ -774,7 +787,12 @@ private fun StatRegionRow(
 }
 
 @Composable
-private fun SnapshotGrid(gold: GoldDocument, silverAvailable: Boolean) {
+private fun SnapshotGrid(
+    gold: GoldDocument,
+    silverAvailable: Boolean,
+    currencySymbol: String = "₹",
+    multiplier: Double = 1.0,
+) {
     val metals = LocalMetalColors.current
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -786,8 +804,10 @@ private fun SnapshotGrid(gold: GoldDocument, silverAvailable: Boolean) {
             metals = metals,
             isGold = true,
             uae24 = gold.uae.perG24k, uae22 = gold.uae.perG22k,
-            india24 = gold.india.perG24k, india22 = gold.india.perG22k,
+            india24 = gold.india.perG24k?.let { it * multiplier },
+            india22 = gold.india.perG22k?.let { it * multiplier },
             uaeSilver = null, indiaSilver = null,
+            currencySymbol = currencySymbol,
         )
         if (silverAvailable) {
             MetalSnapshotCard(
@@ -797,7 +817,8 @@ private fun SnapshotGrid(gold: GoldDocument, silverAvailable: Boolean) {
                 uae24 = null, uae22 = null,
                 india24 = null, india22 = null,
                 uaeSilver = gold.uaeSilver?.perG,
-                indiaSilver = gold.indiaSilver?.perG,
+                indiaSilver = gold.indiaSilver?.perG?.let { it * multiplier },
+                currencySymbol = currencySymbol,
             )
         }
     }
@@ -816,6 +837,7 @@ private fun MetalSnapshotCard(
     uae24: Double?, uae22: Double?,
     india24: Double?, india22: Double?,
     uaeSilver: Double?, indiaSilver: Double?,
+    currencySymbol: String = "₹",
 ) {
     val gradStart = if (isGold) metals.goldLightest else metals.silverLightest
     val gradEnd   = if (isGold) metals.goldLight    else metals.silverLight
@@ -851,7 +873,7 @@ private fun MetalSnapshotCard(
                       accent = accent, deep = deep, emphasis = true)
             Spacer(Modifier.height(4.dp))
             MetalLine(label = "INDIA  ·  24K 1g",
-                      value = india24?.let { "₹ %,.0f".format(it) } ?: "—",
+                      value = india24?.let { "$currencySymbol %,.0f".format(it) } ?: "—",
                       accent = accent, deep = deep, emphasis = true)
             Spacer(Modifier.height(8.dp))
             MetalDivider(accent.copy(alpha = 0.25f))
@@ -861,7 +883,7 @@ private fun MetalSnapshotCard(
                       accent = accent, deep = deep, emphasis = false)
             Spacer(Modifier.height(4.dp))
             MetalLine(label = "INDIA  ·  22K 1g",
-                      value = india22?.let { "₹ %,.0f".format(it) } ?: "—",
+                      value = india22?.let { "$currencySymbol %,.0f".format(it) } ?: "—",
                       accent = accent, deep = deep, emphasis = false)
         } else {
             // Silver card content: 1g (UAE + India), 1kg (UAE + India)
@@ -870,7 +892,7 @@ private fun MetalSnapshotCard(
                       accent = accent, deep = deep, emphasis = true)
             Spacer(Modifier.height(4.dp))
             MetalLine(label = "INDIA  ·  1g",
-                      value = indiaSilver?.let { "₹ %,.0f".format(it) } ?: "—",
+                      value = indiaSilver?.let { "$currencySymbol %,.0f".format(it) } ?: "—",
                       accent = accent, deep = deep, emphasis = true)
             Spacer(Modifier.height(8.dp))
             MetalDivider(accent.copy(alpha = 0.25f))
@@ -880,7 +902,7 @@ private fun MetalSnapshotCard(
                       accent = accent, deep = deep, emphasis = false)
             Spacer(Modifier.height(4.dp))
             MetalLine(label = "INDIA  ·  1kg",
-                      value = indiaSilver?.let { "₹ %,.0f".format(it * 1000) } ?: "—",
+                      value = indiaSilver?.let { "$currencySymbol %,.0f".format(it * 1000) } ?: "—",
                       accent = accent, deep = deep, emphasis = false)
         }
     }
