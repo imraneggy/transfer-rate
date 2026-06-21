@@ -1,13 +1,17 @@
 package com.transferrate.app.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -66,16 +70,22 @@ fun StatPill(label: String, value: String, modifier: Modifier = Modifier) {
  */
 @Composable
 fun CaratChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    val bg = if (selected) MaterialTheme.colorScheme.primary
-             else MaterialTheme.colorScheme.surfaceVariant
-    val fg = if (selected) MaterialTheme.colorScheme.onPrimary
-             else MaterialTheme.colorScheme.onSurface
-    // v0.31.1: AutoSizeText inside the chip so localised CaratChip
-    // labels ("வெள்ளி" / "चाँदी" / "വെള്ളി" / "Silver") fit at varying
-    // widths.  24K and 22K stay at 14 sp because they're fixed unit
-    // codes; the auto-shrink only kicks in for the "Silver" chip.
+    val bg by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary
+                      else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(durationMillis = 200),
+        label = "carat-chip-bg",
+    )
+    val fg by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.onPrimary
+                      else MaterialTheme.colorScheme.onSurface,
+        animationSpec = tween(durationMillis = 200),
+        label = "carat-chip-fg",
+    )
     androidx.compose.foundation.layout.Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
+            .heightIn(min = 48.dp)
             .background(bg, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 22.dp, vertical = 8.dp),

@@ -202,6 +202,39 @@ private val DarkMetalColors = MetalColors(
  */
 val LocalMetalColors = staticCompositionLocalOf { LightMetalColors }
 
+/** Brand-anchored colors that live outside the M3 color scheme. */
+data class BrandColors(
+    val navy: Color,
+    val teal: Color,
+    val gold: Color,
+)
+
+val LocalBrandColors = staticCompositionLocalOf {
+    BrandColors(
+        navy = Color(0xFF071827),
+        teal = Color(0xFF14BBA6),
+        gold = Color(0xFFF4A900),
+    )
+}
+
+/** Semantic positive/negative pair — resolved once per theme. */
+data class SemanticColors(
+    val positive: Color,
+    val negative: Color,
+)
+
+private val LightSemanticColors = SemanticColors(
+    positive = Color(0xFF1B7B33),
+    negative = Color(0xFFB71C1C),
+)
+
+private val DarkSemanticColors = SemanticColors(
+    positive = Color(0xFF6FDBA0),
+    negative = Color(0xFFFF8A80),
+)
+
+val LocalSemanticColors = staticCompositionLocalOf { LightSemanticColors }
+
 @Composable
 fun TransferRateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -218,6 +251,7 @@ fun TransferRateTheme(
         else -> LightColors
     }
     val metals = if (darkTheme) DarkMetalColors else LightMetalColors
+    val semantics = if (darkTheme) DarkSemanticColors else LightSemanticColors
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -228,7 +262,10 @@ fun TransferRateTheme(
         }
     }
 
-    CompositionLocalProvider(LocalMetalColors provides metals) {
+    CompositionLocalProvider(
+        LocalMetalColors provides metals,
+        LocalSemanticColors provides semantics,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = TransferRateTypography,

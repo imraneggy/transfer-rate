@@ -76,7 +76,12 @@ import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.CurrencyInfo
 import com.transferrate.app.data.GoldDocument
 import com.transferrate.app.data.ProviderQuote
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import com.transferrate.app.ui.theme.LocalBrandColors
 import com.transferrate.app.ui.theme.LocalMetalColors
+import com.transferrate.app.ui.theme.LocalSemanticColors
 
 /** Theme override modes for the user-facing toggle. */
 enum class ThemeMode {
@@ -136,14 +141,14 @@ fun RatesScreen(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(androidx.compose.foundation.shape.CircleShape)
-                                .background(Color(0xFF071827)),
+                                .background(LocalBrandColors.current.navy),
                             contentAlignment = Alignment.Center,
                         ) {
                             androidx.compose.foundation.Image(
                                 painter = androidx.compose.ui.res.painterResource(
                                     id = R.drawable.transfer_rate_logo,
                                 ),
-                                contentDescription = null,
+                                contentDescription = stringResource(R.string.app_name),
                                 contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                                 modifier = Modifier
                                     .size(28.dp)
@@ -174,7 +179,7 @@ fun RatesScreen(
                         androidx.compose.material3.Icon(
                             painter = androidx.compose.ui.res.painterResource(id = themeIcon),
                             contentDescription = "Theme: ${themeMode.label} (tap to cycle)",
-                            tint = MaterialTheme.colorScheme.onBackground,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     IconButton(onClick = { vm.refresh() }) {
@@ -381,8 +386,18 @@ private fun relativeTime(iso: String): String {
 
 @Composable
 private fun CenteredSpinner() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
         CircularProgressIndicator()
+        Spacer(Modifier.height(16.dp))
+        Text(
+            stringResource(R.string.loading_rates),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -936,12 +951,21 @@ private fun CurrencyChipRow(
 
 @Composable
 private fun CurrencyChip(info: CurrencyInfo, isSelected: Boolean, onClick: () -> Unit) {
-    val bgColor = if (isSelected) MaterialTheme.colorScheme.primary
-                  else MaterialTheme.colorScheme.surfaceVariant
-    val fgColor = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                  else MaterialTheme.colorScheme.onSurfaceVariant
+    val bgColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+                      else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(200),
+        label = "currency-chip-bg",
+    )
+    val fgColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                      else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(200),
+        label = "currency-chip-fg",
+    )
     Row(
         modifier = Modifier
+            .heightIn(min = 48.dp)
             .background(bgColor, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -1029,12 +1053,22 @@ private fun AmountPanel(
 }
 @Composable
 private fun AmountChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    val bg = if (selected) MaterialTheme.colorScheme.primary
-             else MaterialTheme.colorScheme.surfaceVariant
-    val fg = if (selected) MaterialTheme.colorScheme.onPrimary
-             else MaterialTheme.colorScheme.onSurfaceVariant
+    val bg by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary
+                      else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(200),
+        label = "amount-chip-bg",
+    )
+    val fg by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.onPrimary
+                      else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(200),
+        label = "amount-chip-fg",
+    )
     Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
+            .heightIn(min = 48.dp)
             .background(bg, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -1115,23 +1149,15 @@ private fun MetalCalculatorPanel(
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            // v0.35.0: pick a random motivational, metal-specific phrase
-            // for the eyebrow — a purity-focused pool for 24K, a general
-            // gold pitch for 22K, and a silver pool for silver. Re-rolled
-            // on screen open and again whenever the user switches metals,
-            // instead of always showing the same static "WHAT THIS BUYS"
-            // label.
-            val titleVariants = when (selected) {
-                MetalCalcOption.Gold24k -> stringArrayResource(R.array.metals_calc_title_variants_gold_24k)
-                MetalCalcOption.Gold22k -> stringArrayResource(R.array.metals_calc_title_variants_gold_22k)
-                MetalCalcOption.Silver -> stringArrayResource(R.array.metals_calc_title_variants_silver)
-            }
-            val title = remember(selected) { titleVariants.random() }
             Text(
-                text = title,
-                fontSize = 11.sp,
+                text = when (selected) {
+                    MetalCalcOption.Gold24k -> stringResource(R.string.metals_calc_option_gold_24k)
+                    MetalCalcOption.Gold22k -> stringResource(R.string.metals_calc_option_gold_22k)
+                    MetalCalcOption.Silver  -> stringResource(R.string.metals_calc_option_silver)
+                }.uppercase() + " · " + stringResource(R.string.metals_calc_label),
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 1.0.sp,
+                letterSpacing = 0.8.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
@@ -1327,9 +1353,13 @@ private fun ProviderCard(
                 // rate against the rolling 7-day average.
                 RateView(p, midMarket = midMarket, amount = amount, history = history)
             }
-            if (p.status == "ok" && p.promoRate != null) {
-                Spacer(Modifier.height(10.dp))
-                PromoBadge(p.promoRate, p.promoNote, p.quote)
+            AnimatedVisibility(visible = p.status == "ok" && p.promoRate != null) {
+                Column {
+                    Spacer(Modifier.height(10.dp))
+                    if (p.promoRate != null) {
+                        PromoBadge(p.promoRate, p.promoNote, p.quote)
+                    }
+                }
             }
         }
     }
@@ -1366,14 +1396,14 @@ private fun ManualBadge() {
     Box(
         modifier = Modifier
             .background(
-                MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f),
+                MaterialTheme.colorScheme.tertiaryContainer,
                 RoundedCornerShape(6.dp),
             )
             .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
         Text(
             text = stringResource(R.string.badge_manual),
-            color = MaterialTheme.colorScheme.tertiary,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
             fontWeight = FontWeight.Bold,
             fontSize = 10.sp,
             letterSpacing = 0.6.sp,
@@ -1392,9 +1422,9 @@ private fun RateView(
 ) {
     val rate = p.effectiveRate ?: p.rate
     val symbol = CURRENCIES[p.quote]?.symbol ?: ""
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val positive = if (isDark) Color(0xFF6FDBA0) else Color(0xFF1B7B33)
-    val negative = if (isDark) Color(0xFFFF8A80) else Color(0xFFB71C1C)
+    val semantic = LocalSemanticColors.current
+    val positive = semantic.positive
+    val negative = semantic.negative
 
     // v0.31.0: rolling-7-day trend arrow.  Computed against the
     // provider's 7-day rate history.
@@ -1415,7 +1445,10 @@ private fun RateView(
         }
     } else null
 
-    Column(horizontalAlignment = Alignment.End) {
+    Column(
+        horizontalAlignment = Alignment.End,
+        modifier = Modifier.widthIn(min = 90.dp),
+    ) {
         when (p.status) {
             "ok", "manual" -> {
                 // v0.30.5: rate is the headline again (top), received
@@ -1451,8 +1484,10 @@ private fun RateView(
                     )
                 }
                 if (received != null) {
+                    val receivedStr = if (received >= 100) "%,.0f".format(received)
+                                      else "%,.2f".format(received)
                     Text(
-                        text = "$symbol %,.0f".format(received),
+                        text = "$symbol $receivedStr",
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontFeatureSettings = "tnum",
                         ),
@@ -1539,7 +1574,7 @@ private fun RateView(
                         textAlign = TextAlign.End,
                     )
                 } else {
-                    StatusDot(Color(0xFF94A3B8))
+                    StatusDot(MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             else -> StatusDot(MaterialTheme.colorScheme.error)

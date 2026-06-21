@@ -19,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,14 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-private val brandNavy = Color(0xFF071827)
-private val brandTeal = Color(0xFF14BBA6)
-private val brandGold = Color(0xFFF4A900)
+import com.transferrate.app.R
+import com.transferrate.app.ui.theme.LocalBrandColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +53,13 @@ fun UpgradeScreen(
             TopAppBar(
                 title = { Text("Transfer Rate Pro", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Text("←", fontSize = 22.sp) }
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
@@ -104,7 +110,7 @@ fun UpgradeScreen(
             Text(
                 text = "Cancel anytime in Google Play subscriptions. No refunds for partial months.",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 8.dp),
             )
@@ -115,6 +121,7 @@ fun UpgradeScreen(
 
 @Composable
 private fun HeroCard() {
+    val brand = LocalBrandColors.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -125,7 +132,7 @@ private fun HeroCard() {
             modifier = Modifier
                 .background(
                     brush = Brush.verticalGradient(
-                        colors = listOf(brandNavy, Color(0xFF0D2B40)),
+                        colors = listOf(brand.navy, Color(0xFF0D2B40)),
                     ),
                     shape = RoundedCornerShape(20.dp),
                 )
@@ -136,7 +143,7 @@ private fun HeroCard() {
             Text(
                 text = "✦",
                 fontSize = 40.sp,
-                color = brandGold,
+                color = brand.gold,
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -182,7 +189,7 @@ private fun FeatureRow(emoji: String, title: String, subtitle: String) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -191,6 +198,7 @@ private fun FeatureRow(emoji: String, title: String, subtitle: String) {
 
 @Composable
 private fun UpgradeButton(priceString: String?, onUpgrade: () -> Unit) {
+    val brand = LocalBrandColors.current
     val label = if (priceString != null) {
         "Upgrade to Pro — $priceString / month"
     } else {
@@ -202,7 +210,7 @@ private fun UpgradeButton(priceString: String?, onUpgrade: () -> Unit) {
             .fillMaxWidth()
             .height(52.dp),
         shape = RoundedCornerShape(14.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = brandTeal),
+        colors = ButtonDefaults.buttonColors(containerColor = brand.teal),
     ) {
         Text(
             text = label,
@@ -215,10 +223,11 @@ private fun UpgradeButton(priceString: String?, onUpgrade: () -> Unit) {
 
 @Composable
 private fun ProActiveCard() {
+    val brand = LocalBrandColors.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = brandTeal.copy(alpha = 0.12f)),
+        colors = CardDefaults.cardColors(containerColor = brand.teal.copy(alpha = 0.12f)),
         elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Row(
@@ -226,18 +235,18 @@ private fun ProActiveCard() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Text("✦", fontSize = 20.sp, color = brandTeal)
+            Text("✦", fontSize = 20.sp, color = brand.teal)
             Spacer(Modifier.width(10.dp))
             Column {
                 Text(
                     text = "Pro active",
                     fontWeight = FontWeight.SemiBold,
-                    color = brandTeal,
+                    color = brand.teal,
                 )
                 Text(
                     text = "All Pro features are unlocked on this device.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
