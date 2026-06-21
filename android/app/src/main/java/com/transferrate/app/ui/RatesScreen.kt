@@ -41,7 +41,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -78,7 +77,13 @@ import com.transferrate.app.data.GoldDocument
 import com.transferrate.app.data.ProviderQuote
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.ui.geometry.Offset
 import com.transferrate.app.ui.theme.LocalBrandColors
 import com.transferrate.app.ui.theme.LocalMetalColors
 import com.transferrate.app.ui.theme.LocalSemanticColors
@@ -233,7 +238,7 @@ fun RatesScreen(
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (val s = state) {
-                is RatesUiState.Loading -> CenteredSpinner()
+                is RatesUiState.Loading -> SkeletonLoading()
                 is RatesUiState.Failed -> ErrorView(s.message) { vm.refresh() }
                 is RatesUiState.Ready -> {
                     PullToRefreshBox(
@@ -384,20 +389,136 @@ private fun relativeTime(iso: String): String {
 }
 
 
+/**
+ * Animated shimmer brush for skeleton placeholders.  A translucent band
+ * sweeps left→right across each placeholder block, reading as "content
+ * loading" far better than a centred spinner (skill rule: prefer skeleton
+ * screens over blocking spinners for operations that may exceed ~1s).
+ *
+ * The brush translates a soft gradient (surfaceVariant → transparent →
+ * surfaceVariant) so the same animation reads correctly on both the OLED
+ * true-black dark theme and the paper-light theme without per-theme tuning.
+ */
 @Composable
-private fun CenteredSpinner() {
+private fun rememberShimmerBrush(): Brush {
+    val transition = rememberInfiniteTransition(label = "skeleton-shimmer")
+    val translate by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1400f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1100, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "skeleton-translate",
+    )
+    val base = MaterialTheme.colorScheme.surfaceVariant
+    return Brush.linearGradient(
+        colors = listOf(
+            base.copy(alpha = 0.55f),
+            base.copy(alpha = 0.18f),
+            base.copy(alpha = 0.55f),
+        ),
+        start = Offset(translate - 350f, 0f),
+        end = Offset(translate, 0f),
+    )
+}
+
+/** A single rounded shimmer block used to compose skeleton layouts. */
+@Composable
+private fun SkeletonBox(
+    modifier: Modifier = Modifier,
+    brush: Brush,
+    cornerRadius: Int = 8,
+) {
+    Box(modifier.background(brush, RoundedCornerShape(cornerRadius.dp)))
+}
+
+/**
+ * Loading placeholder that mirrors [ReadyView]'s real layout — currency
+ * chips, the hero rate + gold row, the amount field, and a stack of
+ * provider rows.  Showing the actual content silhouette (rather than a
+ * generic spinner) keeps spatial continuity so the screen doesn't visibly
+ * reflow when real data arrives.
+ */
+@Composable
+private fun SkeletonLoading() {
+    val brush = rememberShimmerBrush()
     Column(
-        Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        CircularProgressIndicator()
-        Spacer(Modifier.height(16.dp))
-        Text(
-            stringResource(R.string.loading_rates),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // Currency chip row
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            repeat(4) {
+                SkeletonBox(
+                    Modifier.height(48.dp).width(72.dp),
+                    brush = brush,
+                    cornerRadius = 20,
+                )
+            }
+        }
+        // Hero rate + gold module row
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            SkeletonBox(
+                Modifier.weight(1f).height(156.dp),
+                brush = brush,
+                cornerRadius = 22,
+            )
+            SkeletonBox(
+                Modifier.weight(1f).height(156.dp),
+                brush = brush,
+                cornerRadius = 22,
+            )
+        }
+        // Amount field
+        SkeletonBox(
+            Modifier.fillMaxWidth().height(56.dp),
+            brush = brush,
+            cornerRadius = 12,
         )
+        // Metal calculator panel
+        SkeletonBox(
+            Modifier.fillMaxWidth().height(96.dp),
+            brush = brush,
+            cornerRadius = 22,
+        )
+        // Provider rows
+        repeat(6) {
+            SkeletonProviderRow(brush)
+        }
+    }
+}
+
+/** One provider-card silhouette: avatar circle, two text lines, and the
+ *  right-aligned rate block — matching [ProviderCard]'s real geometry. */
+@Composable
+private fun SkeletonProviderRow(brush: Brush) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.18f),
+                RoundedCornerShape(20.dp),
+            )
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SkeletonBox(Modifier.size(44.dp), brush = brush, cornerRadius = 22)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            SkeletonBox(Modifier.fillMaxWidth(0.55f).height(15.dp), brush = brush)
+            SkeletonBox(Modifier.fillMaxWidth(0.35f).height(12.dp), brush = brush)
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            SkeletonBox(Modifier.width(72.dp).height(20.dp), brush = brush)
+            SkeletonBox(Modifier.width(56.dp).height(14.dp), brush = brush)
+        }
     }
 }
 
