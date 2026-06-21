@@ -3,9 +3,13 @@ package com.transferrate.app.ui
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.widget.ImageView
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
@@ -34,41 +38,44 @@ import com.transferrate.app.R
 import kotlinx.coroutines.delay
 
 /**
- * Branded Transfer Rate splash that runs AFTER the OS native splash and
- * BEFORE the rates list. Holds for at least [minDurationMs] so the
- * brand animation registers, then dismisses when the caller's data is
- * ready.
+ * Branded Transfer Rate splash — two phases:
  *
- * Composition ("infinity DXR" brand refresh, res/raw/splash.gif):
- *   - Full-bleed playback of the animated brand reveal — the teal
- *     infinity money-flow loop draws in, then the "Transfer Rate"
- *     wordmark and "Compare. Choose. Save." tagline appear, settling
- *     on a Deep Navy backdrop. The GIF loops forever by default
- *     (NETSCAPE2.0 loop=0), so we force play-once and hold the final
- *     frame — which already matches the desired static splash state.
- *   - [minDurationMs] defaults to the GIF's ~3.1s runtime so the
- *     animation completes before the rates list can take over.
- *   - Subtle loading indicator near the bottom, overlaid on the GIF's
- *     final frame.
- *   - Whole composition fades in over 400ms for a softer transition
- *     from the OS splash.
+ *   Phase 1 (0 → gifDurationMs): "infinity DXR" GIF plays once and
+ *     holds its final frame. A teal loading indicator sits near the
+ *     bottom while data loads in the background.
+ *
+ *   Phase 2 (gifDurationMs → gifDurationMs + flashDurationMs): The
+ *     brand flash card (drawable-nodpi/brand_flash.png — "Proud of UAE"
+ *     card) cross-fades in over the GIF's final frame and is held for
+ *     [flashDurationMs]. The loading indicator is hidden during this
+ *     phase so the full card is unobstructed.
+ *
+ *   Dismiss: after both phases complete AND [isReady] is true, [onDone]
+ *     is called and the rates screen takes over.
  */
 @Composable
 fun SplashScreen(
     minDurationMs: Long = 3100L,
+    flashDurationMs: Long = 1800L,
     isReady: Boolean = false,
     onDone: () -> Unit,
 ) {
-    var minElapsed by remember { mutableStateOf(false) }
+    // Phase 1 done when GIF has played through.
+    var gifDone by remember { mutableStateOf(false) }
+    // Phase 2 done when flash card has been held long enough.
+    var flashDone by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         delay(minDurationMs)
-        minElapsed = true
+        gifDone = true
+        delay(flashDurationMs)
+        flashDone = true
     }
-    LaunchedEffect(minElapsed, isReady) {
-        if (minElapsed && isReady) onDone()
+    LaunchedEffect(flashDone, isReady) {
+        if (flashDone && isReady) onDone()
     }
 
-    // Fade-in alpha for the whole splash content
+    // Fade-in for the whole splash on first appearance.
     val alpha by animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(durationMillis = 400, easing = LinearEasing),
@@ -78,10 +85,11 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF071827)) // Deep Navy — matches GIF + flash card bg
             .alpha(alpha),
         contentAlignment = Alignment.BottomCenter,
     ) {
+        // Phase 1: GIF animation (always rendered so it plays immediately).
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
@@ -91,20 +99,43 @@ fun SplashScreen(
                     val drawable = ImageDecoder.decodeDrawable(source)
                     setImageDrawable(drawable)
                     if (drawable is AnimatedImageDrawable) {
-                        drawable.repeatCount = 0 // play once, then hold the final frame
+                        drawable.repeatCount = 0 // play once, hold final frame
                         drawable.start()
                     }
                 }
             },
         )
 
-        CircularProgressIndicator(
-            modifier = Modifier
-                .padding(bottom = 64.dp)
-                .size(28.dp),
-            color = Color(0xFF14BBA6), // brand teal (infinity DXR refresh)
-            strokeWidth = 2.5.dp,
-        )
+        // Phase 2: brand flash card cross-fades in over the GIF once it ends.
+        AnimatedContent(
+            targetState = gifDone,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(600)) togetherWith fadeOut(animationSpec = tween(300))
+            },
+            label = "flash-card-transition",
+        ) { showFlash ->
+            if (showFlash) {
+                Image(
+                    painter = painterResource(id = R.drawable.brand_flash),
+                    contentDescription = "Transfer Rate — Proud of UAE",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                Box(Modifier.fillMaxSize())
+            }
+        }
+
+        // Loading indicator — visible only during Phase 1.
+        if (!gifDone) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(bottom = 64.dp)
+                    .size(28.dp),
+                color = Color(0xFF14BBA6),
+                strokeWidth = 2.5.dp,
+            )
+        }
     }
 }
 
