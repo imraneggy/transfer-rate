@@ -85,7 +85,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF071827)) // Deep Navy — matches GIF + flash card bg
+            .background(Color(0xFF000000)) // Full black — matches GIF + flash card bg
             .alpha(alpha),
         contentAlignment = Alignment.BottomCenter,
     ) {

@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.38.5] - 2026-06-26
+
+### Changed
+- **Full-black splash background.** The brand flash card ("Proud of UAE") shown after the intro animation now sits on a pure-black background instead of deep navy, for a cleaner OLED-true-black reveal. The card artwork and the splash container background were both updated.
+
 ## [0.38.4] - 2026-06-21
 
 ### Changed
