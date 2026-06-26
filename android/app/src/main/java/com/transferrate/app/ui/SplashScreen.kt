@@ -115,12 +115,24 @@ fun SplashScreen(
             label = "flash-card-transition",
         ) { showFlash ->
             if (showFlash) {
-                Image(
-                    painter = painterResource(id = R.drawable.brand_flash),
-                    contentDescription = "Transfer Rate — Proud of UAE",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                // Full-screen black under the card so the GIF's final frame
+                // (navy) can't show through the Fit-scaled card's letterbox
+                // bars (the card is ~941x1672; on a 9:16 screen Fit leaves
+                // ~240px top/bottom). Without this the splash showed faint
+                // navy bars behind an otherwise-black card.
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF000000)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.brand_flash),
+                        contentDescription = "Transfer Rate — Proud of UAE",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             } else {
                 Box(Modifier.fillMaxSize())
             }

@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.38.6] - 2026-06-26
+
+### Fixed
+- **Navy bars behind the splash card.** On real devices a thin navy tint showed at the top and bottom of the post-intro brand card, because the Fit-scaled card left letterbox bars through which the intro animation's navy final frame was visible. A full-screen black layer now sits behind the card, so the splash is pure black edge-to-edge on every screen aspect.
+
 ## [0.38.5] - 2026-06-26
 
 ### Changed
