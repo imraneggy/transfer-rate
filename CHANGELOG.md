@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.39.1] - 2026-06-27
+
+### Fixed
+- **Theme toggle icon.** The top-bar theme button showed a settings gear in System mode, making it look like a settings button rather than a light/dark toggle. It now shows a sun or moon reflecting the theme currently in effect (System resolves to the live system theme), so the button reads as a theme toggle at a glance.
+
 ## [0.39.0] - 2026-06-27
 
 ### Added

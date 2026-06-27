@@ -176,8 +176,15 @@ fun RatesScreen(
                     }
                 },
                 actions = {
+                    // Show the icon for the theme currently in effect (sun =
+                    // light, moon = dark) rather than a gear for System — users
+                    // read the toolbar button as a light/dark toggle, and a
+                    // settings gear made it look like it did nothing until
+                    // tapped. System resolves to the live system theme.
                     val themeIcon = when (themeMode) {
-                        ThemeMode.System -> R.drawable.ic_settings_outline
+                        ThemeMode.System ->
+                            if (androidx.compose.foundation.isSystemInDarkTheme())
+                                R.drawable.ic_dark_mode else R.drawable.ic_light_mode
                         ThemeMode.Light  -> R.drawable.ic_light_mode
                         ThemeMode.Dark   -> R.drawable.ic_dark_mode
                     }
