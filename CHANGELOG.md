@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.39.0] - 2026-06-27
+
+### Added
+- **UAE jewellers directory.** The gold sheet now lists major UAE gold jewellers (Joy Alukkas, Malabar Gold & Diamonds, Kalyan Jewellers, Sky Jewellery, Damas), each a tap-to-open link to that jeweller's official daily-rate page. The UAE retail gold rate is set uniformly by the Dubai Gold & Jewellery Group, so this is a directory — not a price comparison; making charges (the real per-shop difference) vary by store and are noted as such rather than fabricated.
+
 ## [0.38.6] - 2026-06-26
 
 ### Fixed
