@@ -15,6 +15,14 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.40.0] - 2026-06-27
+
+### Added
+- **Gold sheet follows the selected corridor.** The gold/silver module is now "UAE vs <your selected country>" instead of always UAE vs India. Pick PKR and you see Pakistan's retail gold + silver; pick EGP and you see Egypt's, and so on — with each country's own headline rate, 30-day trend sparklines, and high/low/avg stats in that country's local currency. Per-country rates come from livepriceofgold.com; the 30-day trend accumulates from daily snapshots, so it fills in over the coming weeks. Corridors without a per-country feed fall back to showing India, labelled honestly.
+
+### Changed
+- **Per-country values are native, not converted.** Previously the India column was converted into the selected currency via mid-market rates; now each country's actual local gold/silver price is shown directly.
+
 ## [0.39.1] - 2026-06-27
 
 ### Fixed

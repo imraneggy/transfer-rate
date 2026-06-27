@@ -109,6 +109,11 @@ fun GoldHistorySheet(
     onDismiss: () -> Unit,
     secondaryCurrencySymbol: String = "₹",
     secondaryConversionRate: Double? = null,
+    // v0.40: second column follows the selected corridor's country. Label =
+    // country name ("Pakistan") for trend/stats; code ("PKR") for the tight
+    // table header. Defaults keep the legacy "India / IN" labelling.
+    secondaryLabel: String = "India",
+    secondaryCode: String = "IN",
 ) {
     // v0.27 structure: outer body is a LazyColumn (not a Column) so the
     // sheet has a single scrollable child, cooperating with M3's
@@ -174,9 +179,9 @@ fun GoldHistorySheet(
                         // floor leaves the title legible at worst case.
                         AutoSizeText(
                             text = if (silverAvailable)
-                                stringResource(R.string.gold_sheet_title_both)
+                                stringResource(R.string.gold_sheet_title_both_fmt, secondaryLabel)
                             else
-                                stringResource(R.string.gold_sheet_title_gold_only),
+                                stringResource(R.string.gold_sheet_title_gold_only_fmt, secondaryLabel),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             minFontSize = 14.sp,
@@ -209,6 +214,7 @@ fun GoldHistorySheet(
                         uaeValues = uaeGoldHistory.map { it.perG24k },
                         indiaValues = indiaGoldHistory.map { it.perG24k * multiplier },
                         indiaUnit = indiaSym,
+                        indiaLabel = secondaryLabel,
                     )
                     Spacer(Modifier.height(12.dp))
                     TrendRow(
@@ -216,6 +222,7 @@ fun GoldHistorySheet(
                         uaeValues = uaeGoldHistory.map { it.perG22k },
                         indiaValues = indiaGoldHistory.map { it.perG22k * multiplier },
                         indiaUnit = indiaSym,
+                        indiaLabel = secondaryLabel,
                     )
                     Spacer(Modifier.height(16.dp))
                 }
@@ -239,6 +246,7 @@ fun GoldHistorySheet(
                             indiaValues = indiaSilverChrono.map { it.perG * multiplier },
                             uaePlaceholder = stringResource(R.string.gold_sheet_uae_spot_only),
                             indiaUnit = indiaSym,
+                            indiaLabel = secondaryLabel,
                         )
                         Spacer(Modifier.height(16.dp))
                     }
@@ -322,7 +330,7 @@ fun GoldHistorySheet(
                     }
                     if (indiaSelectedRates.isNotEmpty()) {
                         StatRegionRow(
-                            regionLabel = "India",
+                            regionLabel = secondaryLabel,
                             currencySym = indiaSym,
                             rates = indiaSelectedRates.map { it.rate * multiplier },
                         )
@@ -347,7 +355,7 @@ fun GoldHistorySheet(
                 )
                 Spacer(Modifier.height(6.dp))
 
-                HistoryTableHeader(uaeLabel = "UAE", indiaLabel = "IN")
+                HistoryTableHeader(uaeLabel = "UAE", indiaLabel = secondaryCode)
                 Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
                 if (miniHistoryDates.isEmpty()) {
@@ -445,6 +453,7 @@ fun GoldHistorySheet(
             onDismiss = { fullHistoryOpen = false },
             currencySymbol = indiaSym,
             multiplier = multiplier,
+            secondaryLabel = secondaryLabel,
         )
     }
 }
@@ -553,6 +562,7 @@ private fun FullHistorySheet(
     onDismiss: () -> Unit,
     currencySymbol: String = "₹",
     multiplier: Double = 1.0,
+    secondaryLabel: String = "India",
 ) {
     val allDates = remember(uaeRates, indiaRates) {
         (uaeRates.map { it.date } + indiaRates.map { it.date })
@@ -624,7 +634,7 @@ private fun FullHistorySheet(
             item {
                 HistoryTableHeader(
                     uaeLabel = stringResource(R.string.gold_sheet_uae_aed),
-                    indiaLabel = "India ($currencySymbol)",
+                    indiaLabel = "$secondaryLabel ($currencySymbol)",
                 )
                 Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
             }
@@ -779,6 +789,7 @@ private fun TrendRow(
     indiaValues: List<Double>,
     uaePlaceholder: String? = null,
     indiaUnit: String = "₹",
+    indiaLabel: String = "India",
 ) {
     // v0.31.1: AutoSizeText for the trend headers — "Silver trend ·
     // India (newest right)" + the Malayalam equivalent are visibly
@@ -827,7 +838,7 @@ private fun TrendRow(
             )
         }
         SparkColumn(
-            label = "India",
+            label = indiaLabel,
             unit = indiaUnit,
             values = indiaValues,
             modifier = Modifier.weight(1f),

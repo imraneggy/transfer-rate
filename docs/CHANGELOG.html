@@ -321,6 +321,7 @@
 <nav class="toc">
   <h2>Versions</h2>
   <ul>
+    <li><a href="#v0-40-0">v0.40.0</a><span class="date">2026-06-27</span></li>
     <li><a href="#v0-39-1">v0.39.1</a><span class="date">2026-06-27</span></li>
     <li><a href="#v0-39-0">v0.39.0</a><span class="date">2026-06-27</span></li>
     <li><a href="#v0-38-6">v0.38.6</a><span class="date">2026-06-26</span></li>
@@ -394,8 +395,33 @@
   </ul>
 </nav>
 
-<section class="release current" id="v0-39-1">
-  <h2><span class="ver">v0.39.1</span> <span class="badge">Latest</span></h2>
+<section class="release current" id="v0-40-0">
+  <h2><span class="ver">v0.40.0</span> <span class="badge">Latest</span></h2>
+  <p class="date">2026-06-27</p>
+
+  <h3 class="added">Added</h3>
+  <ul>
+    <li><strong>Gold sheet follows the selected corridor.</strong> The
+      gold/silver module is now "UAE vs &lt;your selected country&gt;" instead
+      of always UAE vs India. Pick PKR and you see Pakistan's retail gold +
+      silver; pick EGP and you see Egypt's — each with its own headline rate,
+      30-day trend sparklines, and high/low/avg stats in that country's local
+      currency. Per-country rates come from livepriceofgold.com; the 30-day
+      trend accumulates from daily snapshots, so it fills in over the coming
+      weeks. Corridors without a per-country feed fall back to India, labelled
+      honestly.</li>
+  </ul>
+
+  <h3 class="changed">Changed</h3>
+  <ul>
+    <li><strong>Per-country values are native, not converted.</strong>
+      Previously the India column was converted into the selected currency via
+      mid-market rates; now each country's actual local gold/silver price is
+      shown directly.</li>
+  </ul>
+</section>
+<section class="release" id="v0-39-1">
+  <h2><span class="ver">v0.39.1</span></h2>
   <p class="date">2026-06-27</p>
 
   <h3 class="fixed">Fixed</h3>

@@ -57,6 +57,20 @@ data class GoldDocument(
     @SerialName("uae_silver")   val uaeSilver: SilverSide? = null,
     @SerialName("india_silver") val indiaSilver: SilverSide? = null,
     @SerialName("fetched_at")   val fetchedAt: String,
+    // v0.40: per-corridor retail metals (livepriceofgold.com), keyed by
+    // currency code. Lets the gold sheet show "UAE vs <selected country>"
+    // with that country's own local gold/silver instead of always India.
+    // Default empty → older rates.json (no `secondary`) parses unchanged.
+    val secondary: Map<String, CountryMetals> = emptyMap(),
+)
+
+/** One corridor's local gold + silver (the second column when that
+ *  corridor is selected). Either side may be null/error if the source
+ *  failed for that country on a given run. */
+@Serializable
+data class CountryMetals(
+    val gold: GoldSide? = null,
+    val silver: SilverSide? = null,
 )
 
 @Serializable
@@ -188,18 +202,25 @@ fun HistoryDocument.validate(): HistoryDocument {
     return this
 }
 
-/** Display metadata for each supported currency. Symbol + full name. */
-data class CurrencyInfo(val code: String, val symbol: String, val flag: String, val name: String)
+/** Display metadata for each supported currency. Symbol + full name +
+ *  destination country (used as the gold sheet's "UAE vs <country>" label). */
+data class CurrencyInfo(
+    val code: String,
+    val symbol: String,
+    val flag: String,
+    val name: String,
+    val country: String,
+)
 
 val CURRENCIES: Map<String, CurrencyInfo> = listOf(
-    CurrencyInfo("INR", "₹",   "🇮🇳", "Indian Rupee"),
-    CurrencyInfo("PKR", "₨",   "🇵🇰", "Pakistani Rupee"),
-    CurrencyInfo("PHP", "₱",   "🇵🇭", "Philippine Peso"),
-    CurrencyInfo("BDT", "৳",   "🇧🇩", "Bangladeshi Taka"),
-    CurrencyInfo("EGP", "E£",  "🇪🇬", "Egyptian Pound"),
-    CurrencyInfo("USD", "$",   "🇺🇸", "US Dollar"),
-    CurrencyInfo("EUR", "€",   "🇪🇺", "Euro"),
-    CurrencyInfo("GBP", "£",   "🇬🇧", "Pound Sterling"),
-    CurrencyInfo("NPR", "रू",  "🇳🇵", "Nepalese Rupee"),
-    CurrencyInfo("LKR", "Rs",  "🇱🇰", "Sri Lankan Rupee"),
+    CurrencyInfo("INR", "₹",   "🇮🇳", "Indian Rupee",       "India"),
+    CurrencyInfo("PKR", "₨",   "🇵🇰", "Pakistani Rupee",    "Pakistan"),
+    CurrencyInfo("PHP", "₱",   "🇵🇭", "Philippine Peso",    "Philippines"),
+    CurrencyInfo("BDT", "৳",   "🇧🇩", "Bangladeshi Taka",   "Bangladesh"),
+    CurrencyInfo("EGP", "E£",  "🇪🇬", "Egyptian Pound",     "Egypt"),
+    CurrencyInfo("USD", "$",   "🇺🇸", "US Dollar",          "USA"),
+    CurrencyInfo("EUR", "€",   "🇪🇺", "Euro",               "Eurozone"),
+    CurrencyInfo("GBP", "£",   "🇬🇧", "Pound Sterling",     "UK"),
+    CurrencyInfo("NPR", "रू",  "🇳🇵", "Nepalese Rupee",     "Nepal"),
+    CurrencyInfo("LKR", "Rs",  "🇱🇰", "Sri Lankan Rupee",   "Sri Lanka"),
 ).associateBy { it.code }

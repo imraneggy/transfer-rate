@@ -601,6 +601,22 @@ private fun ReadyView(
     val midMarket = state.midMarketRate
     val gold = state.doc.gold
 
+    // v0.40: the gold module's second column follows the selected corridor's
+    // country (UAE vs Pakistan / Egypt / …) using that country's own retail
+    // gold + silver from rates.json `gold.secondary[CUR]`.  We swap the
+    // GoldDocument's `india` side for the country's side so the existing
+    // GoldHeader / GoldHistorySheet render it natively (already in local
+    // currency → no conversion).  INR keeps the richer LiveChennai feed, and
+    // any corridor whose secondary side is missing/errored falls back to the
+    // India side shown honestly as India (₹).
+    val secMetals = if (selected != "INR") gold?.secondary?.get(selected) else null
+    val useCountryMetals = secMetals?.gold?.status == "ok"
+    val effGold = if (gold != null && useCountryMetals)
+        gold.copy(india = secMetals!!.gold!!, indiaSilver = secMetals.silver)
+    else gold
+    val secondCountryLabel = if (useCountryMetals) (info?.country ?: selected) else "India"
+    val secondCountrySymbol = if (useCountryMetals) (info?.symbol ?: "₹") else "₹"
+
     // The provider whose history sheet is currently open (null = no sheet).
     var sheetForProvider by remember { mutableStateOf<ProviderQuote?>(null) }
     var goldSheetOpen by remember { mutableStateOf(false) }
@@ -655,11 +671,13 @@ private fun ReadyView(
                         onClick = onMidMarketClick,
                     )
                     GoldHeader(
-                        gold = gold,
+                        gold = effGold ?: gold,
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                         onClick = { goldSheetOpen = true },
-                        secondaryCurrencySymbol = info?.symbol ?: "₹",
-                        secondaryConversionRate = state.goldIndiaConversionRate,
+                        secondaryCurrencySymbol = secondCountrySymbol,
+                        // effGold's second side is already in local currency
+                        // (or India ₹ on fallback) → no conversion.
+                        secondaryConversionRate = 1.0,
                     )
                 }
             } else {
@@ -737,12 +755,15 @@ private fun ReadyView(
 
     // Gold history sheet
     if (goldSheetOpen) {
-        state.doc.gold?.let { g ->
+        (effGold ?: state.doc.gold)?.let { g ->
             GoldHistorySheet(
                 gold = g,
                 onDismiss = { goldSheetOpen = false },
-                secondaryCurrencySymbol = info?.symbol ?: "₹",
-                secondaryConversionRate = state.goldIndiaConversionRate,
+                secondaryCurrencySymbol = secondCountrySymbol,
+                // g's second side is already in local currency → no convert.
+                secondaryConversionRate = 1.0,
+                secondaryLabel = secondCountryLabel,
+                secondaryCode = selected,
             )
         }
     }
