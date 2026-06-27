@@ -852,6 +852,142 @@ def fetch_uae_silver() -> SilverSide:
 
 
 # =====================================================================
+# Per-country secondary metals — livepriceofgold.com
+# =====================================================================
+#
+# v0.40: the gold sheet's second column now follows the corridor the user
+# picked (UAE vs Pakistan / Egypt / …) instead of always India.  India's
+# LiveChennai feed only covers India, so we need one source that quotes
+# retail gold + silver per gram in each destination's LOCAL currency.
+#
+# livepriceofgold.com publishes exactly that for every corridor we ship,
+# server-rendered (no JS) in stable tables:
+#   gold:   /<slug>-gold-price.html   → "Gram/<CUR>" table, 24K + 22K /gram
+#   silver: /silver-price/<slug>.html → "Silver/Gram" table, 999 /gram
+#
+# It exposes only the CURRENT rate (no daily series), so the 30-day trend
+# is accumulated from our own cron snapshots in run_all.py (same source →
+# no cross-source level discontinuity in the sparkline).
+
+LPOG_BASE = "https://www.livepriceofgold.com"
+
+# Corridor currency → livepriceofgold country slug.
+LPOG_SLUG = {
+    "INR": "india", "PKR": "pakistan", "PHP": "philippines", "BDT": "bangladesh",
+    "EGP": "egypt", "USD": "usa", "EUR": "euro", "GBP": "uk",
+    "NPR": "nepal", "LKR": "sri-lanka",
+}
+
+
+def _lpog_tables(html: str) -> list:
+    """Return each <table> as a flat list of non-empty cell strings."""
+    out = []
+    for t in re.findall(r"<table[^>]*>.*?</table>", html, re.DOTALL | re.IGNORECASE):
+        cells = [c.strip() for c in re.sub(r"<[^>]+>", "|", t).split("|") if c.strip()]
+        out.append(cells)
+    return out
+
+
+def _parse_lpog_gold(html: str) -> tuple[Optional[float], Optional[float]]:
+    """(24K, 22K) per-gram from the 'Gram/<CUR>' table. None on miss."""
+    for cells in _lpog_tables(html):
+        if not cells or not cells[0].startswith("Gram/"):
+            continue
+        g24 = g22 = None
+        for i, c in enumerate(cells):
+            cu = c.upper()
+            if cu.endswith("GRAM GOLD 24K") and i + 1 < len(cells):
+                g24 = _parse_float(cells[i + 1])
+            elif cu == "GRAM 22K" and i + 1 < len(cells):
+                g22 = _parse_float(cells[i + 1])
+        if g24:
+            return g24, g22
+    return None, None
+
+
+def _parse_lpog_silver(html: str) -> Optional[float]:
+    """Silver 999 per-gram from the 'Silver/Gram' table. None on miss."""
+    for cells in _lpog_tables(html):
+        if not cells or not cells[0].startswith("Silver/Gram"):
+            continue
+        for i, c in enumerate(cells):
+            if c.lower() == "silver/gram" and i + 1 < len(cells):
+                v = _parse_float(cells[i + 1])
+                if v:
+                    return v
+    return None
+
+
+def _fetch_lpog(path: str) -> str:
+    last_exc: Optional[Exception] = None
+    for attempt in range(3):
+        if attempt > 0:
+            import time
+            time.sleep(2.0 ** attempt)
+        try:
+            with http_client(timeout=20.0) as c:
+                r = c.get(
+                    f"{LPOG_BASE}{path}",
+                    headers={
+                        "User-Agent": (
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "transfer-rate-bot/1.0"
+                        ),
+                        "Accept": "text/html",
+                    },
+                )
+                r.raise_for_status()
+            return r.text
+        except Exception as exc:  # noqa: BLE001
+            last_exc = exc
+    raise RuntimeError(
+        f"livepriceofgold fetch failed after 3 attempts ({path}): "
+        f"{type(last_exc).__name__}: {last_exc}"
+    )
+
+
+def fetch_country_gold(currency: str) -> GoldSide:
+    """Retail gold (24K + 22K /gram) for `currency`'s country from
+    livepriceofgold.com.  History is left empty here; run_all.py folds in
+    the accumulated rolling snapshots."""
+    slug = LPOG_SLUG.get(currency)
+    url = f"{LPOG_BASE}/{slug}-gold-price.html"
+    if slug is None:
+        return GoldSide(currency, None, None, "livepriceofgold.com", LPOG_BASE,
+                        status="error", note=f"No slug for {currency}")
+    try:
+        g24, g22 = _parse_lpog_gold(_fetch_lpog(f"/{slug}-gold-price.html"))
+        if not g24 or not g22 or g24 < g22 or g24 <= 0:
+            return GoldSide(currency, g24, g22, "livepriceofgold.com", url,
+                            status="error", note="Implausible/missing 24K/22K")
+        return GoldSide(currency, round(g24, 2), round(g22, 2),
+                        "livepriceofgold.com", url, status="ok")
+    except Exception as exc:  # noqa: BLE001
+        return GoldSide(currency, None, None, "livepriceofgold.com", url,
+                        status="error", note=f"{type(exc).__name__}: {exc}")
+
+
+def fetch_country_silver(currency: str) -> SilverSide:
+    """Retail silver (999 /gram) for `currency`'s country."""
+    slug = LPOG_SLUG.get(currency)
+    url = f"{LPOG_BASE}/silver-price/{slug}.html"
+    if slug is None:
+        return SilverSide(currency, None, "livepriceofgold.com", LPOG_BASE,
+                          status="error", note=f"No slug for {currency}")
+    try:
+        per_g = _parse_lpog_silver(_fetch_lpog(f"/silver-price/{slug}.html"))
+        if not per_g or per_g <= 0:
+            return SilverSide(currency, per_g, "livepriceofgold.com", url,
+                              status="error", note="Missing/implausible silver/g")
+        return SilverSide(currency, round(per_g, 2), "livepriceofgold.com",
+                          url, status="ok")
+    except Exception as exc:  # noqa: BLE001
+        return SilverSide(currency, None, "livepriceofgold.com", url,
+                          status="error", note=f"{type(exc).__name__}: {exc}")
+
+
+# =====================================================================
 # Orchestration entry point
 # =====================================================================
 

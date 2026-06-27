@@ -65,7 +65,10 @@ from .federal_exchange import FederalExchangeProvider
 from .gcc_exchange import GccExchangeProvider
 from .lari import LariProvider
 from .sharaf import SharafProvider
-from .gold import fetch_gold, GoldHistoryPoint
+from .gold import (
+    fetch_gold, GoldHistoryPoint,
+    fetch_country_gold, fetch_country_silver, LPOG_SLUG,
+)
 
 
 # Display order. Mid-market first (extracted to header), then real providers.
@@ -406,6 +409,55 @@ def _merge_uae_gold_history(
     return side
 
 
+def _merge_country_silver_history(
+    side: dict, history_path: Path, max_days: int = 30
+) -> dict:
+    """Rolling per-country silver history (single per_g series).
+
+    livepriceofgold.com only exposes the CURRENT silver rate, so — exactly
+    like [_merge_uae_gold_history] for gold — we accumulate one observation
+    per day from our cron snapshots into a per-currency file so the app can
+    draw a 30-day silver sparkline that fills in over time.
+    """
+    from datetime import date as _date
+
+    rolling: dict = {}
+    for entry in side.get("history", []) or []:
+        d = entry.get("date")
+        p = entry.get("per_g")
+        if d and p is not None:
+            rolling[d] = float(p)
+
+    if history_path.exists():
+        try:
+            loaded = json.loads(history_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                for d, v in loaded.items():
+                    try:
+                        rolling.setdefault(d, float(v))
+                    except (TypeError, ValueError):
+                        pass
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    today = _date.today().isoformat()
+    if side.get("status") == "ok" and side.get("per_g") is not None:
+        rolling[today] = float(side["per_g"])
+
+    keep = sorted(rolling.keys(), reverse=True)[:max_days]
+    pruned = {d: rolling[d] for d in keep}
+
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = history_path.with_suffix(history_path.suffix + ".tmp")
+    tmp.write_text(json.dumps(pruned, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, history_path)
+
+    side["history"] = [
+        {"date": d, "per_g": pruned[d]} for d in sorted(pruned.keys(), reverse=True)
+    ]
+    return side
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run scrapers across all corridors")
     parser.add_argument("--amount", type=float, default=DEFAULT_AMOUNT)
@@ -474,6 +526,31 @@ def main() -> int:
         gold_dict["uae"] = _merge_uae_gold_history(
             gold_dict["uae"], args.gold_history
         )
+        # v0.40: per-corridor secondary metals (UAE vs <country>).  India
+        # keeps its richer LiveChennai feed; every other corridor (and India
+        # too, for uniformity) gets retail gold + silver from
+        # livepriceofgold.com, with 30-day history accumulated per currency
+        # from the same source so the trend has no cross-source jumps.
+        sec_gold_dir = args.gold_history.parent / "secondary_gold"
+        sec_silver_dir = args.gold_history.parent / "secondary_silver"
+        secondary: Dict[str, dict] = {}
+        for cur in args.corridors:
+            if cur not in LPOG_SLUG:
+                continue
+            try:
+                g = _merge_uae_gold_history(
+                    fetch_country_gold(cur).to_dict(),
+                    sec_gold_dir / f"{cur}.json",
+                )
+                s = _merge_country_silver_history(
+                    fetch_country_silver(cur).to_dict(),
+                    sec_silver_dir / f"{cur}.json",
+                )
+                secondary[cur] = {"gold": g, "silver": s}
+            except Exception as exc:  # noqa: BLE001
+                print(f"warning: secondary metals {cur} failed: {exc}",
+                      file=sys.stderr)
+        gold_dict["secondary"] = secondary
         gold_payload = gold_dict
     except Exception as exc:
         print(f"warning: gold module failed: {exc}", file=sys.stderr)
