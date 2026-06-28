@@ -9,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +65,7 @@ import com.transferrate.app.BuildConfig
 import com.transferrate.app.R
 import com.transferrate.app.data.NotificationCenter
 import com.transferrate.app.data.NotificationPrefs
+import com.transferrate.app.ui.theme.LocalBrandColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -275,10 +277,11 @@ private fun NotificationsCard() {
     val errInvalid = stringResource(R.string.about_target_invalid)
     val errOutOfRange = stringResource(R.string.about_target_out_of_range)
 
-    // ── Brand palette ─────────────────────────────────────────────────
-    val brandNavy = Color(0xFF071827)
-    val brandTeal = Color(0xFF14BBA6)
-    val amberAccent = Color(0xFFF4A900)
+    // ── Brand palette (centralized tokens, see Theme.kt) ──────────────
+    val brand = LocalBrandColors.current
+    val brandNavy = brand.navy
+    val brandTeal = brand.teal
+    val amberAccent = brand.gold
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -745,8 +748,9 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
 
 @Composable
 private fun ProCard(isProActive: Boolean, onShowUpgrade: () -> Unit) {
-    val brandNavy = Color(0xFF071827)
-    val brandTeal = Color(0xFF14BBA6)
+    val brand = LocalBrandColors.current
+    val brandNavy = brand.navy
+    val brandTeal = brand.teal
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -760,7 +764,11 @@ private fun ProCard(isProActive: Boolean, onShowUpgrade: () -> Unit) {
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("✦", fontSize = 20.sp, color = Color(0xFFF4A900))
+                Image(
+                    painter = painterResource(id = R.drawable.transfer_rate_logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                )
                 Spacer(Modifier.width(10.dp))
                 Text(
                     "Transfer Rate Pro",

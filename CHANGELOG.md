@@ -15,6 +15,19 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.41.0] - 2026-06-28
+
+### Added
+- **Exchanges directory on the home screen.** A new card under the gold calculator with two tabs — **Money Exchanges** (tap-to-open each money-transfer provider's site) and **Gold Exchanges** (UAE jewellers: Joy Alukkas, Malabar, Kalyan, Sky, Damas). The jeweller links moved here from the gold sheet so both kinds of exchange are one tap away on the main screen.
+
+### Changed
+- **"What this buys" reflects your amount.** The gold/silver calculator header now reads "What 100 AED buys you" using the amount you entered, instead of a generic label.
+- **Proprietary release.** Removed open-source / MIT-license wording from the About page and elsewhere; the footer now shows a standard all-rights-reserved copyright.
+- **About page polish.** Notification and Pro cards now use the shared brand colour tokens; the "BEST" explanation is corridor-neutral.
+
+### Fixed
+- **Pro icon.** The Transfer Rate Pro header on the About and Upgrade screens showed a generic star glyph; it now uses the actual app logo.
+
 ## [0.40.0] - 2026-06-27
 
 ### Added

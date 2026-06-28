@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,8 +38,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Brush
 import com.transferrate.app.R
 import com.transferrate.app.data.GoldDocument
-import com.transferrate.app.data.JEWELLERS
-import com.transferrate.app.data.Jeweller
 import com.transferrate.app.ui.theme.LocalMetalColors
 import com.transferrate.app.ui.theme.MetalColors
 import java.time.LocalDate
@@ -418,14 +415,6 @@ fun GoldHistorySheet(
                 }
             }
 
-            // 7b. Jewellers directory — tap-to-open each shop's official
-            // daily-rate page.  UAE rate is uniform (DGJG), so this is a
-            // directory not a price comparison; see data/Jewellers.kt.
-            item {
-                Spacer(Modifier.height(20.dp))
-                JewellerSection()
-            }
-
             // 8. Source attribution footer (reuses the same metals_disclaimer
             // string already shown on the home-screen gold/silver card).
             item {
@@ -454,91 +443,6 @@ fun GoldHistorySheet(
             currencySymbol = indiaSym,
             multiplier = multiplier,
             secondaryLabel = secondaryLabel,
-        )
-    }
-}
-
-/**
- * "Jewellers" directory block in the gold sheet.
- *
- * Lists major UAE gold jewellers, each a tap-to-open link to that shop's
- * official daily-rate page.  Deliberately shows NO per-jeweller price: the
- * UAE retail rate is uniform (DGJG sets one daily rate for all shops), so a
- * subtitle says exactly that and points users to the rate already shown
- * above.  Making charges — the real per-shop difference — aren't published
- * in any reliable feed, so we link out rather than fabricate numbers.
- */
-@Composable
-private fun JewellerSection() {
-    Text(
-        text = stringResource(R.string.jewellers_title),
-        style = MaterialTheme.typography.labelMedium,
-        fontSize = 13.sp,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontWeight = FontWeight.Bold,
-    )
-    Spacer(Modifier.height(2.dp))
-    Text(
-        text = stringResource(R.string.jewellers_subtitle),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Spacer(Modifier.height(10.dp))
-    JEWELLERS.forEach { j ->
-        JewellerRow(j)
-        Spacer(Modifier.height(8.dp))
-    }
-}
-
-@Composable
-private fun JewellerRow(jeweller: Jeweller) {
-    val ctx = LocalContext.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable {
-                // https-only URLs (see data/Jewellers.kt); same ACTION_VIEW
-                // pattern as ProviderHistorySheet's "Visit provider".
-                runCatching {
-                    ctx.startActivity(
-                        android.content.Intent(
-                            android.content.Intent.ACTION_VIEW,
-                            android.net.Uri.parse(jeweller.ratePageUrl),
-                        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-                    )
-                }
-            }
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        ProviderAvatar(
-            providerId = jeweller.id,
-            displayName = jeweller.name,
-            size = 40.dp,
-        )
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = jeweller.name,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2,
-            )
-            Text(
-                text = stringResource(R.string.jewellers_view_rate),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium,
-            )
-        }
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = "↗",   // ↗ open-external affordance
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

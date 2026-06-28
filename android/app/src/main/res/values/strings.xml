@@ -23,6 +23,8 @@
     <string name="error_loading">Couldn\'t load rates. Pull to retry.</string>
     <string name="loading_rates">Loading rates…</string>
     <string name="metals_calc_label">What This Buys</string>
+    <!-- v0.41: eyebrow uses the entered amount, e.g. "What 100 AED buys you". -->
+    <string name="metals_calc_buys_fmt">What %1$s AED buys you</string>
     <string name="disclaimer">Rates are indicative and may differ at the provider. Not financial advice.</string>
 
     <!-- Toolbar chip labels — kept short on purpose (4–6 chars); can be transliterated rather than translated. -->
@@ -57,6 +59,14 @@
     <string name="jewellers_title">UAE Jewellers</string>
     <string name="jewellers_subtitle">UAE retail gold rate is the same across jewellers; making charges vary by design and store. Tap to open each jeweller\'s official rate page.</string>
     <string name="jewellers_view_rate">View today\'s rate</string>
+
+    <!-- Home-screen Exchanges directory (v0.41): two tabs linking out to
+         money-transfer providers and gold jewellers. -->
+    <string name="exchanges_label">EXCHANGES</string>
+    <string name="exchanges_tab_money">Money Exchanges</string>
+    <string name="exchanges_tab_gold">Gold Exchanges</string>
+    <string name="exchanges_visit">Visit ↗</string>
+    <string name="exchanges_money_empty">No exchange links for this corridor yet.</string>
 
     <!-- "What this buys" gold/silver calculator (v0.34.0, split from the
          amount panel). "24K"/"22K" stay English-only — unit-code style
@@ -194,13 +204,13 @@
     <!-- About-page body paragraphs -->
     <string name="about_midmarket_body">The mid-market (or \'interbank\') rate is the wholesale midpoint between the buy and sell prices in the global currency market. It is the most objective benchmark — every remittance provider charges some markup or fee on top.</string>
     <string name="about_midmarket_body_sources">We pull it from public financial-data sources, with automatic fallbacks if the primary is unavailable. The rate is refreshed alongside provider rates on the regular cycle.</string>
-    <string name="about_best_body">Among the providers with verified live rates, the one giving you the most rupees per AED. Updated each refresh.</string>
+    <string name="about_best_body">Among providers with verified live rates, the one that gives you the most for every AED you send — in whichever currency you\'ve selected. Updated on each refresh.</string>
     <string name="about_best_body_delta">Each card also shows \'+0.02 vs mid-market\' or \'−0.05\' so you can see at a glance how each provider compares to the objective benchmark.</string>
     <string name="about_privacy_body">This app collects nothing. No analytics, no telemetry, no advertising, no account, no cloud sync.</string>
     <string name="about_privacy_body_network">Outbound network access is allowlisted at the application layer to a small set of public data hosts needed for rate updates. Anything else is blocked regardless of what any future dependency tries to do.</string>
     <string name="about_privacy_body_permissions">Permissions: INTERNET and ACCESS_NETWORK_STATE for the rate fetch. The optional POST_NOTIFICATIONS permission is requested once for daily-high alerts; you can deny or revoke it any time without breaking the app.</string>
     <string name="about_footer_disclaimer">Rates shown are indicative and may differ at the provider. Confirm at the provider\'s app or website before sending money. Not financial advice. Not affiliated with any of the listed remittance providers. Provider names and logos are trademarks of their respective owners, used here for nominative identification in a comparison context only.</string>
-    <string name="about_footer_license">Released under the MIT License.</string>
+    <string name="about_footer_license">© 2026 Transfer Rate. All rights reserved.</string>
     <string name="about_dailyhigh_title">Daily high alert</string>
     <string name="about_dailyhigh_body">Status-bar alert when a provider beats today\'s previous best AED→INR rate. At most a few notifications per day.</string>
     <string name="about_permission_denied_hint">Permission was declined. To enable, open Android Settings → Apps → Transfer Rate → Notifications, allow them, then return here and toggle on.</string>
@@ -317,7 +327,7 @@
 
     <!-- Welcome modal -->
     <string name="welcome_title">Welcome to Transfer Rate</string>
-    <string name="welcome_subtitle">A free, open-source comparison app for sending money from the UAE to India. No accounts, no ads, no analytics.</string>
+    <string name="welcome_subtitle">A free app to compare money-transfer rates from the UAE. No accounts, no ads, no analytics.</string>
     <string name="welcome_got_it">Got it</string>
     <string name="welcome_revisit_hint">You can re-read this from the About screen any time.</string>
     <string name="welcome_bullet_rates_title">Live remittance rates</string>

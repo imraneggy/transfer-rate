@@ -75,6 +75,7 @@ import com.transferrate.app.R
 import com.transferrate.app.data.CURRENCIES
 import com.transferrate.app.data.CurrencyInfo
 import com.transferrate.app.data.GoldDocument
+import com.transferrate.app.data.JEWELLERS
 import com.transferrate.app.data.ProviderQuote
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -703,6 +704,9 @@ private fun ReadyView(
                 gold = gold,
             )
         }
+        item {
+            ExchangesSection(providers = state.visibleQuotes)
+        }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = (p.status == "ok" || p.status == "manual")
                     && state.bestRate != null
@@ -1299,12 +1303,12 @@ private fun MetalCalculatorPanel(
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            // v0.41: eyebrow reflects the entered AED amount, e.g.
+            // "WHAT 100 AED BUYS YOU"; the chips below pick which metal.
             Text(
-                text = when (selected) {
-                    MetalCalcOption.Gold24k -> stringResource(R.string.metals_calc_option_gold_24k)
-                    MetalCalcOption.Gold22k -> stringResource(R.string.metals_calc_option_gold_22k)
-                    MetalCalcOption.Silver  -> stringResource(R.string.metals_calc_option_silver)
-                }.uppercase() + " · " + stringResource(R.string.metals_calc_label),
+                text = stringResource(
+                    R.string.metals_calc_buys_fmt, formatAmount(amount),
+                ).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.8.sp,
@@ -1353,6 +1357,117 @@ private fun MetalCalculatorPanel(
                 )
             }
         }
+    }
+}
+
+/**
+ * Exchanges directory on the home screen (v0.41): two tabs — Money
+ * Exchanges (the money-transfer providers, tap to open each one's site)
+ * and Gold Exchanges (UAE jewellers, tap to open their daily-rate page).
+ * Sits under the "What This Buys" calculator. The jeweller list moved
+ * here from the gold sheet so both kinds of exchange are one tap away on
+ * the main screen.
+ */
+@Composable
+private fun ExchangesSection(providers: List<ProviderQuote>) {
+    var goldTab by rememberSaveable { mutableStateOf(false) }
+    val money = remember(providers) {
+        providers.filter { it.providerId != "mid_market" && !it.url.isNullOrBlank() }
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+    ) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+            Text(
+                text = stringResource(R.string.exchanges_label),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.8.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AmountChip(
+                    label = stringResource(R.string.exchanges_tab_money),
+                    selected = !goldTab,
+                    onClick = { goldTab = false },
+                )
+                AmountChip(
+                    label = stringResource(R.string.exchanges_tab_gold),
+                    selected = goldTab,
+                    onClick = { goldTab = true },
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            if (!goldTab) {
+                if (money.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.exchanges_money_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    money.forEachIndexed { i, p ->
+                        ExchangeLinkRow(p.providerId, p.providerName, p.url!!)
+                        if (i < money.lastIndex) Spacer(Modifier.height(8.dp))
+                    }
+                }
+            } else {
+                JEWELLERS.forEachIndexed { i, j ->
+                    ExchangeLinkRow(j.id, j.name, j.ratePageUrl)
+                    if (i < JEWELLERS.lastIndex) Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+/** One tappable exchange/jeweller row: logo + name + "Visit ↗", opens the
+ *  https URL via ACTION_VIEW (same guarded pattern as ProviderHistorySheet). */
+@Composable
+private fun ExchangeLinkRow(id: String, name: String, url: String) {
+    val ctx = LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable {
+                runCatching {
+                    ctx.startActivity(
+                        android.content.Intent(
+                            android.content.Intent.ACTION_VIEW,
+                            android.net.Uri.parse(url),
+                        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+                }
+            }
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ProviderAvatar(providerId = id, displayName = name, size = 40.dp)
+        Spacer(Modifier.width(12.dp))
+        Text(
+            text = name,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.exchanges_visit),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }
 

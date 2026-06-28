@@ -1,5 +1,6 @@
 package com.transferrate.app.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -98,7 +99,7 @@ fun UpgradeScreen(
             FeatureRow(
                 emoji = "❤️",
                 title = "Support independent development",
-                subtitle = "Transfer Rate is ad-free and open source. Pro keeps it that way.",
+                subtitle = "Transfer Rate is ad-free. Pro keeps it that way.",
             )
             Spacer(Modifier.height(28.dp))
             if (isPro) {
@@ -140,10 +141,10 @@ private fun HeroCard() {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "✦",
-                fontSize = 40.sp,
-                color = brand.gold,
+            Image(
+                painter = painterResource(id = R.drawable.transfer_rate_logo),
+                contentDescription = null,
+                modifier = Modifier.size(52.dp),
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -235,7 +236,11 @@ private fun ProActiveCard() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Text("✦", fontSize = 20.sp, color = brand.teal)
+            Image(
+                painter = painterResource(id = R.drawable.transfer_rate_logo),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
             Spacer(Modifier.width(10.dp))
             Column {
                 Text(
