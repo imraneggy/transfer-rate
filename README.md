@@ -1,12 +1,11 @@
 # Transfer Rate
 
-Open-source AED → INR rate aggregator for UAE remittance services, with
-side-by-side gold and silver rates for the UAE / India corridor.
-Public, free, ad-free, no analytics, no accounts.
+AED-based rate aggregator for UAE remittance services, with per-country
+gold and silver rates. Free to use, ad-free, no analytics, no accounts.
 
-[![scrape](https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/scrape.yml)
-[![android-build](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml/badge.svg)](https://github.com/imraneggy/transfer-rate/actions/workflows/android-build.yml)
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+Proprietary software — all rights reserved. This repository is published
+for transparency only; it is **not** open source and grants no licence to
+use, copy, or redistribute the code (see [`LICENSE`](LICENSE)).
 
 > **Latest release: [v0.37.0](https://github.com/imraneggy/transfer-rate/releases/tag/v0.37.0)**
 > See [`CHANGELOG.md`](CHANGELOG.md) for the full version history;
@@ -59,7 +58,6 @@ refreshed every 15 minutes:
 | Data hosting | GitHub Pages (Fastly CDN) | static |
 | Refresh proxy | Cloudflare Worker (free tier) | hosted |
 | Distribution | Google Play (release-signed APK) | per-ABI splits + universal |
-| Distribution | F-Droid (reproducible from source) | metadata in `fastlane/` |
 
 > **Note on ABI splits.** From v0.29.x onward the app has zero native
 > dependencies (no `.so` files), so all ABI-split APKs are functionally
@@ -75,8 +73,7 @@ build into an unauditable supply-chain risk.
 
 ## Screenshots
 
-Real screenshots welcome — submit a PR with PNGs in `docs/screenshots/`.
-For now, here is the layout:
+Layout overview:
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -183,7 +180,6 @@ Not active in the live app until a reliable public source is confirmed:
 | Careem Pay | Not in the active scraper registry; needs a re-check before listing. |
 | Al Rostamani, Al Fardan, Joyalukkas, Al Ghurair, Wall Street | Dubai/UAE candidates under investigation; Al Fardan is blocked by a Sucuri CloudProxy WAF challenge. |
 
-Contributions to add stable public scrapers are welcome — see `CONTRIBUTING.md`.
 
 ## Repository layout
 
@@ -212,7 +208,7 @@ transfer-rate/
 │   ├── lulu-proxy/            Cloudflare Worker — bearer for LuLu's public rate API
 │   └── lulu-residential/      Self-hosted fallback runner for LuLu (legacy)
 ├── fastlane/
-│   └── metadata/android/en-US/    Play Store + F-Droid listing copy
+│   └── metadata/android/en-US/    Play Store listing copy
 ├── .github/workflows/
 │   ├── scrape.yml             Cron */15, runs scrapers, deploys Pages
 │   ├── scrape-lulu-residential.yml   Self-hosted runner for LuLu fallback
@@ -222,7 +218,7 @@ transfer-rate/
 └── docs/
     ├── ARCHITECTURE.md        Two-plane design, failure model, schema
     ├── RUNBOOK.md             Operator playbook (manual entries, incidents)
-    ├── PUBLISHING.md          Play Store + F-Droid release procedures
+    ├── PUBLISHING.md          Play Store release procedures
     ├── USER_GUIDE.md          End-user-facing app documentation
     ├── CHANGELOG.html         Rendered version history (auto-generated)
     └── report.html            Hand-curated technical narrative
@@ -242,7 +238,7 @@ transfer-rate/
 | End user | [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) |
 | Anyone wanting the version history | [`CHANGELOG.md`](CHANGELOG.md) |
 | Anyone wanting a printable / shareable changelog | [`docs/CHANGELOG.html`](docs/CHANGELOG.html) |
-| New contributor | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Maintainer / architecture | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | Maintainer / on-call | [`docs/RUNBOOK.md`](docs/RUNBOOK.md) |
 | Releaser | [`docs/PUBLISHING.md`](docs/PUBLISHING.md) |
 | Security / privacy / takedown | [`SECURITY.md`](SECURITY.md), [`PRIVACY.md`](PRIVACY.md), [`DISCLAIMER.md`](DISCLAIMER.md), [`TAKEDOWN.md`](TAKEDOWN.md) |
@@ -349,13 +345,11 @@ within 24 hours.
 
 ## Distribution
 
-The app is being prepared for two distribution channels:
+The app is distributed via:
 
-* **F-Droid** — metadata is in `fastlane/metadata/android/en-US/`.
-  F-Droid builds from source; submission instructions in
-  [`docs/PUBLISHING.md`](docs/PUBLISHING.md).
 * **Google Play** — release-signing config wired in
   `app/build.gradle.kts`; per-architecture APK splits enabled.
+  Release procedure in [`docs/PUBLISHING.md`](docs/PUBLISHING.md).
 
 For local release builds:
 
@@ -369,9 +363,6 @@ cd android
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
-
-## Contributing
-
-Read [`CONTRIBUTING.md`](CONTRIBUTING.md). Adding a new provider scraper is
-a 30-minute job following `scrapers/wise.py` as a template.
+Proprietary — © 2026 Transfer Rate, all rights reserved. See
+[`LICENSE`](LICENSE). This source is published for transparency only; no
+licence is granted to use, copy, modify, or redistribute it.
