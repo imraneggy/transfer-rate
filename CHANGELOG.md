@@ -15,6 +15,17 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.41.1] - 2026-06-28
+
+### Changed
+- **Gold Exchanges only.** Removed the redundant "Money Exchanges" tab from the home-screen exchanges card — each provider card in the rate list already links out to its own site. The card now shows the gold jewellers directly.
+
+### Added
+- **Jeweller logos.** Joy Alukkas, Malabar, Kalyan and Damas now show their brand logos in the Gold Exchanges list (Sky uses initials until a clean logo is available).
+
+### Fixed
+- **Gold/silver value colour.** The headline gram/AED amount rendered near-white in dark mode; it now uses the gold or silver accent hue to match its metal.
+
 ## [0.41.0] - 2026-06-28
 
 ### Added

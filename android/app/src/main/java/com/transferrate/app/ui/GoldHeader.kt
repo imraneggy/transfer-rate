@@ -181,7 +181,7 @@ fun GoldHeader(
                     inrValue = gold.india.perG24k?.times(indiaRateMultiplier),
                     secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
-                    valueColor = metals.goldDeep,
+                    valueColor = metals.goldAccent,
                     aedDecimals = 0,
                     emphasis = true,
                 )
@@ -192,7 +192,7 @@ fun GoldHeader(
                     inrValue = gold.india.perG22k?.times(indiaRateMultiplier),
                     secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
-                    valueColor = metals.goldDeep,
+                    valueColor = metals.goldAccent,
                     aedDecimals = 0,
                     emphasis = false,
                 )
@@ -230,7 +230,7 @@ fun GoldHeader(
                         inrValue = gold.indiaSilver?.perG?.times(indiaRateMultiplier),
                         secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
-                        valueColor = metals.silverDeep,
+                        valueColor = metals.silverAccent,
                         aedDecimals = 2,
                         emphasis = true,
                     )
@@ -241,7 +241,7 @@ fun GoldHeader(
                         inrValue = gold.indiaSilver?.perG?.times(1000)?.times(indiaRateMultiplier),
                         secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
-                        valueColor = metals.silverDeep,
+                        valueColor = metals.silverAccent,
                         aedDecimals = 0,
                         emphasis = false,
                     )

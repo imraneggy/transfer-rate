@@ -19,8 +19,8 @@ android {
         targetSdk = 35
         // versionCode bumped on every release. App stores use it as the
         // canonical "is this newer?" comparison.
-        versionCode = 85
-        versionName = "0.41.0"
+        versionCode = 86
+        versionName = "0.41.1"
 
 
         // Locales whose resource folders are bundled into the APK.  Any

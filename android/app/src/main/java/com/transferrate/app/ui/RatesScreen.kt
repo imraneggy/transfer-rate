@@ -705,7 +705,7 @@ private fun ReadyView(
             )
         }
         item {
-            ExchangesSection(providers = state.visibleQuotes)
+            ExchangesSection()
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = (p.status == "ok" || p.status == "manual")
@@ -1293,7 +1293,11 @@ private fun MetalCalculatorPanel(
     val grams = perGram?.takeIf { it > 0.0 }?.let { amount / it }
     val isSilver = selected == MetalCalcOption.Silver
     val accentColor = if (isSilver) metals.silverText else metals.goldText
-    val valueColor = if (isSilver) metals.silverDeep else metals.goldDeep
+    // v0.41.1: use the metal's accent hue (gold/silver) for the headline
+    // gram value — goldDeep/silverDeep render near-white/cream in dark mode,
+    // which read as plain white. goldAccent/silverAccent stay metal-coloured
+    // in both themes.
+    val valueColor = if (isSilver) metals.silverAccent else metals.goldAccent
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -1361,19 +1365,15 @@ private fun MetalCalculatorPanel(
 }
 
 /**
- * Exchanges directory on the home screen (v0.41): two tabs — Money
- * Exchanges (the money-transfer providers, tap to open each one's site)
- * and Gold Exchanges (UAE jewellers, tap to open their daily-rate page).
- * Sits under the "What This Buys" calculator. The jeweller list moved
- * here from the gold sheet so both kinds of exchange are one tap away on
- * the main screen.
+ * Gold Exchanges directory on the home screen (v0.41). Lists UAE jewellers,
+ * each a tap-to-open link to that shop's official daily-rate page. Sits under
+ * the "What This Buys" calculator. Money-transfer exchanges are NOT shown here
+ * — each provider card in the list already links out to its own site, so a
+ * second money list would just duplicate that. The UAE retail gold rate is
+ * uniform (DGJG), so the subtitle says so rather than implying a price race.
  */
 @Composable
-private fun ExchangesSection(providers: List<ProviderQuote>) {
-    var goldTab by rememberSaveable { mutableStateOf(false) }
-    val money = remember(providers) {
-        providers.filter { it.providerId != "mid_market" && !it.url.isNullOrBlank() }
-    }
+private fun ExchangesSection() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
@@ -1383,44 +1383,22 @@ private fun ExchangesSection(providers: List<ProviderQuote>) {
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
             Text(
-                text = stringResource(R.string.exchanges_label),
+                text = stringResource(R.string.exchanges_tab_gold),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.8.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AmountChip(
-                    label = stringResource(R.string.exchanges_tab_money),
-                    selected = !goldTab,
-                    onClick = { goldTab = false },
-                )
-                AmountChip(
-                    label = stringResource(R.string.exchanges_tab_gold),
-                    selected = goldTab,
-                    onClick = { goldTab = true },
-                )
-            }
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(R.string.jewellers_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(Modifier.height(12.dp))
-            if (!goldTab) {
-                if (money.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.exchanges_money_empty),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                } else {
-                    money.forEachIndexed { i, p ->
-                        ExchangeLinkRow(p.providerId, p.providerName, p.url!!)
-                        if (i < money.lastIndex) Spacer(Modifier.height(8.dp))
-                    }
-                }
-            } else {
-                JEWELLERS.forEachIndexed { i, j ->
-                    ExchangeLinkRow(j.id, j.name, j.ratePageUrl)
-                    if (i < JEWELLERS.lastIndex) Spacer(Modifier.height(8.dp))
-                }
+            JEWELLERS.forEachIndexed { i, j ->
+                ExchangeLinkRow(j.id, j.name, j.ratePageUrl)
+                if (i < JEWELLERS.lastIndex) Spacer(Modifier.height(8.dp))
             }
         }
     }
