@@ -43,6 +43,7 @@ import com.transferrate.app.data.UserProfile
 import com.transferrate.app.ui.AboutScreen
 import com.transferrate.app.ui.RatesScreen
 import com.transferrate.app.ui.RatesUiState
+import com.transferrate.app.ui.DynamicAccentTheme
 import com.transferrate.app.ui.RatesViewModel
 import com.transferrate.app.ui.SplashScreen
 import com.transferrate.app.ui.ThemeMode
@@ -183,6 +184,9 @@ private fun AppRoot(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // v0.42: app-wide accent follows the current BEST provider's brand colour.
+    val bestProviderId = (state as? RatesUiState.Ready)?.bestProviderId
+    DynamicAccentTheme(providerId = bestProviderId) {
     Box(modifier = Modifier.fillMaxSize().background(SPLASH_BG)) {
         if (!splashDone) {
             SplashScreen(
@@ -230,6 +234,7 @@ private fun AppRoot(
                 }
             }
         }
+    }
     }
 }
 

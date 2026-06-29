@@ -66,6 +66,17 @@ sealed interface RatesUiState {
                 .mapNotNull { it.effectiveRate ?: it.rate }
                 .maxOrNull()
 
+        /** Provider id of the current BEST quote — drives the app-wide accent
+         *  colour (v0.42). Null when no verified quote exists yet. */
+        val bestProviderId: String?
+            get() {
+                val best = bestRate ?: return null
+                return visibleQuotes.firstOrNull {
+                    (it.status == "ok" || it.status == "manual") &&
+                        (it.effectiveRate ?: it.rate) == best
+                }?.providerId
+            }
+
         /** Multiplier that converts an India-side gold/silver value (always
          *  quoted in INR by the scraper) into [selectedCurrency], so the
          *  GoldHeader card tracks the currency chip the same way the

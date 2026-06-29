@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 
 /**
  * Provider brand-colour mapping used to tint the BEST card so the
@@ -52,4 +53,75 @@ internal fun bestCardTintFor(providerId: String): Color {
         // newly registered without a bundled logo PNG).
         else                  -> if (isDark) Color(0xFF241776) else Color(0xFFA3ACFF)
     }
+}
+
+/**
+ * Saturated brand "seed" colour per provider — the canonical brand hex
+ * (the same values noted alongside each tint in [bestCardTintFor], taken
+ * from the official logo PNGs). Unlike the tints above (which are blended
+ * for card backgrounds), these are the full-strength brand colours, used
+ * to drive the app-wide accent from whichever provider is currently BEST.
+ * Falls back to the brand teal so the accent is never the old indigo/purple.
+ */
+internal fun providerBrandSeed(providerId: String): Color = when (providerId.lowercase()) {
+    "ahalia"           -> Color(0xFF023B7F)
+    "al_ansari"        -> Color(0xFF112C69)
+    "al_dahab"         -> Color(0xFF02A12F)
+    "aspora"           -> Color(0xFF5523B2)
+    "federal_exchange" -> Color(0xFFEC9532)
+    "gcc_exchange"     -> Color(0xFF0FA94D)
+    "index_exchange"   -> Color(0xFFFDDA26)
+    "lari"             -> Color(0xFFF58E2C)
+    "orient_exchange"  -> Color(0xFFE2A22E)
+    "lulu"             -> Color(0xFF15ABE7)
+    "remitly"          -> Color(0xFF243954)
+    "sharaf"           -> Color(0xFFFF8110)
+    "transfergo"       -> Color(0xFFFFD000)
+    "wise"             -> Color(0xFF083500)
+    else               -> Color(0xFF14BBA6) // brand teal (incl. mid_market / unknown)
+}
+
+/**
+ * Derive a contrast-safe Material `primary` + `onPrimary` from a brand
+ * seed. We keep the brand HUE but normalise saturation (floor) and
+ * brightness per theme, so a dark brand (e.g. Wise #083500) still yields a
+ * usable accent on a black background and a bright one (e.g. TransferGo
+ * #FFD000) gets dark on-colour text. This keeps every provider's identity
+ * while guaranteeing legibility regardless of the raw brand colour.
+ */
+internal fun deriveAccent(seed: Color, darkTheme: Boolean): Pair<Color, Color> {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(seed.toArgb(), hsv)
+    val sat = hsv[1].coerceIn(0.45f, 0.95f)
+    val value = if (darkTheme) 0.92f else 0.64f
+    val primary = Color.hsv(hsv[0], sat, value)
+    val onPrimary = if (primary.luminance() > 0.5f) Color(0xFF0E0E0E) else Color.White
+    return primary to onPrimary
+}
+
+/**
+ * Re-themes [content] so the Material `primary`/`secondary` accent follows
+ * the currently-BEST provider's brand colour (v0.42). Applied inside the
+ * base [com.transferrate.app.ui.theme.TransferRateTheme]; passing a null
+ * provider leaves the base palette untouched (e.g. during initial load).
+ */
+@Composable
+fun DynamicAccentTheme(providerId: String?, content: @Composable () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    if (providerId == null) {
+        content()
+        return
+    }
+    val isDark = scheme.background.luminance() < 0.5f
+    val (primary, onPrimary) = deriveAccent(providerBrandSeed(providerId), isDark)
+    MaterialTheme(
+        colorScheme = scheme.copy(
+            primary = primary,
+            onPrimary = onPrimary,
+            secondary = primary,
+            onSecondary = onPrimary,
+        ),
+        typography = MaterialTheme.typography,
+        content = content,
+    )
 }

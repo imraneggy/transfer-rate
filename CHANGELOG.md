@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.42.0] - 2026-06-28
+
+### Changed
+- **Accent colour follows the best provider.** The app's accent (selected chips, buttons, links, BEST badge) is no longer a fixed indigo/purple — it now takes the brand colour of whichever provider is currently giving the best rate, updating as the leader changes. The brand hue is tone-normalised per light/dark theme so button and chip text stays legible whatever the provider's raw colour.
+
 ## [0.41.1] - 2026-06-28
 
 ### Changed
