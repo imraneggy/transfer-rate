@@ -705,7 +705,7 @@ private fun ReadyView(
             )
         }
         item {
-            ExchangesSection()
+            ExchangesSection(quotes = state.visibleQuotes)
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = (p.status == "ok" || p.status == "manual")
@@ -1367,13 +1367,18 @@ private fun MetalCalculatorPanel(
 /**
  * Gold Exchanges directory on the home screen (v0.41). Lists UAE jewellers,
  * each a tap-to-open link to that shop's official daily-rate page. Sits under
- * the "What This Buys" calculator. Money-transfer exchanges are NOT shown here
- * — each provider card in the list already links out to its own site, so a
- * second money list would just duplicate that. The UAE retail gold rate is
- * uniform (DGJG), so the subtitle says so rather than implying a price race.
+ * the "What This Buys" calculator. Two tabs side by side: Money Exchanges
+ * (the remittance providers, linking out to each site) and Gold Exchanges
+ * (UAE jewellers). The UAE retail gold rate is uniform (DGJG), so the gold
+ * subtitle says so rather than implying a price race.
  */
 @Composable
-private fun ExchangesSection() {
+private fun ExchangesSection(quotes: List<ProviderQuote>) {
+    var tab by rememberSaveable { mutableStateOf(0) }
+    // Money providers that have a site to open and a live/manual quote.
+    val moneyProviders = quotes.filter {
+        (it.status == "ok" || it.status == "manual") && !it.url.isNullOrBlank()
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(22.dp),
@@ -1382,25 +1387,84 @@ private fun ExchangesSection() {
         ),
     ) {
         Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-            Text(
-                text = stringResource(R.string.exchanges_tab_gold),
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.8.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = stringResource(R.string.jewellers_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            // Segmented two-tab header.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(3.dp),
+                horizontalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
+                ExchangeTabButton(
+                    label = stringResource(R.string.exchanges_tab_money),
+                    selected = tab == 0,
+                    onClick = { tab = 0 },
+                    modifier = Modifier.weight(1f),
+                )
+                ExchangeTabButton(
+                    label = stringResource(R.string.exchanges_tab_gold),
+                    selected = tab == 1,
+                    onClick = { tab = 1 },
+                    modifier = Modifier.weight(1f),
+                )
+            }
             Spacer(Modifier.height(12.dp))
-            JEWELLERS.forEachIndexed { i, j ->
-                ExchangeLinkRow(j.id, j.name, j.ratePageUrl)
-                if (i < JEWELLERS.lastIndex) Spacer(Modifier.height(8.dp))
+            if (tab == 0) {
+                Text(
+                    text = stringResource(R.string.exchanges_money_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(12.dp))
+                moneyProviders.forEachIndexed { i, p ->
+                    ExchangeLinkRow(p.providerId, p.providerName, p.url!!)
+                    if (i < moneyProviders.lastIndex) Spacer(Modifier.height(8.dp))
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.jewellers_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(12.dp))
+                JEWELLERS.forEachIndexed { i, j ->
+                    ExchangeLinkRow(j.id, j.name, j.ratePageUrl)
+                    if (i < JEWELLERS.lastIndex) Spacer(Modifier.height(8.dp))
+                }
             }
         }
+    }
+}
+
+/** Pill button for the Money/Gold segmented header. */
+@Composable
+private fun ExchangeTabButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                if (selected) MaterialTheme.colorScheme.primary
+                else Color.Transparent,
+            )
+            .clickable(onClick = onClick)
+            .padding(vertical = 9.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = if (selected) MaterialTheme.colorScheme.onPrimary
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }
 

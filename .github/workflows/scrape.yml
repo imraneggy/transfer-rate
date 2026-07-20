@@ -118,10 +118,19 @@ jobs:
           # production).  Indian gold/silver history is parsed fresh
           # from the upstream page each run, so no sidecar needed for
           # those.
+          # v0.43: the per-corridor secondary metals (gold.secondary[CUR])
+          # accumulate their 30-day trend into data/secondary_gold/<cur>.json
+          # and data/secondary_silver/<cur>.json the same way the UAE gold
+          # sidecar does.  These MUST be committed too — otherwise every cron
+          # run starts from a fresh checkout with no rolling file, re-seeds a
+          # single same-day entry, and the per-country trend lines are stuck
+          # on "Building…" forever (1 point, never the 2 needed for a spark).
           git add \
             public/rates.json \
             public/history.json \
-            data/uae_gold_history.json
+            data/uae_gold_history.json \
+            data/secondary_gold \
+            data/secondary_silver
           if ! git diff --cached --quiet; then
             git commit -m "rates: scheduled update"
             git push

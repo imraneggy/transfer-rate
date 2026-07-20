@@ -15,6 +15,14 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.43.0] - 2026-07-20
+
+### Added
+- **Money & Gold exchange tabs.** The home-screen exchanges card again has two tabs side by side — **Money Exchanges** (the remittance providers, each opening its own site to start a transfer at the rate shown) and **Gold Exchanges** (the UAE jewellers). Money is the default tab.
+
+### Fixed
+- **Per-country gold/silver 30-day history.** The per-corridor gold and silver trend lines were stuck on "Building…" for every currency because their rolling history sidecars (`data/secondary_gold/`, `data/secondary_silver/`) were never committed by the scheduled scraper — each run started from a fresh checkout and re-seeded a single same-day point. The scraper commit step now persists these sidecars, so the trends accumulate day by day (the sparkline appears once there are two days of data; the full 30-day window fills over ~30 days). The upstream source has no historical prices, so past days cannot be backfilled.
+
 ## [0.42.0] - 2026-06-28
 
 ### Changed
