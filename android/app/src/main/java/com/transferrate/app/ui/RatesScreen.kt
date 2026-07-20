@@ -705,7 +705,13 @@ private fun ReadyView(
             )
         }
         item {
-            ExchangesSection(quotes = state.visibleQuotes)
+            ExchangesSection(
+                quotes = state.visibleQuotes,
+                amount = state.selectedAmount,
+                midMarket = midMarket,
+                quoteSymbol = info?.symbol ?: "",
+                uaeGold = gold?.uae,
+            )
         }
         items(state.visibleQuotes, key = { "${selected}-${it.providerId}" }) { p ->
             val isBest = (p.status == "ok" || p.status == "manual")
@@ -1373,7 +1379,13 @@ private fun MetalCalculatorPanel(
  * subtitle says so rather than implying a price race.
  */
 @Composable
-private fun ExchangesSection(quotes: List<ProviderQuote>) {
+private fun ExchangesSection(
+    quotes: List<ProviderQuote>,
+    amount: Double,
+    midMarket: Double?,
+    quoteSymbol: String,
+    uaeGold: com.transferrate.app.data.GoldSide?,
+) {
     var tab by rememberSaveable { mutableStateOf(0) }
     // Money providers that have a site to open and a live/manual quote.
     val moneyProviders = quotes.filter {
@@ -1411,6 +1423,9 @@ private fun ExchangesSection(quotes: List<ProviderQuote>) {
             }
             Spacer(Modifier.height(12.dp))
             if (tab == 0) {
+                // Money Exchanges: each provider shows the payout amount for
+                // the entered AED and how its rate compares to mid-market,
+                // and the whole row opens the provider's site.
                 Text(
                     text = stringResource(R.string.exchanges_money_subtitle),
                     style = MaterialTheme.typography.bodySmall,
@@ -1418,10 +1433,19 @@ private fun ExchangesSection(quotes: List<ProviderQuote>) {
                 )
                 Spacer(Modifier.height(12.dp))
                 moneyProviders.forEachIndexed { i, p ->
-                    ExchangeLinkRow(p.providerId, p.providerName, p.url!!)
+                    MoneyExchangeRow(
+                        p = p,
+                        amount = amount,
+                        midMarket = midMarket,
+                        quoteSymbol = quoteSymbol,
+                    )
                     if (i < moneyProviders.lastIndex) Spacer(Modifier.height(8.dp))
                 }
             } else {
+                // Gold Exchanges: the UAE gold price (24K/22K per gram) with a
+                // 30-day trend, then the UAE jeweller links.
+                GoldPricePanel(uaeGold = uaeGold)
+                Spacer(Modifier.height(14.dp))
                 Text(
                     text = stringResource(R.string.jewellers_subtitle),
                     style = MaterialTheme.typography.bodySmall,
@@ -1435,6 +1459,237 @@ private fun ExchangesSection(quotes: List<ProviderQuote>) {
             }
         }
     }
+}
+
+/** Money Exchanges row: avatar + name + payout amount + vs-mid comparison,
+ *  the whole row opens the provider's site. */
+@Composable
+private fun MoneyExchangeRow(
+    p: ProviderQuote,
+    amount: Double,
+    midMarket: Double?,
+    quoteSymbol: String,
+) {
+    val ctx = LocalContext.current
+    val semantic = LocalSemanticColors.current
+    val rate = p.effectiveRate ?: p.rate
+    val received = rate?.let { it * amount }
+    val receivedStr = received?.let {
+        if (it >= 100) "$quoteSymbol %,.0f".format(it) else "$quoteSymbol %,.2f".format(it)
+    }
+    // Percent vs mid-market (positive = better than mid for the sender).
+    val vsMid: Pair<String, Color>? = if (rate != null && midMarket != null && midMarket > 0) {
+        val pct = (rate / midMarket - 1.0) * 100.0
+        when {
+            pct > 0.05 -> "+%.1f%%".format(pct) to semantic.positive
+            pct < -0.05 -> "%.1f%%".format(pct) to semantic.negative
+            else -> stringResource(R.string.rate_equals_mid) to
+                MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    } else null
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable {
+                p.url?.let { url ->
+                    runCatching {
+                        ctx.startActivity(
+                            android.content.Intent(
+                                android.content.Intent.ACTION_VIEW,
+                                android.net.Uri.parse(url),
+                            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    }
+                }
+            }
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ProviderAvatar(providerId = p.providerId, displayName = p.providerName, size = 40.dp)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = p.providerName,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            )
+            Text(
+                text = stringResource(R.string.exchanges_visit),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+        Spacer(Modifier.width(8.dp))
+        Column(horizontalAlignment = Alignment.End) {
+            if (receivedStr != null) {
+                Text(
+                    text = receivedStr,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
+            vsMid?.let { (label, color) ->
+                val display = if (label.endsWith("%")) {
+                    stringResource(R.string.rate_vs_mid_format, label)
+                } else label
+                Text(
+                    text = display,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                    color = color,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
+        }
+    }
+}
+
+/** Gold Exchanges header panel: UAE 24K & 22K per-gram price + 30-day trend. */
+@Composable
+private fun GoldPricePanel(uaeGold: com.transferrate.app.data.GoldSide?) {
+    val metals = LocalMetalColors.current
+    val semantic = LocalSemanticColors.current
+    val sym = uaeGold?.currency ?: "AED"
+    val hist24 = remember(uaeGold) {
+        (uaeGold?.history ?: emptyList()).sortedBy { it.date }.map { it.perG24k }
+    }
+    // 30-day change from oldest to newest available point.
+    val change: Pair<String, Color>? = if (hist24.size >= 2) {
+        val first = hist24.first()
+        val pct = if (first != 0.0) (hist24.last() - first) / first * 100.0 else 0.0
+        when {
+            pct > 0.05 -> "+%.1f%%".format(pct) to semantic.positive
+            pct < -0.05 -> "%.1f%%".format(pct) to semantic.negative
+            else -> "0.0%" to MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    } else null
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(14.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.exchanges_gold_header),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.6.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            change?.let { (label, color) ->
+                Text(
+                    text = "${stringResource(R.string.exchanges_gold_30d)}  $label",
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontFeatureSettings = "tnum",
+                    ),
+                    color = color,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            GoldValueBlock("24K", uaeGold?.perG24k, sym, metals.goldAccent)
+            GoldValueBlock("22K", uaeGold?.perG22k, sym, metals.goldAccent)
+        }
+        if (hist24.size >= 2) {
+            Spacer(Modifier.height(12.dp))
+            MiniSparkline(
+                values = hist24,
+                color = metals.goldAccent,
+                modifier = Modifier.fillMaxWidth().height(40.dp),
+            )
+        } else {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.gold_sheet_building_short),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun GoldValueBlock(carat: String, value: Double?, symbol: String, valueColor: Color) {
+    Column {
+        Text(
+            text = stringResource(R.string.exchanges_gold_carat_gram_fmt, carat),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = if (value != null) "$symbol %,.2f".format(value) else "—",
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = valueColor,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontFeatureSettings = "tnum",
+            ),
+            maxLines = 1,
+            softWrap = false,
+        )
+    }
+}
+
+/** Lightweight polyline sparkline drawn from a value series. */
+@Composable
+private fun MiniSparkline(values: List<Double>, color: Color, modifier: Modifier = Modifier) {
+    val trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.18f)
+    Box(
+        modifier = modifier.drawBehind {
+            if (values.size < 2) return@drawBehind
+            val lo = values.minOrNull() ?: return@drawBehind
+            val hi = values.maxOrNull() ?: return@drawBehind
+            val span = (hi - lo).takeIf { it > 0.0 } ?: 1.0
+            val stepX = size.width / (values.size - 1)
+            val pad = 3f
+            val usableH = size.height - pad * 2
+            fun pointFor(i: Int): Offset {
+                val x = stepX * i
+                val norm = ((values[i] - lo) / span).toFloat()
+                val y = pad + (1f - norm) * usableH
+                return Offset(x, y)
+            }
+            // baseline
+            drawLine(
+                color = trackColor,
+                start = Offset(0f, size.height - pad),
+                end = Offset(size.width, size.height - pad),
+                strokeWidth = 1f,
+            )
+            for (i in 0 until values.size - 1) {
+                drawLine(
+                    color = color.copy(alpha = 0.9f),
+                    start = pointFor(i),
+                    end = pointFor(i + 1),
+                    strokeWidth = 2.5f,
+                    cap = androidx.compose.ui.graphics.StrokeCap.Round,
+                )
+            }
+        },
+    )
 }
 
 /** Pill button for the Money/Gold segmented header. */

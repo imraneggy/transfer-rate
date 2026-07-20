@@ -15,6 +15,14 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.44.0] - 2026-07-20
+
+### Changed
+- **Richer exchange tabs.** In the home-screen exchanges card, **Money Exchanges** now shows each provider's payout amount for your entered AED plus how its rate compares to mid-market, and the whole row opens the provider's site. **Gold Exchanges** now leads with the UAE gold price — 24K and 22K per gram with a 30-day trend line — above the jeweller links.
+
+### Fixed
+- **Per-country trends filled immediately.** The per-country gold/silver 30-day history (added in v0.43.0) no longer shows "Building…" while it slowly accumulates — the last 30 days were reconstructed from real COMEX gold/silver futures and daily FX, anchored to today's true retail value, so every corridor's trend line draws right away.
+
 ## [0.43.0] - 2026-07-20
 
 ### Added
