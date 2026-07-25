@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.45.0] - 2026-07-25
+
+### Changed
+- **Money / Gold tabs now switch the whole list.** The Money and Gold tabs sit above the vendor section: **Money** shows the original rich provider cards (rate, payout, vs-mid, BEST badge, trend) — no duplicate summary list — and **Gold** shows only the UAE gold details: 24K/22K per gram, the 30-day trend, and the jeweller rate-page links. Switching tabs swaps the section instead of stacking a second list below it.
+
 ## [0.44.0] - 2026-07-20
 
 ### Changed
