@@ -15,6 +15,11 @@ automatically by `.github/workflows/changelog.yml` on every `v*.*.*` tag push.
 
 ---
 
+## [0.46.0] - 2026-07-26
+
+### Fixed
+- **Light-mode gold/silver legibility.** The 24K/22K and silver values in the gold module, the "what this buys" calculator, and the UAE gold panel rendered in a pale accent that was hard to read on the white card. Light mode now uses the deeper gold/silver text tones for those numbers (and the gold trend line); dark mode keeps the bright accents that read well on black.
+
 ## [0.45.0] - 2026-07-25
 
 ### Changed

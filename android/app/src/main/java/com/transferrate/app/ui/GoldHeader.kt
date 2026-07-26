@@ -88,6 +88,11 @@ fun GoldHeader(
     // plus the same per-theme depth treatment — soft primary-tinted
     // shadow in light mode, light-catch gradient border on OLED black.
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    // v0.46: light-mode legibility — the metal accents (#D4A017 gold /
+    // #8E9AA8 silver) are too pale on the light card, so use the darker
+    // goldText/silverText tokens there; dark mode keeps the bright accents.
+    val goldValueColor = if (isDark) metals.goldAccent else metals.goldText
+    val silverValueColor = if (isDark) metals.silverAccent else metals.silverText
     val cardShape = RoundedCornerShape(22.dp)
     val depthMod = if (isDark) {
         Modifier.border(
@@ -181,7 +186,7 @@ fun GoldHeader(
                     inrValue = gold.india.perG24k?.times(indiaRateMultiplier),
                     secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
-                    valueColor = metals.goldAccent,
+                    valueColor = goldValueColor,
                     aedDecimals = 0,
                     emphasis = true,
                 )
@@ -192,7 +197,7 @@ fun GoldHeader(
                     inrValue = gold.india.perG22k?.times(indiaRateMultiplier),
                     secondaryCurrencySymbol = indiaSymbol,
                     accentColor = metals.goldText,
-                    valueColor = metals.goldAccent,
+                    valueColor = goldValueColor,
                     aedDecimals = 0,
                     emphasis = false,
                 )
@@ -213,7 +218,7 @@ fun GoldHeader(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("◇", fontSize = 13.sp,
-                             color = metals.silverAccent, maxLines = 1)
+                             color = silverValueColor, maxLines = 1)
                         Spacer(Modifier.width(4.dp))
                         AutoSizeText(
                             text = stringResource(R.string.metals_silver),
@@ -230,7 +235,7 @@ fun GoldHeader(
                         inrValue = gold.indiaSilver?.perG?.times(indiaRateMultiplier),
                         secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
-                        valueColor = metals.silverAccent,
+                        valueColor = silverValueColor,
                         aedDecimals = 2,
                         emphasis = true,
                     )
@@ -241,7 +246,7 @@ fun GoldHeader(
                         inrValue = gold.indiaSilver?.perG?.times(1000)?.times(indiaRateMultiplier),
                         secondaryCurrencySymbol = indiaSymbol,
                         accentColor = metals.silverText,
-                        valueColor = metals.silverAccent,
+                        valueColor = silverValueColor,
                         aedDecimals = 0,
                         emphasis = false,
                     )

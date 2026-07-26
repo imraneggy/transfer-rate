@@ -1310,9 +1310,16 @@ private fun MetalCalculatorPanel(
     val accentColor = if (isSilver) metals.silverText else metals.goldText
     // v0.41.1: use the metal's accent hue (gold/silver) for the headline
     // gram value — goldDeep/silverDeep render near-white/cream in dark mode,
-    // which read as plain white. goldAccent/silverAccent stay metal-coloured
-    // in both themes.
-    val valueColor = if (isSilver) metals.silverAccent else metals.goldAccent
+    // which read as plain white. goldAccent/silverAccent stay metal-coloured.
+    // v0.46: in LIGHT mode the accents (#D4A017 gold / #8E9AA8 silver) are too
+    // light on the white card (~2.5:1), so use the darker goldText/silverText
+    // tokens there; dark mode keeps the bright accents legible on black.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val valueColor = if (isDark) {
+        if (isSilver) metals.silverAccent else metals.goldAccent
+    } else {
+        if (isSilver) metals.silverText else metals.goldText
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -1449,6 +1456,10 @@ private fun GoldTabContent(uaeGold: com.transferrate.app.data.GoldSide?) {
 private fun GoldPricePanel(uaeGold: com.transferrate.app.data.GoldSide?) {
     val metals = LocalMetalColors.current
     val semantic = LocalSemanticColors.current
+    // v0.46: darker gold token in light mode for legibility on the white card;
+    // bright accent in dark mode. Same rule the metal calculator uses.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val goldValueColor = if (isDark) metals.goldAccent else metals.goldText
     val sym = uaeGold?.currency ?: "AED"
     val hist24 = remember(uaeGold) {
         (uaeGold?.history ?: emptyList()).sortedBy { it.date }.map { it.perG24k }
@@ -1495,14 +1506,14 @@ private fun GoldPricePanel(uaeGold: com.transferrate.app.data.GoldSide?) {
         }
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            GoldValueBlock("24K", uaeGold?.perG24k, sym, metals.goldAccent)
-            GoldValueBlock("22K", uaeGold?.perG22k, sym, metals.goldAccent)
+            GoldValueBlock("24K", uaeGold?.perG24k, sym, goldValueColor)
+            GoldValueBlock("22K", uaeGold?.perG22k, sym, goldValueColor)
         }
         if (hist24.size >= 2) {
             Spacer(Modifier.height(12.dp))
             MiniSparkline(
                 values = hist24,
-                color = metals.goldAccent,
+                color = goldValueColor,
                 modifier = Modifier.fillMaxWidth().height(40.dp),
             )
         } else {
