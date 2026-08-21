@@ -2,8 +2,8 @@
   "schema_version": 2,
   "base": "AED",
   "amount_base": 1000.0,
-  "started_at": "2026-08-21T17:32:37Z",
-  "completed_at": "2026-08-21T17:33:08Z",
+  "started_at": "2026-08-21T18:03:55Z",
+  "completed_at": "2026-08-21T18:04:25Z",
   "corridors": {
     "INR": [
       {
@@ -22,7 +22,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "wise",
@@ -30,9 +30,9 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 26.0469,
+        "rate": 26.0484,
         "fee_base": null,
-        "received_quote": 26046.9,
+        "received_quote": 26048.4,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -40,7 +40,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "aspora",
@@ -58,7 +58,7 @@
         "note": null,
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "remitly",
@@ -66,17 +66,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 25.99,
+        "rate": 25.93,
         "fee_base": 0.0,
-        "received_quote": 25990.0,
-        "effective_rate": 25.99,
+        "received_quote": 25930.0,
+        "effective_rate": 25.93,
         "delivery_estimate": "cash pickup, bank deposit, or UPI",
         "url": "https://www.remitly.com/ae/en/india",
         "status": "ok",
         "note": null,
-        "promo_rate": 26.17,
+        "promo_rate": 26.11,
         "promo_note": "First transfer \u2265 AED 10",
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "transfergo",
@@ -84,17 +84,17 @@
         "base": "AED",
         "quote": "INR",
         "amount_base": 1000.0,
-        "rate": 26.05335,
+        "rate": 26.05564,
         "fee_base": null,
-        "received_quote": 26053.35,
-        "effective_rate": 26.05335,
+        "received_quote": 26055.64,
+        "effective_rate": 26.05564,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "al_ansari",
@@ -112,7 +112,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "al_dahab",
@@ -130,7 +130,7 @@
         "note": "RuntimeError: Al Dahab: AED/INR not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "ahalia",
@@ -148,7 +148,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -166,7 +166,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:50Z"
+        "fetched_at": "2026-08-21T18:04:10Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -184,7 +184,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "index_exchange",
@@ -202,7 +202,7 @@
         "note": "Indicative rate from indexexchange.ae homepage.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -220,7 +220,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "lari",
@@ -238,7 +238,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "sharaf",
@@ -256,7 +256,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-20 04:57 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       }
     ],
     "PKR": [
@@ -276,7 +276,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "wise",
@@ -284,9 +284,9 @@
         "base": "AED",
         "quote": "PKR",
         "amount_base": 1000.0,
-        "rate": 75.5581,
+        "rate": 75.5602,
         "fee_base": null,
-        "received_quote": 75558.09999999999,
+        "received_quote": 75560.2,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -294,7 +294,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "aspora",
@@ -312,7 +312,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->PKR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:37Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "remitly",
@@ -330,7 +330,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->PKR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:37Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "transfergo",
@@ -348,7 +348,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "al_ansari",
@@ -366,7 +366,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "al_dahab",
@@ -384,7 +384,7 @@
         "note": "RuntimeError: Al Dahab: AED/PKR not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "ahalia",
@@ -402,7 +402,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -420,7 +420,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:52Z"
+        "fetched_at": "2026-08-21T18:04:09Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -438,7 +438,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "index_exchange",
@@ -456,7 +456,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->PKR would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:55Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -474,7 +474,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:48Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "lari",
@@ -492,7 +492,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "sharaf",
@@ -510,7 +510,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-20 04:55 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       }
     ],
     "PHP": [
@@ -520,17 +520,17 @@
         "base": "AED",
         "quote": "PHP",
         "amount_base": 1000.0,
-        "rate": 16.8032497523,
+        "rate": 16.8027052309,
         "fee_base": null,
-        "received_quote": 16803.249752300002,
-        "effective_rate": 16.8032497523,
+        "received_quote": 16802.7052309,
+        "effective_rate": 16.8027052309,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "wise",
@@ -538,9 +538,9 @@
         "base": "AED",
         "quote": "PHP",
         "amount_base": 1000.0,
-        "rate": 16.8011,
+        "rate": 16.802,
         "fee_base": null,
-        "received_quote": 16801.100000000002,
+        "received_quote": 16802.0,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -548,7 +548,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "aspora",
@@ -566,7 +566,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->PHP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "remitly",
@@ -584,7 +584,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->PHP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "transfergo",
@@ -592,17 +592,17 @@
         "base": "AED",
         "quote": "PHP",
         "amount_base": 1000.0,
-        "rate": 16.80271,
+        "rate": 16.80237,
         "fee_base": null,
-        "received_quote": 16802.710000000003,
-        "effective_rate": 16.80271,
+        "received_quote": 16802.37,
+        "effective_rate": 16.80237,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "al_ansari",
@@ -620,7 +620,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "al_dahab",
@@ -638,7 +638,7 @@
         "note": "RuntimeError: Al Dahab: AED/PHP not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "ahalia",
@@ -656,7 +656,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -674,7 +674,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:53Z"
+        "fetched_at": "2026-08-21T18:04:08Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -692,7 +692,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "index_exchange",
@@ -710,7 +710,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->PHP would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:38Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -728,7 +728,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "lari",
@@ -746,7 +746,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "sharaf",
@@ -764,7 +764,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-20 04:59 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       }
     ],
     "BDT": [
@@ -784,7 +784,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "wise",
@@ -792,9 +792,9 @@
         "base": "AED",
         "quote": "BDT",
         "amount_base": 1000.0,
-        "rate": 33.2698,
+        "rate": 33.2707,
         "fee_base": null,
-        "received_quote": 33269.799999999996,
+        "received_quote": 33270.7,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -802,7 +802,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "aspora",
@@ -820,7 +820,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->BDT not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "remitly",
@@ -838,7 +838,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->BDT would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:56Z"
       },
       {
         "provider_id": "transfergo",
@@ -856,7 +856,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "al_ansari",
@@ -874,7 +874,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "al_dahab",
@@ -892,7 +892,7 @@
         "note": "RuntimeError: Al Dahab: AED/BDT not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "ahalia",
@@ -910,7 +910,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -928,7 +928,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:54Z"
+        "fetched_at": "2026-08-21T18:04:09Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -946,7 +946,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "index_exchange",
@@ -964,7 +964,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->BDT would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -982,7 +982,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "lari",
@@ -1000,7 +1000,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "sharaf",
@@ -1018,7 +1018,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-21 04:26 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       }
     ],
     "EGP": [
@@ -1028,17 +1028,17 @@
         "base": "AED",
         "quote": "EGP",
         "amount_base": 1000.0,
-        "rate": 13.8515625993,
+        "rate": 13.8520254425,
         "fee_base": null,
-        "received_quote": 13851.5625993,
-        "effective_rate": 13.8515625993,
+        "received_quote": 13852.0254425,
+        "effective_rate": 13.8520254425,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "wise",
@@ -1046,9 +1046,9 @@
         "base": "AED",
         "quote": "EGP",
         "amount_base": 1000.0,
-        "rate": 13.8524,
+        "rate": 13.8528,
         "fee_base": null,
-        "received_quote": 13852.4,
+        "received_quote": 13852.800000000001,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -1056,7 +1056,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "aspora",
@@ -1074,7 +1074,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->EGP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "remitly",
@@ -1092,7 +1092,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->EGP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:39Z"
+        "fetched_at": "2026-08-21T18:03:57Z"
       },
       {
         "provider_id": "transfergo",
@@ -1100,17 +1100,17 @@
         "base": "AED",
         "quote": "EGP",
         "amount_base": 1000.0,
-        "rate": 13.85268,
+        "rate": 13.85143,
         "fee_base": null,
-        "received_quote": 13852.68,
-        "effective_rate": 13.85268,
+        "received_quote": 13851.43,
+        "effective_rate": 13.85143,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1128,7 +1128,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "al_dahab",
@@ -1146,7 +1146,7 @@
         "note": "RuntimeError: Al Dahab: AED/EGP not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "ahalia",
@@ -1164,7 +1164,7 @@
         "note": "RuntimeError: Ahalia: no cc_data key for EGP. Add to _CC_KEY in scrapers/ahalia.py.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -1182,7 +1182,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:54Z"
+        "fetched_at": "2026-08-21T18:04:11Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1200,7 +1200,7 @@
         "note": "RuntimeError: GCC: no entry for EGP. Available: ['AED', 'AUD', 'BDT', 'EUR', 'GBP', 'INR', 'JOD', 'LKR', 'NPR', 'PHP', 'PKR', 'SGD', 'USD']",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1218,7 +1218,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->EGP would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -1236,7 +1236,7 @@
         "note": "RuntimeError: Orient Exchange EGP rate out of plausible range: 0.0",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:03:58Z"
       },
       {
         "provider_id": "lari",
@@ -1254,7 +1254,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:05Z"
       },
       {
         "provider_id": "sharaf",
@@ -1272,7 +1272,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 1970-01-01 12:00 AM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       }
     ],
     "USD": [
@@ -1282,17 +1282,17 @@
         "base": "AED",
         "quote": "USD",
         "amount_base": 1000.0,
-        "rate": 0.272294,
+        "rate": 0.272260717,
         "fee_base": null,
-        "received_quote": 272.294,
-        "effective_rate": 0.272294,
+        "received_quote": 272.260717,
+        "effective_rate": 0.272260717,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
-        "note": "Reference rate from Open ExchangeRate.",
+        "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "wise",
@@ -1300,9 +1300,9 @@
         "base": "AED",
         "quote": "USD",
         "amount_base": 1000.0,
-        "rate": 0.272257,
+        "rate": 0.272264,
         "fee_base": null,
-        "received_quote": 272.257,
+        "received_quote": 272.264,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -1310,7 +1310,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "aspora",
@@ -1328,7 +1328,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->USD not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "remitly",
@@ -1346,7 +1346,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->USD would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:40Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "transfergo",
@@ -1364,7 +1364,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1382,7 +1382,7 @@
         "note": "Bank Transfer rate (BT) via WP-Ajax convertor.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:07Z"
       },
       {
         "provider_id": "al_dahab",
@@ -1400,7 +1400,7 @@
         "note": "RuntimeError: Al Dahab: AED/USD not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "ahalia",
@@ -1418,7 +1418,7 @@
         "note": "RuntimeError: Ahalia: no cc_data key for USD. Add to _CC_KEY in scrapers/ahalia.py.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -1436,7 +1436,7 @@
         "note": "RuntimeError: Federal Exchange: 'US DOLLAR' card not found on page. Their homepage structure may have changed.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:56Z"
+        "fetched_at": "2026-08-21T18:04:12Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1454,7 +1454,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1472,7 +1472,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->USD would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:41Z"
+        "fetched_at": "2026-08-21T18:03:59Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -1490,7 +1490,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "lari",
@@ -1508,7 +1508,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:48Z"
+        "fetched_at": "2026-08-21T18:04:05Z"
       },
       {
         "provider_id": "sharaf",
@@ -1526,7 +1526,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2024-12-25 01:10 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       }
     ],
     "EUR": [
@@ -1536,17 +1536,17 @@
         "base": "AED",
         "quote": "EUR",
         "amount_base": 1000.0,
-        "rate": 0.233160018,
+        "rate": 0.233116535,
         "fee_base": null,
-        "received_quote": 233.160018,
-        "effective_rate": 0.233160018,
+        "received_quote": 233.11653500000003,
+        "effective_rate": 0.233116535,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "wise",
@@ -1554,9 +1554,9 @@
         "base": "AED",
         "quote": "EUR",
         "amount_base": 1000.0,
-        "rate": 0.233087,
+        "rate": 0.233033,
         "fee_base": null,
-        "received_quote": 233.087,
+        "received_quote": 233.033,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -1564,7 +1564,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "aspora",
@@ -1582,7 +1582,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->EUR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "remitly",
@@ -1600,7 +1600,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->EUR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "transfergo",
@@ -1608,17 +1608,17 @@
         "base": "AED",
         "quote": "EUR",
         "amount_base": 1000.0,
-        "rate": 0.23309,
+        "rate": 0.23304,
         "fee_base": null,
-        "received_quote": 233.09,
-        "effective_rate": 0.23309,
+        "received_quote": 233.04,
+        "effective_rate": 0.23304,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1636,7 +1636,7 @@
         "note": "RuntimeError: Al Ansari: no internal currency code for EUR",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "al_dahab",
@@ -1654,7 +1654,7 @@
         "note": "RuntimeError: Al Dahab: AED/EUR not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "ahalia",
@@ -1672,7 +1672,7 @@
         "note": "RuntimeError: Ahalia: no cc_data key for EUR. Add to _CC_KEY in scrapers/ahalia.py.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -1690,7 +1690,7 @@
         "note": "RuntimeError: Federal Exchange: 'EURO' card not found on page. Their homepage structure may have changed.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:56Z"
+        "fetched_at": "2026-08-21T18:04:09Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1708,7 +1708,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1726,7 +1726,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->EUR would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:42Z"
+        "fetched_at": "2026-08-21T18:04:00Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -1744,7 +1744,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "lari",
@@ -1762,7 +1762,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:49Z"
+        "fetched_at": "2026-08-21T18:04:06Z"
       },
       {
         "provider_id": "sharaf",
@@ -1780,7 +1780,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-21 04:28 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       }
     ],
     "GBP": [
@@ -1790,17 +1790,17 @@
         "base": "AED",
         "quote": "GBP",
         "amount_base": 1000.0,
-        "rate": 0.199636542,
+        "rate": 0.1996365,
         "fee_base": null,
-        "received_quote": 199.636542,
-        "effective_rate": 0.199636542,
+        "received_quote": 199.63649999999998,
+        "effective_rate": 0.1996365,
         "delivery_estimate": null,
         "url": null,
         "status": "ok",
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "wise",
@@ -1808,9 +1808,9 @@
         "base": "AED",
         "quote": "GBP",
         "amount_base": 1000.0,
-        "rate": 0.199536,
+        "rate": 0.199425,
         "fee_base": null,
-        "received_quote": 199.536,
+        "received_quote": 199.42499999999998,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -1818,7 +1818,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "aspora",
@@ -1836,7 +1836,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->GBP not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "remitly",
@@ -1854,7 +1854,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->GBP would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "transfergo",
@@ -1862,17 +1862,17 @@
         "base": "AED",
         "quote": "GBP",
         "amount_base": 1000.0,
-        "rate": 0.19954,
+        "rate": 0.19941,
         "fee_base": null,
-        "received_quote": 199.54,
-        "effective_rate": 0.19954,
+        "received_quote": 199.41,
+        "effective_rate": 0.19941,
         "delivery_estimate": "bank deposit, varies",
         "url": "https://www.transfergo.com/en-ae/send-money-from-united-arab-emirates/aed/india/inr",
         "status": "ok",
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "al_ansari",
@@ -1890,7 +1890,7 @@
         "note": "RuntimeError: Al Ansari: no internal currency code for GBP",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "al_dahab",
@@ -1908,7 +1908,7 @@
         "note": "RuntimeError: Al Dahab: AED/GBP not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "ahalia",
@@ -1926,7 +1926,7 @@
         "note": "RuntimeError: Ahalia: no cc_data key for GBP. Add to _CC_KEY in scrapers/ahalia.py.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:43Z"
+        "fetched_at": "2026-08-21T18:04:01Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -1944,7 +1944,7 @@
         "note": "RuntimeError: Federal Exchange: 'POUND STERLING' card not found on page. Their homepage structure may have changed.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:56Z"
+        "fetched_at": "2026-08-21T18:04:09Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -1962,7 +1962,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "index_exchange",
@@ -1980,7 +1980,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->GBP would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -1998,7 +1998,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:02Z"
       },
       {
         "provider_id": "lari",
@@ -2016,7 +2016,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:52Z"
+        "fetched_at": "2026-08-21T18:04:07Z"
       },
       {
         "provider_id": "sharaf",
@@ -2034,7 +2034,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-21 04:28 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       }
     ],
     "NPR": [
@@ -2054,7 +2054,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "wise",
@@ -2062,9 +2062,9 @@
         "base": "AED",
         "quote": "NPR",
         "amount_base": 1000.0,
-        "rate": 41.6907,
+        "rate": 41.6919,
         "fee_base": null,
-        "received_quote": 41690.7,
+        "received_quote": 41691.899999999994,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -2072,7 +2072,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "aspora",
@@ -2090,7 +2090,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->NPR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "remitly",
@@ -2108,7 +2108,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->NPR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:44Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "transfergo",
@@ -2126,7 +2126,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "al_ansari",
@@ -2144,7 +2144,7 @@
         "note": "RuntimeError: Al Ansari: no internal currency code for NPR",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "al_dahab",
@@ -2162,7 +2162,7 @@
         "note": "RuntimeError: Al Dahab: AED/NPR not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "ahalia",
@@ -2180,7 +2180,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -2198,7 +2198,7 @@
         "note": "RuntimeError: Federal Exchange: 'NEPALI RUPEE' card not found on page. Their homepage structure may have changed.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:53Z"
+        "fetched_at": "2026-08-21T18:04:13Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -2216,7 +2216,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "index_exchange",
@@ -2234,7 +2234,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->NPR would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:03Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -2252,7 +2252,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "lari",
@@ -2270,7 +2270,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:51Z"
+        "fetched_at": "2026-08-21T18:04:09Z"
       },
       {
         "provider_id": "sharaf",
@@ -2288,7 +2288,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-21 04:26 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       }
     ],
     "LKR": [
@@ -2308,7 +2308,7 @@
         "note": "Reference rate from Google Finance.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "wise",
@@ -2316,9 +2316,9 @@
         "base": "AED",
         "quote": "LKR",
         "amount_base": 1000.0,
-        "rate": 89.676,
+        "rate": 89.6785,
         "fee_base": null,
-        "received_quote": 89676.0,
+        "received_quote": 89678.5,
         "effective_rate": null,
         "delivery_estimate": "within minutes",
         "url": "https://wise.com",
@@ -2326,7 +2326,7 @@
         "note": "Mid-market rate; provider charges a transparent fee on top.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "aspora",
@@ -2344,7 +2344,7 @@
         "note": "RuntimeError: Aspora currently exposes only AED->INR; AED->LKR not supported.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "remitly",
@@ -2362,7 +2362,7 @@
         "note": "RuntimeError: Remitly scraper currently only handles AED->INR. AED->LKR would need a separate corridor page.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "transfergo",
@@ -2380,7 +2380,7 @@
         "note": "Indicative rate from TransferGo public fx-rates API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "al_ansari",
@@ -2398,7 +2398,7 @@
         "note": "RuntimeError: Al Ansari: no internal currency code for LKR",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:45Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "al_dahab",
@@ -2416,7 +2416,7 @@
         "note": "RuntimeError: Al Dahab: AED/LKR not in marquee. Their ticker may not include this corridor today.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:47Z"
+        "fetched_at": "2026-08-21T18:04:06Z"
       },
       {
         "provider_id": "ahalia",
@@ -2434,7 +2434,7 @@
         "note": "Customer transfer rate from cc_data inline JS.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "federal_exchange",
@@ -2452,7 +2452,7 @@
         "note": "Daily rate from Federal Exchange homepage card.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:52Z"
+        "fetched_at": "2026-08-21T18:04:12Z"
       },
       {
         "provider_id": "gcc_exchange",
@@ -2470,7 +2470,7 @@
         "note": "Bank-transfer rate from GCC public API.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:05Z"
       },
       {
         "provider_id": "index_exchange",
@@ -2488,7 +2488,7 @@
         "note": "RuntimeError: Index Exchange scraper currently handles AED->INR only (homepage default); AED->LKR would need a different request shape.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:46Z"
+        "fetched_at": "2026-08-21T18:04:04Z"
       },
       {
         "provider_id": "orient_exchange",
@@ -2506,7 +2506,7 @@
         "note": "Transfer rate from Orient public rates endpoint. Provider timestamp: 21 Aug 2026 08.06 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:47Z"
+        "fetched_at": "2026-08-21T18:04:05Z"
       },
       {
         "provider_id": "lari",
@@ -2524,7 +2524,7 @@
         "note": "Static homepage rate table.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:53Z"
+        "fetched_at": "2026-08-21T18:04:11Z"
       },
       {
         "provider_id": "sharaf",
@@ -2542,7 +2542,7 @@
         "note": "Transfer rate from Sharaf Exchange public rates endpoint. Provider timestamp: 2026-08-21 04:26 PM.",
         "promo_rate": null,
         "promo_note": null,
-        "fetched_at": "2026-08-21T17:32:47Z"
+        "fetched_at": "2026-08-21T18:04:06Z"
       }
     ]
   },
@@ -2771,7 +2771,7 @@
     },
     "uae_silver": {
       "currency": "AED",
-      "per_g": 8.21,
+      "per_g": 8.22,
       "source": "igold.ae (Dubai bullion, AED/gram)",
       "source_url": "https://charts.igold.ae/api/data?metal=xag&currency=aed&period=monthly&weight=gram",
       "status": "ok",
@@ -2895,7 +2895,7 @@
         },
         {
           "date": "2026-08-21",
-          "per_g": 8.22
+          "per_g": 8.21
         }
       ]
     },
@@ -2949,13 +2949,13 @@
         }
       ]
     },
-    "fetched_at": "2026-08-21T17:33:00Z",
+    "fetched_at": "2026-08-21T18:04:16Z",
     "secondary": {
       "INR": {
         "gold": {
           "currency": "INR",
-          "per_g_24k": 14224.63,
-          "per_g_22k": 13058.21,
+          "per_g_24k": 14230.37,
+          "per_g_22k": 13063.48,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/india-gold-price.html",
           "status": "ok",
@@ -2963,8 +2963,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 13058.21,
-              "per_g_24k": 14224.63
+              "per_g_22k": 13063.48,
+              "per_g_24k": 14230.37
             },
             {
               "date": "2026-08-20",
@@ -3247,8 +3247,8 @@
       "PKR": {
         "gold": {
           "currency": "PKR",
-          "per_g_24k": 41245.04,
-          "per_g_22k": 37862.94,
+          "per_g_24k": 41273.97,
+          "per_g_22k": 37889.51,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/pakistan-gold-price.html",
           "status": "ok",
@@ -3256,8 +3256,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 37862.94,
-              "per_g_24k": 41245.04
+              "per_g_22k": 37889.51,
+              "per_g_24k": 41273.97
             },
             {
               "date": "2026-08-20",
@@ -3540,8 +3540,8 @@
       "PHP": {
         "gold": {
           "currency": "PHP",
-          "per_g_24k": 9172.76,
-          "per_g_22k": 8420.59,
+          "per_g_24k": 9169.02,
+          "per_g_22k": 8417.16,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/philippines-gold-price.html",
           "status": "ok",
@@ -3549,8 +3549,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 8420.59,
-              "per_g_24k": 9172.76
+              "per_g_22k": 8417.16,
+              "per_g_24k": 9169.02
             },
             {
               "date": "2026-08-20",
@@ -3833,8 +3833,8 @@
       "BDT": {
         "gold": {
           "currency": "BDT",
-          "per_g_24k": 18157.77,
-          "per_g_22k": 16668.83,
+          "per_g_24k": 18170.51,
+          "per_g_22k": 16680.53,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/bangladesh-gold-price.html",
           "status": "ok",
@@ -3842,8 +3842,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 16668.83,
-              "per_g_24k": 18157.77
+              "per_g_22k": 16680.53,
+              "per_g_24k": 18170.51
             },
             {
               "date": "2026-08-20",
@@ -4126,8 +4126,8 @@
       "EGP": {
         "gold": {
           "currency": "EGP",
-          "per_g_24k": 7560.29,
-          "per_g_22k": 6940.35,
+          "per_g_24k": 7559.39,
+          "per_g_22k": 6939.52,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/egypt-gold-price.html",
           "status": "ok",
@@ -4135,8 +4135,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 6940.35,
-              "per_g_24k": 7560.29
+              "per_g_22k": 6939.52,
+              "per_g_24k": 7559.39
             },
             {
               "date": "2026-08-20",
@@ -4419,8 +4419,8 @@
       "USD": {
         "gold": {
           "currency": "USD",
-          "per_g_24k": 148.62,
-          "per_g_22k": 136.44,
+          "per_g_24k": 148.69,
+          "per_g_22k": 136.5,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/usa-gold-price.html",
           "status": "ok",
@@ -4428,8 +4428,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 136.44,
-              "per_g_24k": 148.62
+              "per_g_22k": 136.5,
+              "per_g_24k": 148.69
             },
             {
               "date": "2026-08-20",
@@ -4712,8 +4712,8 @@
       "EUR": {
         "gold": {
           "currency": "EUR",
-          "per_g_24k": 127.22,
-          "per_g_22k": 116.79,
+          "per_g_24k": 127.21,
+          "per_g_22k": 116.78,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/euro-gold-price.html",
           "status": "ok",
@@ -4721,8 +4721,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 116.79,
-              "per_g_24k": 127.22
+              "per_g_22k": 116.78,
+              "per_g_24k": 127.21
             },
             {
               "date": "2026-08-20",
@@ -5005,8 +5005,8 @@
       "GBP": {
         "gold": {
           "currency": "GBP",
-          "per_g_24k": 108.85,
-          "per_g_22k": 99.92,
+          "per_g_24k": 108.97,
+          "per_g_22k": 100.04,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/uk-gold-price.html",
           "status": "ok",
@@ -5014,8 +5014,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 99.92,
-              "per_g_24k": 108.85
+              "per_g_22k": 100.04,
+              "per_g_24k": 108.97
             },
             {
               "date": "2026-08-20",
@@ -5298,8 +5298,8 @@
       "NPR": {
         "gold": {
           "currency": "NPR",
-          "per_g_24k": 22745.95,
-          "per_g_22k": 20880.78,
+          "per_g_24k": 22767.25,
+          "per_g_22k": 20900.33,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/nepal-gold-price.html",
           "status": "ok",
@@ -5307,8 +5307,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 20880.78,
-              "per_g_24k": 22745.95
+              "per_g_22k": 20900.33,
+              "per_g_24k": 22767.25
             },
             {
               "date": "2026-08-20",
@@ -5459,7 +5459,7 @@
         },
         "silver": {
           "currency": "NPR",
-          "per_g": 342.0,
+          "per_g": 343.0,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/silver-price/nepal.html",
           "status": "ok",
@@ -5467,7 +5467,7 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g": 342.0
+              "per_g": 343.0
             },
             {
               "date": "2026-08-20",
@@ -5591,8 +5591,8 @@
       "LKR": {
         "gold": {
           "currency": "LKR",
-          "per_g_24k": 48936.32,
-          "per_g_22k": 44923.54,
+          "per_g_24k": 48947.32,
+          "per_g_22k": 44933.64,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/sri-lanka-gold-price.html",
           "status": "ok",
@@ -5600,8 +5600,8 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g_22k": 44923.54,
-              "per_g_24k": 48936.32
+              "per_g_22k": 44933.64,
+              "per_g_24k": 48947.32
             },
             {
               "date": "2026-08-20",
@@ -5752,7 +5752,7 @@
         },
         "silver": {
           "currency": "LKR",
-          "per_g": 736.0,
+          "per_g": 737.0,
           "source": "livepriceofgold.com",
           "source_url": "https://www.livepriceofgold.com/silver-price/sri-lanka.html",
           "status": "ok",
@@ -5760,7 +5760,7 @@
           "history": [
             {
               "date": "2026-08-21",
-              "per_g": 736.0
+              "per_g": 737.0
             },
             {
               "date": "2026-08-20",
